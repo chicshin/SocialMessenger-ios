@@ -39,7 +39,10 @@ class ResetPasswordViewController: UIViewController {
     }
     @IBAction func dismissAction(_ sender: Any) {
         self.view.endEditing(true)
+//        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+//        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
         navigationController?.popViewController(animated: true)
+//        navigationController!.pushViewController(signInVC, animated: true)
     }
     @IBAction func resetButtonDidTapped(_ sender: Any) {
         self.validateFields()
