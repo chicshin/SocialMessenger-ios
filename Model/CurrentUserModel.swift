@@ -7,3 +7,15 @@
 //
 
 import Foundation
+
+class CurrentUserModel {
+    var usernameText: String
+    var profileImageUrl: String
+    var uidString: String
+    
+    init(username: String, profileImageUrlString: String, uid: String) {
+        usernameText = username
+        profileImageUrl = profileImageUrlString
+        uidString = uid
+    }
+}
