@@ -16,9 +16,9 @@ extension ProfileImageViewController {
         
         imageView.image = #imageLiteral(resourceName: "add_photo")
         
-        imageView.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
-        imageView.addGestureRecognizer(tapGesture)
+//        imageView.isUserInteractionEnabled = true
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
+//        imageView.addGestureRecognizer(tapGesture)
     }
     
     @objc func presentPicker() {
@@ -47,13 +47,16 @@ extension ProfileImageViewController {
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 4
     }
-    func setupSubmitButton() {
+    func setupAddPhotoButton() {
         submitButton.setTitle("Add a photo", for: UIControl.State.normal)
         submitButton.setTitleColor(.white, for: UIControl.State.normal)
         submitButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
         submitButton.layer.cornerRadius = 5
         submitButton.clipsToBounds = true
-        submitButton.isUserInteractionEnabled = false
+        
+//        submitButton.isUserInteractionEnabled = true
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
+//        submitButton.addGestureRecognizer(tapGesture)
     }
     
     func setupSkip() {
