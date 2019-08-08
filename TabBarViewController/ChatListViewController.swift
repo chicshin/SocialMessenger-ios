@@ -7,19 +7,21 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
+import ProgressHUD
+import Alamofire
+import AlamofireImage
 
-class ChatListsViewController: UIViewController {
-
-    @IBOutlet weak var tableView: UITableView!
-    table
+class ChatListViewController: UIViewController {
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+//        tableView.dataSource = self
     }
 
-}
-
-class ChatListCell: UITableViewCell {
-    
 }
