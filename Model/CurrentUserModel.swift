@@ -8,14 +8,16 @@
 
 import Foundation
 
-class CurrentUserModel {
-    var usernameText: String
-    var profileImageUrl: String
-    var uidString: String
+class CurrentUserModel: NSObject {
+    @objc var email: String?
+    @objc var fullname: String?
+    @objc var profileImageUrl: String?
+    @objc var uid: String?
+    @objc var username: String?
     
-    init(username: String, profileImageUrlString: String, uid: String) {
-        usernameText = username
-        profileImageUrl = profileImageUrlString
-        uidString = uid
-    }
+//    init(username: String, profileImageUrlString: String, uid: String) {
+//        usernameText = username
+//        profileImageUrl = profileImageUrlString
+//        uidString = uid
+//    }
 }
