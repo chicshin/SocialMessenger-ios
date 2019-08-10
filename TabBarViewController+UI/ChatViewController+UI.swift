@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
+import FirebaseStorage
 import Alamofire
 import AlamofireImage
 
@@ -17,10 +20,7 @@ extension ChatViewController {
     }
     
     func setupNavigationBar() {
-//        let screenSize: CGRect = UIScreen.main.bounds
-//        let navigationBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: 40))
-//        let navigationItem = UINavigationItem(title: "Name")
-        navigationItem.title = self.username
+        navigationItem.title = self.userModel!.username!
         let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
         navigationItem.leftBarButtonItem = dismissButton
 
@@ -93,4 +93,5 @@ extension ChatViewController {
         
         sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
     }
+
 }

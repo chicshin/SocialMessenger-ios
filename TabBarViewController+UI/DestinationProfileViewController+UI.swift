@@ -10,12 +10,14 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import Kingfisher
 import Alamofire
 import AlamofireImage
 
 extension DestinationProfileViewController {
-    func setupChatButton() {}
-    
+    func setupChatButton() {
+        
+    }
     func setupDestinationeInfo() {
 //        let myUid = Auth.auth().currentUser?.uid
 //        Ref().databaseUsers.observe(.value, with: { (snapshot: DataSnapshot) in
@@ -38,15 +40,19 @@ extension DestinationProfileViewController {
 //        })
     }
     func setupDestinationName() {
-        nameLabel.text = usernameReceived
+        nameLabel.text = self.user!.username!
     }
+    
     func setupProfileImage() {
-        Alamofire.request(imageReceived).responseImage {
-            (response) in
-            if let image = response.result.value {
-                self.profileImage.image = image
-            }
-        }
+        let url = URL(string: self.user!.profileImageUrl!)
+        profileImage.kf.setImage(with: url)
+        
+//        Alamofire.request(imageReceived).responseImage {
+//            (response) in
+//            if let image = response.result.value {
+//                self.profileImage.image = image
+//            }
+//        }
         profileImage.layer.cornerRadius = profileImage.frame.width/2
         profileImage.clipsToBounds = true
         profileImage.contentMode = .scaleAspectFill

@@ -16,14 +16,12 @@ extension PeopleViewController {
     func loadMyProfile() {
         let uid = Auth.auth().currentUser?.uid
         
-        Ref().databaseUsers.child(uid!).observe(.value, with: { (snapshot: DataSnapshot) in
-            self.currentUser.removeAll()
+        Ref().databaseUsers.child(uid!).observe(.value, with: { (snapshot) in
+            self.CurrentUser.removeAll()
             if let dict = snapshot.value as? [String:Any] {
-                let username = dict["username"] as! String
-                let profileImageUrlString = dict["profileImageUrl"] as! String
-                let uid = dict["uid"] as! String
-                let user = CurrentUserModel(username: username, profileImageUrlString: profileImageUrlString, uid: uid)
-                self.currentUser.append(user)
+                let user = CurrentUserModel()
+                user.setValuesForKeys(dict)
+                self.CurrentUser.append(user)
             }
             DispatchQueue.main.async {
                 self.tableView.reloadData();
@@ -32,19 +30,16 @@ extension PeopleViewController {
     }
     func loadPeople() {
         let myUid = Auth.auth().currentUser?.uid
-        Ref().databaseUsers.observe(.value, with: { (snapshot: DataSnapshot) in
+        Ref().databaseUsers.observe(.value, with: { (snapshot) in
             self.Users.removeAll()
             let dict = snapshot.value as? [String:Any]
-            var uids = ""
             for child in dict!.keys {
-                if child != myUid && child != "activeUsernames"{
-                    uids = child
-                    Ref().databaseUsers.child(uids).observe(.value, with: { (data: DataSnapshot) in
-                        if let dictTemp = data.value as? [String:Any] {
-                            let username = dictTemp["username"] as! String
-                            let profileImageUrlString = dictTemp["profileImageUrl"] as! String
-                            let uid = dictTemp["uid"] as! String
-                            let user = UserModel(username: username, profileImageUrlString: profileImageUrlString, uid: uid)
+                if child != myUid && child != "activeUsernames" {
+                    let uid = child
+                    let user = UserModel()
+                    Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
+                        if let dictionary = data.value as? [String:Any] {
+                            user.setValuesForKeys(dictionary)
                             self.Users.append(user)
                         }
                         DispatchQueue.main.async {
@@ -54,25 +49,28 @@ extension PeopleViewController {
                 }
             }
         })
-//        Ref().databaseUsers.observe(.childAdded, with: { (snapshot) in
-////            print(snapshot.value)
-//            if let dict = snapshot.value as? [String:AnyObject] {
-//                let user = UserModel()
-////                user.setValuesForKeys(dict)
-//                user.username = dict["username"] as? String
-//                user.fullname = dict["fullname"] as? String
-//                user.profileImageUrl = dict["profileImageUrl"] as? String
-//                user.uid = dict["uid"] as? String
-//                user.email = dict["email"] as? String
-//                
-//
-//                self.Users.append(user)
-//                DispatchQueue.main.async {
-//                    self.friendsTableView.reloadData();
+//        Ref().databaseUsers.observe(.value, with: { (snapshot: DataSnapshot) in
+//            self.Users.removeAll()
+//            let dict = snapshot.value as? [String:Any]
+//            var uids = ""
+//            for child in dict!.keys {
+//                if child != myUid && child != "activeUsernames"{
+//                    uids = child
+//                    Ref().databaseUsers.child(uids).observe(.value, with: { (data: DataSnapshot) in
+//                        if let dictTemp = data.value as? [String:Any] {
+//                            let username = dictTemp["username"] as! String
+//                            let profileImageUrlString = dictTemp["profileImageUrl"] as! String
+//                            let uid = dictTemp["uid"] as! String
+//                            let user = UserModel(username: username, profileImageUrlString: profileImageUrlString, uid: uid)
+//                            self.Users.append(user)
+//                        }
+//                        DispatchQueue.main.async {
+//                            self.friendsTableView.reloadData();
+//                        }
+//                    })
 //                }
 //            }
 //        })
-
     }
     
     func setupImage() {
@@ -94,10 +92,18 @@ extension PeopleViewController {
     }
     
     func setupFriendsTitle() {
-        let title = "Friends"
+        let title = "Friends "
+        let subTitle = String(self.friendsCount)
+        
         let attributedText = NSMutableAttributedString(string: title, attributes:
             [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
              NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        
+        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
+            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        
+        attributedText.append(attributedSubText)
         
         friendsTitleLabel.attributedText = attributedText
     }
