@@ -21,20 +21,20 @@ class DestinationProfileViewController: UIViewController {
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var chatButton: UIButton!
     
-    var usernameReceived = ""
-    var imageReceived = ""
+    var user: UserModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+
     }
     
     func setupUI() {
         setupChatButton()
-        setupDestinationeInfo()
         setupDestinationName()
         setupProfileImage()
         setupCloseButton()
+        
     }
 
     @IBAction func dismissAction(_ sender: Any) {
@@ -48,9 +48,17 @@ class DestinationProfileViewController: UIViewController {
         if segue.identifier == "chatRoomSegue" {
             let nav = segue.destination as! UINavigationController
             let vc = nav.topViewController as! ChatViewController
-            vc.username = self.usernameReceived
-            vc.imageUrlReceived = self.imageReceived
+            vc.userModel = self.user
         }
     }
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "chatRoomSegue" {
+//            let nav = segue.destination as! UINavigationController
+//            let vc = nav.topViewController as! ChatViewController
+//            vc.username = self.usernameReceived
+//            vc.imageUrlReceived = self.imageReceived
+//        }
+//    }
 
 }

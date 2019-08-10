@@ -21,11 +21,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var friendsTitleLabel: UILabel!
     
     var Users = [UserModel]()
-    var currentUser = [CurrentUserModel]()
+    var CurrentUser = [CurrentUserModel]()
+
+    var currentIndexPathRow: Int?
     
-    var usernameSelected = ""
-    var userImageUrl = ""
-    var myIndex = 0
+    var friendsCount = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,10 +34,10 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.delegate = self
         friendsTableView.delegate = self
         setupTableView()
-        setupFriendsTitle()
         
         loadMyProfile()
         loadPeople()
+        setupFriendsTitle()
         setupFriendsImage()
         
     }
@@ -52,7 +52,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         var count:Int?
         
         if tableView == self.tableView {
-            count = currentUser.count
+            count = CurrentUser.count
         }
         
         if tableView == self.friendsTableView {
@@ -65,35 +65,29 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         var cellToReturn = UITableViewCell()
         if tableView == self.tableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath) as! MyCell
-            let url = currentUser[indexPath.row].profileImageUrl
-            Alamofire.request(url).responseImage { (response) in
-                if let image = response.result.value {
-                    cell.profileImage.image = image
-                    cell.profileImage.contentMode = .scaleAspectFill
-                    cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-                    cell.profileImage.clipsToBounds = true
-                }
-            }
-            cell.usernameLabel.text = currentUser[indexPath.row].usernameText
+            let user = CurrentUser[indexPath.row]
+            
+            let url = URL(string: user.profileImageUrl!)
+            cell.profileImage.kf.setImage(with: url)
+            cell.profileImage.contentMode = .scaleAspectFill
+            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+            cell.profileImage.clipsToBounds = true
+            cell.usernameLabel.text = user.username!
+            
             cellToReturn = cell
             
         }
         if tableView == self.friendsTableView {
             let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
             let user = Users[indexPath.row]
-//            print(user.profileImageUrl!)
-            let url = Users[indexPath.row].profileImageUrl
-            Alamofire.request(url).responseImage { (response) in
-                if let image = response.result.value {
-                    cell.profileImage.image = image
-                    cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-                    cell.profileImage.contentMode = .scaleAspectFill
-                    cell.profileImage.clipsToBounds = true
-                }
-            }
-            cell.usernameLabel.text = user.usernameText
-//            cell.usernameLabel.text = Users[indexPath.row].username!
-//            cell.selectionStyle = .none
+            
+            let url = URL(string: user.profileImageUrl!)
+            cell.profileImage.kf.setImage(with: url)
+            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+            cell.profileImage.contentMode = .scaleAspectFill
+            cell.profileImage.clipsToBounds = true
+            cell.usernameLabel.text = user.username!
+            
             cellToReturn = cell
             
         }
@@ -101,29 +95,28 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         return cellToReturn
     }
     
+//    var destinationUserProfile: DestinationProfileViewController?
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if tableView == self.tableView {
             let view = storyboard?.instantiateViewController(withIdentifier: "MyProfileVC") as! ProfileViewController
             navigationController?.present(view, animated: true, completion: nil)
-//            navigationController?.pushViewController(view, animated: true)
-//            performSegue(withIdentifier: "myProfileSegue", sender: self)
+            tableView.deselectRow(at: indexPath, animated: true)
         }else{
+//            friendsTableView.deselectRow(at: indexPath, animated: true)
 //            let view = storyboard?.instantiateViewController(withIdentifier: "DestinationProfileVC") as! DestinationProfileViewController
 //            navigationController?.present(view, animated: true, completion: nil)
-            
-            usernameSelected = Users[indexPath.row].usernameText
-            userImageUrl = Users[indexPath.row].profileImageUrl
+            currentIndexPathRow = indexPath.row
             performSegue(withIdentifier: "sendUserDataSegue", sender: self)
         }
 
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "sendUserDataSegue" {
             let vc = segue.destination as! DestinationProfileViewController
-            vc.usernameReceived = self.usernameSelected
-            vc.imageReceived = self.userImageUrl
+            vc.user = self.Users[currentIndexPathRow!]
         }
     }
 }

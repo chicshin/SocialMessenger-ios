@@ -24,14 +24,14 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     let additionalButton: UIButton! = UIButton()
     let sendButton: UIButton! = UIButton(type: .system)
     
-    var username = ""
-    var imageUrlReceived = ""
-    var user = [UserModel]()
+    var userModel: UserModel?
+
+//    var user = [UserModel]()
     var destination = [CurrentUserModel]()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.delegate = self
         tableView.dataSource = self
         inputTextField.delegate = self
@@ -41,7 +41,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         containerView.addSubview(inputTextField)
         containerView.addSubview(additionalButton)
         containerView.addSubview(sendButton)
-        
+                
         setupUI()
     }
     
@@ -88,12 +88,20 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func handleSend() {
+        let childRef = Ref().databaseRoot.child("messages").childByAutoId()
         let uid = Auth.auth().currentUser?.uid
+        let toUid = userModel!.uid
+        let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
         let values : Dictionary<String,Any> = [
             "text": inputTextField.text!,
-            "senderUid": uid!
+            "senderUid": uid!,
+            "toUid": toUid!,
+            "timestamp": timestamp
             ]
-        Ref().databaseRoot.child("messages").childByAutoId().updateChildValues(values)
+        childRef.updateChildValues(values)
+        let messageId = childRef.key! 
+        let userMessageRef = Ref().databaseRoot.child("user-messages").child(uid!)
+        userMessageRef.updateChildValues([messageId: 1])
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -104,7 +112,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyMessageCell", for: indexPath) as! MyMessageCell
         
         let profileImage = cell.profileImage!
-        let url = URL(string: imageUrlReceived)
+        let url = URL(string: userModel!.profileImageUrl!)
         profileImage.layer.cornerRadius = 35/2
         profileImage.contentMode = .scaleAspectFill
         profileImage.clipsToBounds = true
