@@ -49,28 +49,6 @@ extension PeopleViewController {
                 }
             }
         })
-//        Ref().databaseUsers.observe(.value, with: { (snapshot: DataSnapshot) in
-//            self.Users.removeAll()
-//            let dict = snapshot.value as? [String:Any]
-//            var uids = ""
-//            for child in dict!.keys {
-//                if child != myUid && child != "activeUsernames"{
-//                    uids = child
-//                    Ref().databaseUsers.child(uids).observe(.value, with: { (data: DataSnapshot) in
-//                        if let dictTemp = data.value as? [String:Any] {
-//                            let username = dictTemp["username"] as! String
-//                            let profileImageUrlString = dictTemp["profileImageUrl"] as! String
-//                            let uid = dictTemp["uid"] as! String
-//                            let user = UserModel(username: username, profileImageUrlString: profileImageUrlString, uid: uid)
-//                            self.Users.append(user)
-//                        }
-//                        DispatchQueue.main.async {
-//                            self.friendsTableView.reloadData();
-//                        }
-//                    })
-//                }
-//            }
-//        })
     }
     
     func setupImage() {
@@ -78,20 +56,23 @@ extension PeopleViewController {
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.clipsToBounds = true
         
+        let friendsCell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
+        friendsCell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+        friendsCell.profileImage.clipsToBounds = true
     }
     
-    func setupFriendsImage() {
-        let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-        cell.profileImage.clipsToBounds = true
-    }
+//    func setupFriendsImage() {
+//        let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
+//        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+//        cell.profileImage.clipsToBounds = true
+//    }
     
     func setupTableView() {
         tableView.separatorStyle = .none
         friendsTableView.separatorStyle = .none
     }
     
-    func setupFriendsTitle() {
+    func setupFriendsCountTitle() {
         let title = "Friends "
         let subTitle = String(self.friendsCount)
         

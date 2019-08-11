@@ -19,6 +19,27 @@ extension ChatViewController {
         tableView.backgroundColor = UIColor(white: 1, alpha: 1)
     }
     
+    func showMessageLogs() {
+        let uid = Auth.auth().currentUser?.uid
+        Ref().databaseRoot.child("user-messages").child(uid!).observe(.childAdded, with: { (snapshot) in
+            let messageId = snapshot.key
+            Ref().databaseRoot.child("user-messages").child(self.userModel!.uid!).observe(.childAdded, with: { (Recipientsnapshot) in
+                if messageId == Recipientsnapshot.key {
+                    Ref().databaseRoot.child("messages").child(messageId).observeSingleEvent(of: .value, with: { (data) in
+                        if let dictionary = data.value as? [String:Any] {
+                            let message = ChatModel()
+                            message.setValuesForKeys(dictionary)
+                            self.Chat.append(message)
+                        }
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData();
+                        }
+                    })
+                }
+            })
+        })
+    }
+    
     func setupNavigationBar() {
         navigationItem.title = self.userModel!.username!
         let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
@@ -57,26 +78,25 @@ extension ChatViewController {
         additionalButton.translatesAutoresizingMaskIntoConstraints = false
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         
-        let constraints = [
-            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
-            containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            
-            inputTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40),
-            inputTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -60),
-            inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
-            inputTextField.heightAnchor.constraint(equalToConstant: 30),
-            
-            additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
-            additionalButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            additionalButton.widthAnchor.constraint(equalToConstant: 30),
-            additionalButton.heightAnchor.constraint(equalToConstant: 30),
-            
-            sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5),
-            sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            sendButton.widthAnchor.constraint(equalToConstant: 60),
-            sendButton.heightAnchor.constraint(equalToConstant: 30)
+        let constraints = [containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+                           containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
+                           containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                           containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+                            
+                           inputTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40),
+                           inputTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -60),
+                           inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
+                           inputTextField.heightAnchor.constraint(equalToConstant: 30),
+                            
+                           additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+                           additionalButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                           additionalButton.widthAnchor.constraint(equalToConstant: 30),
+                           additionalButton.heightAnchor.constraint(equalToConstant: 30),
+                            
+                           sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5),
+                           sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                           sendButton.widthAnchor.constraint(equalToConstant: 60),
+                           sendButton.heightAnchor.constraint(equalToConstant: 30)
         ]
         NSLayoutConstraint.activate(constraints)
     }
@@ -94,4 +114,58 @@ extension ChatViewController {
         sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
     }
 
+}
+
+extension MyMessageCell {
+    func constraints() {
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        bubbleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        timestamp.translatesAutoresizingMaskIntoConstraints = false
+        
+        let constraints = [messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+                           messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
+                           messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+                           messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
+                           
+                           bubbleBackgroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -13),
+                           bubbleBackgroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 13),
+                           bubbleBackgroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -13),
+                           bubbleBackgroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 13),
+                           
+                           timestamp.bottomAnchor.constraint(equalTo: bubbleBackgroundView.bottomAnchor, constant: 0),
+                           timestamp.trailingAnchor.constraint(equalTo: bubbleBackgroundView.leadingAnchor, constant: -5)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+}
+
+extension DestinationMessageCell {
+    func constraints() {
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        bubbleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        profileImage.translatesAutoresizingMaskIntoConstraints = false
+        timestamp.translatesAutoresizingMaskIntoConstraints = false
+        
+        let constraints = [messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 35),
+                           messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
+                           messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 68),
+                           messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
+                           
+                           bubbleBackgroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -13),
+                           bubbleBackgroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 13),
+                           bubbleBackgroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -13),
+                           bubbleBackgroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 13),
+                           
+                           profileImage.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+                           profileImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+                           profileImage.widthAnchor.constraint(equalToConstant: 35),
+                           profileImage.heightAnchor.constraint(equalToConstant: 35),
+                           
+                           timestamp.bottomAnchor.constraint(equalTo: bubbleBackgroundView.bottomAnchor, constant: 0),
+                           timestamp.leadingAnchor.constraint(equalTo: bubbleBackgroundView.trailingAnchor, constant: 5)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
 }
