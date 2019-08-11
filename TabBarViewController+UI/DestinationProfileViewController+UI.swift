@@ -18,27 +18,6 @@ extension DestinationProfileViewController {
     func setupChatButton() {
         
     }
-    func setupDestinationeInfo() {
-//        let myUid = Auth.auth().currentUser?.uid
-//        Ref().databaseUsers.observe(.value, with: { (snapshot: DataSnapshot) in
-//            self.users.removeAll()
-//            let dict = snapshot.value as? [String:Any]
-//            var uids = ""
-//            for child in dict!.keys {
-//                if child != myUid && child != "activeUsernames"{
-//                    uids = child
-//                    Ref().databaseUsers.child(uids).observe(.value, with: { (data: DataSnapshot) in
-//                        if let dictTemp = data.value as? [String:Any] {
-//                            let username = dictTemp["username"] as! String
-//                            let profileImageUrlString = dictTemp["profileImageUrl"] as! String
-//                            let uid = dictTemp["uid"] as! String
-//                            let user = UserModel(username: username, profileImageUrlString: profileImageUrlString, uid: uid)
-//                            self.users.append(user)                        }
-//                    })
-//                }
-//            }
-//        })
-    }
     func setupDestinationName() {
         nameLabel.text = self.user!.username!
     }
@@ -46,7 +25,6 @@ extension DestinationProfileViewController {
     func setupProfileImage() {
         let url = URL(string: self.user!.profileImageUrl!)
         profileImage.kf.setImage(with: url)
-        
 //        Alamofire.request(imageReceived).responseImage {
 //            (response) in
 //            if let image = response.result.value {

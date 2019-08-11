@@ -61,12 +61,6 @@ extension PeopleViewController {
         friendsCell.profileImage.clipsToBounds = true
     }
     
-//    func setupFriendsImage() {
-//        let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-//        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-//        cell.profileImage.clipsToBounds = true
-//    }
-    
     func setupTableView() {
         tableView.separatorStyle = .none
         friendsTableView.separatorStyle = .none
@@ -87,5 +81,15 @@ extension PeopleViewController {
         attributedText.append(attributedSubText)
         
         friendsTitleLabel.attributedText = attributedText
+    }
+    
+    func setupSearchButton() {
+        let searchButton = UIBarButtonItem(image: #imageLiteral(resourceName: "search"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSearchInputTextField))
+        searchButton.tintColor = .lightGray
+        navigationItem.rightBarButtonItem = searchButton
+    }
+    
+    @objc func showSearchInputTextField() {
+        
     }
 }

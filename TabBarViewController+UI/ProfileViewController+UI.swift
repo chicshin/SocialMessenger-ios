@@ -51,11 +51,12 @@ extension ProfileViewController {
     
     func setupEditButton() {
         editButton.tintColor = .darkGray
-        editButton.setImage(#imageLiteral(resourceName: "edit"), for: UIControl.State.normal)
-        editButton.imageEdgeInsets = UIEdgeInsets(top: -40, left: 25, bottom: 0, right: 0)
+//        editButton.setImage(#imageLiteral(resourceName: "edit"), for: UIControl.State.normal)
+//        editButton.imageEdgeInsets = UIEdgeInsets(top: -40, left: 25, bottom: 0, right: 0)
         editButton.titleLabel?.text = "Edit Profile"
-        editButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: -25, bottom: 0, right: 0)
+//        editButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: -25, bottom: 0, right: 0)
         editButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        editImage.image = #imageLiteral(resourceName: "edit")
     }
     
     func setupDoneButton() {
@@ -91,7 +92,6 @@ extension ProfileViewController {
             onError(errorMessage)
         }
     }
-    
 }
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {

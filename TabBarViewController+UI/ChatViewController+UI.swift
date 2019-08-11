@@ -47,71 +47,103 @@ extension ChatViewController {
 
     }
     
-    func setupTextField() {
-        let title = "Enter text..."
-        
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
-             NSAttributedString.Key.foregroundColor : UIColor.lightGray.withAlphaComponent(0.9)])
-        
-        inputTextField.attributedPlaceholder = attributedText
-        
-        inputTextField.backgroundColor = .white
-        inputTextField.layer.borderWidth = 1
-        inputTextField.layer.borderColor = UIColor.lightGray.cgColor
-        inputTextField.layer.cornerRadius = 10
-        inputTextField.clipsToBounds = true
-        
-        let leftView = UILabel(frame: CGRect(x: 10, y: 0, width: 8, height: 30))
-        let rightView = UILabel(frame: CGRect(x: -10, y: 0, width: 5, height: 30))
-        inputTextField.leftView = leftView
-        inputTextField.leftViewMode = .always
-        inputTextField.rightView = rightView
-        inputTextField.rightViewMode = .always
+    func setupKeyboardObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    func setupBottomViewConstraints() {
-        containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
+    @objc func keyboardWillShow(notification: NSNotification) {
+        let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let keyboardDuration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval)
+        containerViewBottomAnchor?.constant = -keyboardFrame.height
+        containerViewHeightAnchor?.constant = 45
+        inputTextFieldBottomAnchor?.constant = -5
         
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        inputTextField.translatesAutoresizingMaskIntoConstraints = false
-        additionalButton.translatesAutoresizingMaskIntoConstraints = false
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        UIView.animate(withDuration: keyboardDuration, animations: {
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let keyboardDuration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval)
+        containerViewBottomAnchor?.constant = 0
+        containerViewHeightAnchor?.constant = 60
+        inputTextFieldBottomAnchor?.constant = -20
         
-        let constraints = [containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
-                           containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
-                           containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-                           containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-                            
-                           inputTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40),
-                           inputTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -60),
-                           inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
-                           inputTextField.heightAnchor.constraint(equalToConstant: 30),
-                            
-                           additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
-                           additionalButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-                           additionalButton.widthAnchor.constraint(equalToConstant: 30),
-                           additionalButton.heightAnchor.constraint(equalToConstant: 30),
-                            
-                           sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5),
-                           sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-                           sendButton.widthAnchor.constraint(equalToConstant: 60),
-                           sendButton.heightAnchor.constraint(equalToConstant: 30)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        UIView.animate(withDuration: keyboardDuration, animations: {
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    func setupTextField() {
+//        let title = "Enter text..."
+//
+//        let attributedText = NSMutableAttributedString(string: title, attributes:
+//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
+//             NSAttributedString.Key.foregroundColor : UIColor.lightGray.withAlphaComponent(0.9)])
+//
+//        inputTextField.attributedPlaceholder = attributedText
+//
+//        inputTextField.backgroundColor = .white
+//        inputTextField.layer.borderWidth = 1
+//        inputTextField.layer.borderColor = UIColor.lightGray.cgColor
+//        inputTextField.layer.cornerRadius = 10
+//        inputTextField.clipsToBounds = true
+//
+//        let leftView = UILabel(frame: CGRect(x: 10, y: 0, width: 8, height: 30))
+//        let rightView = UILabel(frame: CGRect(x: -10, y: 0, width: 5, height: 30))
+//        inputTextField.leftView = leftView
+//        inputTextField.leftViewMode = .always
+//        inputTextField.rightView = rightView
+//        inputTextField.rightViewMode = .always
+    }
+    
+    func setupContainerViewConstraints() {
+//        containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
+//
+//        containerView.translatesAutoresizingMaskIntoConstraints = false
+//        inputTextField.translatesAutoresizingMaskIntoConstraints = false
+//        additionalButton.translatesAutoresizingMaskIntoConstraints = false
+//        sendButton.translatesAutoresizingMaskIntoConstraints = false
+//
+//        containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+//        containerViewHeightAnchor = containerView.heightAnchor.constraint(equalToConstant: 60)
+//        inputTextFieldBottomAnchor = inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20)
+//        containerViewBottomAnchor?.isActive = true
+//        containerViewHeightAnchor?.isActive = true
+//        inputTextFieldBottomAnchor?.isActive = true
+//
+//        let constraints = [containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+//                           containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+//
+//                           inputTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40),
+//                           inputTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -60),
+//                           inputTextField.heightAnchor.constraint(equalToConstant: 35),
+//
+//                           additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+//                           additionalButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor),
+//                           additionalButton.widthAnchor.constraint(equalToConstant: 30),
+//                           additionalButton.heightAnchor.constraint(equalToConstant: 30),
+//
+//                           sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5),
+//                           sendButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor),
+//                           sendButton.widthAnchor.constraint(equalToConstant: 60),
+//                           sendButton.heightAnchor.constraint(equalToConstant: 30)
+//        ]
+//        NSLayoutConstraint.activate(constraints)
     }
     
     func setupAdditionalButton() {
-        additionalButton.setImage(#imageLiteral(resourceName: "add_circle").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
-        additionalButton.tintColor = UIColor.lightGray
+//        additionalButton.setImage(#imageLiteral(resourceName: "add_circle").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
+//        additionalButton.tintColor = UIColor.lightGray
     }
 
     func setupSendButton() {
-        sendButton.setTitle("Send", for: UIControl.State.normal)
-        sendButton.setTitleColor(#colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1), for: UIControl.State.normal)
-        sendButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        
-        sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
+//        sendButton.setTitle("Send", for: UIControl.State.normal)
+//        sendButton.setTitleColor(#colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1), for: UIControl.State.normal)
+//        sendButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+//
+//        sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
     }
 
 }
