@@ -20,15 +20,18 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet weak var tableView: UITableView!
     
     let inputTextField: UITextField! = UITextField()
-    let containerView: UIView! = UIView()
-    let additionalButton: UIButton! = UIButton()
-    let sendButton: UIButton! = UIButton(type: .system)
+//    let containerView: UIView! = UIView()
+//    let additionalButton: UIButton! = UIButton()
+//    let sendButton: UIButton! = UIButton(type: .system)
     
     var userModel: UserModel?
 //    var user = [UserModel]()
     var destination = [CurrentUserModel]()
     var Chat = [ChatModel]()
     var messagesDictionary = [String: ChatModel]()
+    var containerViewBottomAnchor: NSLayoutConstraint?
+    var containerViewHeightAnchor: NSLayoutConstraint?
+    var inputTextFieldBottomAnchor: NSLayoutConstraint?
 
     
     override func viewDidLoad() {
@@ -38,47 +41,89 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         inputTextField.delegate = self
         tableView.register(MyMessageCell.self, forCellReuseIdentifier: "MyMessageCell")
         tableView.register(DestinationMessageCell.self, forCellReuseIdentifier: "DestinationMessageCell")
-
-        view.addSubview(containerView)
-        containerView.addSubview(inputTextField)
-        containerView.addSubview(additionalButton)
-        containerView.addSubview(sendButton)
+        tableView.keyboardDismissMode = .interactive
         
         showMessageLogs()
+//        setupKeyboardObserver()
         setupUI()
     }
     
     func setupUI() {
         setupTableView()
         setupNavigationBar()
-        setupTextField()
-        setupBottomViewConstraints()
-        setupAdditionalButton()
-        setupSendButton()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-//            tableView.translatesAutoresizingMaskIntoConstraints = false
-            containerView.translatesAutoresizingMaskIntoConstraints = false
-//            messageTextField.translatesAutoresizingMaskIntoConstraints = false
-            self.containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: keyboardSize.height).isActive = true
-//            self.messageTextField.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: keyboardSize.height).isActive = true
-//            self.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: keyboardSize.height).isActive = true
+    
+    lazy var inputContainerVeiw: UIView = {
+        let containerView = UIView()
+//        let inputTextField = UITextField()
+        let additionalButton = UIButton()
+        let sendButton = UIButton(type: .system)
+        
+        containerView.addSubview(inputTextField)
+        containerView.addSubview(additionalButton)
+        containerView.addSubview(sendButton)
+        
+        additionalButton.translatesAutoresizingMaskIntoConstraints = false
+        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 60)
+        containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
+        
+        inputTextField.placeholder = "Enter text here..."
+        inputTextField.frame = CGRect(x: 40, y: 5, width: 310, height: 35)
+        
+        additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5).isActive = true
+        additionalButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        additionalButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        additionalButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
+        
+        sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5).isActive = true
+        sendButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        sendButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        sendButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
+        
+        inputTextField.backgroundColor = .white
+        inputTextField.layer.borderWidth = 1
+        inputTextField.layer.borderColor = UIColor.lightGray.cgColor
+        inputTextField.layer.cornerRadius = 18
+        inputTextField.clipsToBounds = true
+        
+        let leftView = UILabel(frame: CGRect(x: 10, y: 0, width: 14, height: 30))
+        let rightView = UILabel(frame: CGRect(x: -10, y: 0, width: 5, height: 30))
+        inputTextField.leftView = leftView
+        inputTextField.leftViewMode = .always
+        inputTextField.rightView = rightView
+        inputTextField.rightViewMode = .always
+        additionalButton.setImage(#imageLiteral(resourceName: "add_circle").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
+        additionalButton.tintColor = UIColor.lightGray
+        
+        sendButton.setTitle("Send", for: UIControl.State.normal)
+        sendButton.setTitleColor(#colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1), for: UIControl.State.normal)
+        sendButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        
+        sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
+        
+        return containerView
+    }()
+    
+    override var inputAccessoryView: UIView? {
+        get {
+            
+            return inputContainerVeiw
         }
     }
     
-    @objc func keyboardWillHide(notification: NSNotification) {
-//        let margins = view.layoutMarginsGuide
-//        self.containerView.bottomAnchor.constraint(equalTo: margins.bottomAnchor, constant: 0)
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    //prevent memory leak
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -87,6 +132,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func dismissChat() {
+        self.view.endEditing(true)
         dismiss(animated: true, completion: nil)
     }
     
@@ -109,6 +155,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let recipientUserMessageRef = Ref().databaseRoot.child("user-messages").child(toUid!)
         recipientUserMessageRef.updateChildValues([messageId: 1])
+        
+        inputTextField.text = ""
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

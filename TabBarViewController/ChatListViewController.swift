@@ -135,7 +135,7 @@ class listCell: UITableViewCell {
         timestampLabel.translatesAutoresizingMaskIntoConstraints = false
         
         lastMessageLabel.font = UIFont.systemFont(ofSize: 14)
-        lastMessageLabel.textColor = .darkGray
+        lastMessageLabel.textColor = .lightGray
         nameLabel.font = UIFont.systemFont(ofSize: 18)
         timestampLabel.textColor = .lightGray
         timestampLabel.font = UIFont.systemFont(ofSize: 13)

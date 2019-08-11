@@ -26,7 +26,6 @@ class DestinationProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
     }
     
     func setupUI() {
@@ -51,14 +50,4 @@ class DestinationProfileViewController: UIViewController {
             vc.userModel = self.user
         }
     }
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "chatRoomSegue" {
-//            let nav = segue.destination as! UINavigationController
-//            let vc = nav.topViewController as! ChatViewController
-//            vc.username = self.usernameReceived
-//            vc.imageUrlReceived = self.imageReceived
-//        }
-//    }
-
 }

@@ -39,14 +39,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         loadPeople()
         setupFriendsCountTitle()
         setupImage()
-//        setupFriendsImage()
-        
+        setupSearchButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupImage()
-//        setupFriendsImage()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
