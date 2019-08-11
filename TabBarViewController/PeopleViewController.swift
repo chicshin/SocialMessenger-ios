@@ -37,15 +37,16 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         
         loadMyProfile()
         loadPeople()
-        setupFriendsTitle()
-        setupFriendsImage()
+        setupFriendsCountTitle()
+        setupImage()
+//        setupFriendsImage()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupImage()
-        setupFriendsImage()
+//        setupFriendsImage()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,8 +95,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 
         return cellToReturn
     }
-    
-//    var destinationUserProfile: DestinationProfileViewController?
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         

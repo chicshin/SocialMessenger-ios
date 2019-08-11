@@ -25,9 +25,10 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     let sendButton: UIButton! = UIButton(type: .system)
     
     var userModel: UserModel?
-
 //    var user = [UserModel]()
     var destination = [CurrentUserModel]()
+    var Chat = [ChatModel]()
+    var messagesDictionary = [String: ChatModel]()
 
     
     override func viewDidLoad() {
@@ -36,12 +37,14 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.dataSource = self
         inputTextField.delegate = self
         tableView.register(MyMessageCell.self, forCellReuseIdentifier: "MyMessageCell")
+        tableView.register(DestinationMessageCell.self, forCellReuseIdentifier: "DestinationMessageCell")
 
         view.addSubview(containerView)
         containerView.addSubview(inputTextField)
         containerView.addSubview(additionalButton)
         containerView.addSubview(sendButton)
-                
+        
+        showMessageLogs()
         setupUI()
     }
     
@@ -99,74 +102,67 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
             "timestamp": timestamp
             ]
         childRef.updateChildValues(values)
+        
         let messageId = childRef.key! 
         let userMessageRef = Ref().databaseRoot.child("user-messages").child(uid!)
         userMessageRef.updateChildValues([messageId: 1])
+        
+        let recipientUserMessageRef = Ref().databaseRoot.child("user-messages").child(toUid!)
+        recipientUserMessageRef.updateChildValues([messageId: 1])
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return Chat.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MyMessageCell", for: indexPath) as! MyMessageCell
-        
-        let profileImage = cell.profileImage!
-        let url = URL(string: userModel!.profileImageUrl!)
-        profileImage.layer.cornerRadius = 35/2
-        profileImage.contentMode = .scaleAspectFill
-        profileImage.clipsToBounds = true
-        profileImage.kf.setImage(with: url)
-        return cell
+        var cellToReturn = UITableViewCell()
+        if (self.Chat[indexPath.row].toUid == Auth.auth().currentUser?.uid) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DestinationMessageCell", for: indexPath) as! DestinationMessageCell
+            let chat = Chat[indexPath.row]
+            cell.messageLabel.text = chat.text
+            cell.timestamp(chat: chat)
+            
+            let profileImage = cell.profileImage!
+            let url = URL(string: userModel!.profileImageUrl!)
+            profileImage.layer.cornerRadius = 35/2
+            profileImage.contentMode = .scaleAspectFill
+            profileImage.clipsToBounds = true
+            profileImage.kf.setImage(with: url)
+            
+            cellToReturn = cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MyMessageCell", for: indexPath) as! MyMessageCell
+            let chat = Chat[indexPath.row]
+            cell.messageLabel.text = chat.text
+            cell.timestamp(chat: chat)
+            
+            cellToReturn = cell
+        }
+        return cellToReturn
     }
-
 }
 
 class MyMessageCell: UITableViewCell {
-    
     let messageLabel = UILabel()
     let bubbleBackgroundView = UIView()
-    
-    let profileImage: UIImageView! = UIImageView()
+    let timestamp = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         addSubview(bubbleBackgroundView)
         addSubview(messageLabel)
-        addSubview(profileImage!)
+        addSubview(timestamp)
+        
+        constraints()
         
         backgroundColor = .clear
         
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        bubbleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        profileImage.translatesAutoresizingMaskIntoConstraints = false
-        
-//        messageLabel.text = "Some message here--ckgroundColor = .whitebubbleBackgroundView.layer.cornerRadius = 12bubbleBackgroundView.layer.borderWidth =  bubbleBackgroundView.layer.bor"
         messageLabel.numberOfLines = 0
-        
-        bubbleBackgroundView.backgroundColor = .white
-        bubbleBackgroundView.layer.cornerRadius = 12
-        bubbleBackgroundView.layer.borderWidth = 1
-        bubbleBackgroundView.layer.borderColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1)
-        
-    
-        let constraints = [messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 30),
-        messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30),
-        messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 68),
-        messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
-        
-        bubbleBackgroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -15),
-        bubbleBackgroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 15),
-        bubbleBackgroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -15),
-        bubbleBackgroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 15),
-        
-        profileImage.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-        profileImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-        profileImage.widthAnchor.constraint(equalToConstant: 35),
-        profileImage.heightAnchor.constraint(equalToConstant: 35)]
-        
-        NSLayoutConstraint.activate(constraints)
+        bubbleBackgroundView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.9)
+        bubbleBackgroundView.layer.cornerRadius = 18
+        timestamp.font = UIFont.systemFont(ofSize: 12)
+        timestamp.textColor = .lightGray
         
     }
     
@@ -176,5 +172,34 @@ class MyMessageCell: UITableViewCell {
 }
 
 class DestinationMessageCell: UITableViewCell {
+    let messageLabel = UILabel()
+    let bubbleBackgroundView = UIView()
+    let profileImage: UIImageView! = UIImageView()
+    let timestamp = UILabel()
     
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        addSubview(bubbleBackgroundView)
+        addSubview(messageLabel)
+        addSubview(profileImage!)
+        addSubview(timestamp)
+        
+        constraints()
+        
+        backgroundColor = .clear
+        
+        messageLabel.numberOfLines = 0
+        bubbleBackgroundView.backgroundColor = .white
+        bubbleBackgroundView.layer.cornerRadius = 18
+        bubbleBackgroundView.layer.borderWidth = 1
+        bubbleBackgroundView.layer.borderColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1)
+        timestamp.font = UIFont.systemFont(ofSize: 12)
+        timestamp.textColor = .lightGray
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

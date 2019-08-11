@@ -22,8 +22,9 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     
     var User = [UserModel]()
     var Chat = [ChatModel]()
-    
     var messageDictionary = [String: ChatModel]()
+    
+    var chatPartnerUid: String?
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +35,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         
         view.addSubview(tableView)
         
-        observeMessages()
+        observeUserMessages()
         setupUI()
     }
     
@@ -49,21 +50,36 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! listCell
         let chat = Chat[indexPath.row]
-        let uid = chat.toUid!
+        let toUid = chat.toUid!
+        let senderUid = chat.senderUid!
+        let currentUid = Auth.auth().currentUser?.uid
         
         cell.lastMessageLabel.text = chat.text
         
-        Ref().databaseSpecificUser(uid: uid).observe(.value, with: { (snapshot) in
+        //if currentUid == toUid -> show senderUid
+        //else show toUid
+        if currentUid == toUid {
+            chatPartnerUid = senderUid
+        } else {
+            chatPartnerUid = toUid
+        }
+        Ref().databaseSpecificUser(uid: chatPartnerUid!).observe(.value, with: { (snapshot) in
             if let dict = snapshot.value as? [String:Any] {
                 let imageUrl = dict["profileImageUrl"] as? String
                 let username = dict["username"] as? String
                 let url = URL(string: imageUrl!)
+                
+                let user = UserModel()
+                user.setValuesForKeys(dict)
+                self.User.append(user)
                 
                 cell.nameLabel.text = username
                 cell.profileImage.kf.setImage(with: url)
                 cell.profileImage.layer.cornerRadius = 55/2
                 cell.profileImage.clipsToBounds = true
                 cell.profileImage.contentMode = .scaleAspectFill
+                
+                cell.timestamp(chat: chat)
             }
         })
         return cell
@@ -71,7 +87,11 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = Chat[indexPath.row]
-        let chatPartnerUid = message.toUid
+        if Auth.auth().currentUser?.uid == message.toUid {
+            chatPartnerUid = message.senderUid
+        } else {
+            chatPartnerUid = message.toUid
+        }
         Ref().databaseSpecificUser(uid: chatPartnerUid!).observeSingleEvent(of: .value, with: { (snapshot) in
             self.User.removeAll()
             guard let dictionary = snapshot.value as? [String:Any] else {
@@ -83,7 +103,6 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
             self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
             tableView.deselectRow(at: indexPath, animated: true)
         })
-
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -117,7 +136,9 @@ class listCell: UITableViewCell {
         
         lastMessageLabel.font = UIFont.systemFont(ofSize: 14)
         lastMessageLabel.textColor = .darkGray
-        nameLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        nameLabel.font = UIFont.systemFont(ofSize: 18)
+        timestampLabel.textColor = .lightGray
+        timestampLabel.font = UIFont.systemFont(ofSize: 13)
         timestampLabel.text = "HH:MM:SS"
         
         
@@ -125,8 +146,8 @@ class listCell: UITableViewCell {
         let constraints = [
             lastMessageLabel.heightAnchor.constraint(equalToConstant: 16),
             lastMessageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
-            lastMessageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 80),
-            lastMessageLabel.widthAnchor.constraint(equalToConstant: 260),
+            lastMessageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 83),
+            lastMessageLabel.widthAnchor.constraint(equalToConstant: 250),
             
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
             profileImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
@@ -134,10 +155,12 @@ class listCell: UITableViewCell {
             profileImage.heightAnchor.constraint(equalToConstant: 55),
             
             nameLabel.topAnchor.constraint(equalTo: topAnchor, constant:15),
-//            nameLabel.heightAnchor.constraint(equalToConstant: 35),
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -35),
-            nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 80),
-            nameLabel.widthAnchor.constraint(equalToConstant: 260)
+            nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 83),
+            nameLabel.widthAnchor.constraint(equalToConstant: 250),
+            
+            timestampLabel.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0),
+            timestampLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
         ]
         NSLayoutConstraint.activate(constraints)
     }

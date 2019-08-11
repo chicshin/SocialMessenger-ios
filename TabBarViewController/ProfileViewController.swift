@@ -25,13 +25,14 @@ class ProfileViewController: UIViewController {
     
     var users = [UserModel]()
     var image: UIImage? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        doneButton.isHidden = true
     }
     
     func setupUI() {
-        loadPhotos()
         setupBackgroundImage()
         setupProfileImage()
         setupFullname()
@@ -41,11 +42,7 @@ class ProfileViewController: UIViewController {
     }
 
     @IBAction func dismissAction(_ sender: Any) {
-//        let view = storyboard?.instantiateViewController(withIdentifier: "PeopleVC") as! PeopleViewController
-//        navigationController?.pushViewController(view, animated: true)
-//        navigationController?.popViewController(animated: false)
         dismiss(animated: true, completion: nil)
-//        self.performSegue(withIdentifier: "changedMyProfileSegue", sender: nil)
     }
 
     @IBAction func didTapEdit(_ sender: Any) {
