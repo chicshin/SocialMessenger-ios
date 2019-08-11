@@ -36,7 +36,7 @@
                 <viewControllerPlaceholder storyboardName="Chat" referencedIdentifier="NavigationChat" id="xfo-xN-3r7" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aiK-Kh-gpz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1707" y="-605"/>
+            <point key="canvasLocation" x="1917" y="-314"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="HnR-Y3-xdF">

@@ -33,16 +33,17 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yaz-Qi-DIq">
-                                                    <rect key="frame" x="20" y="0.0" width="374" height="69.5"/>
+                                                    <rect key="frame" x="15" y="0.0" width="379" height="69.5"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2Pa-kU-tTT">
                                                             <rect key="frame" x="0.0" y="5" width="59.5" height="59.5"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="59.5" id="Udp-hX-ivi"/>
+                                                                <constraint firstAttribute="height" constant="59.5" id="mWF-Zm-6sb"/>
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i8v-Cn-NrB">
-                                                            <rect key="frame" x="79.5" y="24" width="42" height="20.5"/>
+                                                            <rect key="frame" x="74.5" y="24" width="42" height="20.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -51,9 +52,8 @@
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstItem="2Pa-kU-tTT" firstAttribute="leading" secondItem="yaz-Qi-DIq" secondAttribute="leading" id="8fV-QZ-5nD"/>
-                                                        <constraint firstAttribute="bottom" secondItem="2Pa-kU-tTT" secondAttribute="bottom" constant="5" id="DFb-sj-Bo2"/>
                                                         <constraint firstAttribute="bottom" secondItem="i8v-Cn-NrB" secondAttribute="bottom" constant="25" id="FRB-Eb-Kko"/>
-                                                        <constraint firstItem="i8v-Cn-NrB" firstAttribute="leading" secondItem="2Pa-kU-tTT" secondAttribute="trailing" constant="20" id="kqq-9d-MQT"/>
+                                                        <constraint firstItem="i8v-Cn-NrB" firstAttribute="leading" secondItem="2Pa-kU-tTT" secondAttribute="trailing" constant="15" id="kqq-9d-MQT"/>
                                                         <constraint firstItem="2Pa-kU-tTT" firstAttribute="top" secondItem="yaz-Qi-DIq" secondAttribute="top" constant="5" id="n6Q-0S-d3l"/>
                                                         <constraint firstItem="i8v-Cn-NrB" firstAttribute="top" secondItem="yaz-Qi-DIq" secondAttribute="top" constant="24" id="p4P-wn-cyc"/>
                                                     </constraints>
@@ -61,7 +61,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="yaz-Qi-DIq" secondAttribute="bottom" id="2Gb-CJ-ftg"/>
-                                                <constraint firstItem="yaz-Qi-DIq" firstAttribute="leading" secondItem="h0a-uL-Rfl" secondAttribute="leading" constant="20" id="mKD-Jg-7SR"/>
+                                                <constraint firstItem="yaz-Qi-DIq" firstAttribute="leading" secondItem="h0a-uL-Rfl" secondAttribute="leading" constant="15" id="mKD-Jg-7SR"/>
                                                 <constraint firstAttribute="trailing" secondItem="yaz-Qi-DIq" secondAttribute="trailing" constant="20" id="tOy-Du-GHB"/>
                                                 <constraint firstItem="yaz-Qi-DIq" firstAttribute="top" secondItem="h0a-uL-Rfl" secondAttribute="top" id="z3p-IV-8jp"/>
                                             </constraints>
