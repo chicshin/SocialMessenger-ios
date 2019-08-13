@@ -103,4 +103,23 @@ class UserApi {
             onError(errorMessage)
             }
     }
+    
+//    func ChatLogImageData(image: UIImage?, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
+//        let uid = Auth.auth().currentUser?.uid
+//        let imageSelected = image
+//        
+//        guard let imageData = imageSelected?.jpegData(compressionQuality: 0.2) else {
+//            return
+//        }
+//        
+////        let dict: Dictionary<String,Any> = [
+////            "imageUrl": ""
+////        ]
+//        let imageName = NSUUID().uuidString
+//        let storageRef = Ref().storageRef.child("message_images").child(imageName)
+//        let metadata = StorageMetadata()
+//        metadata.contentType = "image/jpeg"
+//        
+//        
+//    }
 }
