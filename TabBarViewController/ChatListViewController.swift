@@ -24,8 +24,10 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     var Chat = [ChatModel]()
     var messageDictionary = [String: ChatModel]()
     
-    var chatPartnerUid: String?
-        
+    var timer: Timer?
+    
+//    var chatPartnerUid: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView = UITableView(frame: UIScreen.main.bounds, style: UITableView.Style.plain)
@@ -42,6 +44,26 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func setupUI() {
         setupTableView()
     }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let message = self.Chat[indexPath.row]
+        if let chatPartnerUid = message.chatPartnerUid() {
+            Ref().databaseRoot.child("user-messages").child(uid).child(chatPartnerUid).removeValue(completionBlock: { (error, ref) in
+                if error != nil {
+                    print("Failed to delete message: ", error!)
+                    return
+                }
+                self.messageDictionary.removeValue(forKey: chatPartnerUid)
+                self.attemptReloadTable()
+            })
+        }
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Chat.count
@@ -50,59 +72,90 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! listCell
         let chat = Chat[indexPath.row]
-        let toUid = chat.toUid!
-        let senderUid = chat.senderUid!
-        let currentUid = Auth.auth().currentUser?.uid
         
         cell.lastMessageLabel.text = chat.text
         
         //if currentUid == toUid -> show senderUid
         //else show toUid
-        if currentUid == toUid {
-            chatPartnerUid = senderUid
-        } else {
-            chatPartnerUid = toUid
+        if let chatPartnerUid = chat.chatPartnerUid() {
+            Ref().databaseSpecificUser(uid: chatPartnerUid).observe(.value, with: { (snapshot) in
+                if let dict = snapshot.value as? [String:Any] {
+                    let imageUrl = dict["profileImageUrl"] as? String
+                    let username = dict["username"] as? String
+                    let url = URL(string: imageUrl!)
+                    
+                    let user = UserModel()
+                    user.setValuesForKeys(dict)
+                    self.User.append(user)
+                    
+                    cell.nameLabel.text = username
+                    cell.profileImage.kf.setImage(with: url)
+                    cell.profileImage.layer.cornerRadius = 55/2
+                    cell.profileImage.clipsToBounds = true
+                    cell.profileImage.contentMode = .scaleAspectFill
+                    
+                    cell.timestamp(chat: chat)
+                }
+            })
         }
-        Ref().databaseSpecificUser(uid: chatPartnerUid!).observe(.value, with: { (snapshot) in
-            if let dict = snapshot.value as? [String:Any] {
-                let imageUrl = dict["profileImageUrl"] as? String
-                let username = dict["username"] as? String
-                let url = URL(string: imageUrl!)
-                
-                let user = UserModel()
-                user.setValuesForKeys(dict)
-                self.User.append(user)
-                
-                cell.nameLabel.text = username
-                cell.profileImage.kf.setImage(with: url)
-                cell.profileImage.layer.cornerRadius = 55/2
-                cell.profileImage.clipsToBounds = true
-                cell.profileImage.contentMode = .scaleAspectFill
-                
-                cell.timestamp(chat: chat)
-            }
-        })
+//        if currentUid == toUid {
+//            chatPartnerUid = senderUid
+//        } else {
+//            chatPartnerUid = toUid
+//        }
+//        Ref().databaseSpecificUser(uid: chatPartnerUid!).observe(.value, with: { (snapshot) in
+//            if let dict = snapshot.value as? [String:Any] {
+//                let imageUrl = dict["profileImageUrl"] as? String
+//                let username = dict["username"] as? String
+//                let url = URL(string: imageUrl!)
+//
+//                let user = UserModel()
+//                user.setValuesForKeys(dict)
+//                self.User.append(user)
+//
+//                cell.nameLabel.text = username
+//                cell.profileImage.kf.setImage(with: url)
+//                cell.profileImage.layer.cornerRadius = 55/2
+//                cell.profileImage.clipsToBounds = true
+//                cell.profileImage.contentMode = .scaleAspectFill
+//
+//                cell.timestamp(chat: chat)
+//            }
+//        })
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = Chat[indexPath.row]
-        if Auth.auth().currentUser?.uid == message.toUid {
-            chatPartnerUid = message.senderUid
-        } else {
-            chatPartnerUid = message.toUid
+        if let chatPartnerUid = message.chatPartnerUid() {
+            Ref().databaseSpecificUser(uid: chatPartnerUid).observeSingleEvent(of: .value, with: { (snapshot) in
+                self.User.removeAll()
+                guard let dictionary = snapshot.value as? [String:Any] else {
+                    return
+                }
+                let user = UserModel()
+                user.setValuesForKeys(dictionary)
+                self.User.append(user)
+                self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
+                tableView.deselectRow(at: indexPath, animated: true)
+            })
         }
-        Ref().databaseSpecificUser(uid: chatPartnerUid!).observeSingleEvent(of: .value, with: { (snapshot) in
-            self.User.removeAll()
-            guard let dictionary = snapshot.value as? [String:Any] else {
-                return
-            }
-            let user = UserModel()
-            user.setValuesForKeys(dictionary)
-            self.User.append(user)
-            self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
-            tableView.deselectRow(at: indexPath, animated: true)
-        })
+//        if Auth.auth().currentUser?.uid == message.toUid {
+//            chatPartnerUid = message.senderUid
+//        } else {
+//            chatPartnerUid = message.toUid
+//        }
+//        Ref().databaseSpecificUser(uid: chatPartnerUid!).observeSingleEvent(of: .value, with: { (snapshot) in
+//            self.User.removeAll()
+//            guard let dictionary = snapshot.value as? [String:Any] else {
+//                return
+//            }
+//            let user = UserModel()
+//            user.setValuesForKeys(dictionary)
+//            self.User.append(user)
+//            self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
+//            tableView.deselectRow(at: indexPath, animated: true)
+//        })
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

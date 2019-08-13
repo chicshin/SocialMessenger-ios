@@ -40,13 +40,14 @@ class ProfileViewController: UIViewController {
         setupEditButton()
         setupDoneButton()
         setupCloseButton()
+        didTapEditButton()
     }
 
     @IBAction func dismissAction(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-
-    @IBAction func didTapEdit(_ sender: Any) {
+    
+    func didTapEditButton() {
         editButton.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
         editButton.addGestureRecognizer(tapGesture)
