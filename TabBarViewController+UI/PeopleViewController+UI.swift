@@ -24,7 +24,8 @@ extension PeopleViewController {
                 self.CurrentUser.append(user)
             }
             DispatchQueue.main.async {
-                self.tableView.reloadData();
+                self.tableView.reloadData()
+                self.tableView.isScrollEnabled = false
             }
         })
     }
