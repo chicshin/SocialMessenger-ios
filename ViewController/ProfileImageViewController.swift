@@ -36,6 +36,8 @@ class ProfileImageViewController: UIViewController {
         setupSkip()
         setupDone()
     }
+    
+    
     @IBAction func addPhotoDidTapped(_ sender: Any) {
         submitButton.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
