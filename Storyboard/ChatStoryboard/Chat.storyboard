@@ -6,77 +6,61 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Chat View Controller-->
-        <scene sceneID="Uua-nf-xMi">
+        <scene sceneID="GQx-81-RWm">
             <objects>
-                <viewController storyboardIdentifier="ChatVC" id="4az-HF-duR" customClass="ChatViewController" customModule="Tikitalka" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="PEZ-ST-pwq">
+                <collectionViewController storyboardIdentifier="ChatVC" id="Huy-l8-vev" customClass="ChatViewController" customModule="Tikitalka" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="aAV-JV-a1b">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bgl-eO-NlH">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MyMessageCell" id="dbO-JH-LPQ" customClass="MyMessageCell" customModule="Tikitalka" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dbO-JH-LPQ" id="PMj-Uu-9IT">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="DestinationMessageCell" id="hCd-Ok-C98" customClass="DestinationMessageCell">
-                                        <rect key="frame" x="0.0" y="72" width="414" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hCd-Ok-C98" id="xIt-xK-XGG">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="bgl-eO-NlH" firstAttribute="bottom" secondItem="E8W-OH-oBB" secondAttribute="bottom" id="LfN-9u-03f"/>
-                            <constraint firstItem="bgl-eO-NlH" firstAttribute="top" secondItem="E8W-OH-oBB" secondAttribute="top" id="PFt-W9-hXd"/>
-                            <constraint firstItem="bgl-eO-NlH" firstAttribute="trailing" secondItem="E8W-OH-oBB" secondAttribute="trailing" id="bVh-pA-3qi"/>
-                            <constraint firstItem="bgl-eO-NlH" firstAttribute="leading" secondItem="E8W-OH-oBB" secondAttribute="leading" id="wOM-YT-n0d"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="E8W-OH-oBB"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="jQ0-xq-jgr"/>
-                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="tableView" destination="bgl-eO-NlH" id="tWm-Ka-wcf"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vUH-zU-SVh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5u7-FT-D5o">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="chatMessageCell" id="Uje-hj-wRs">
+                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="Huy-l8-vev" id="E7l-3M-LT4"/>
+                            <outlet property="delegate" destination="Huy-l8-vev" id="HUH-oV-kja"/>
+                        </connections>
+                    </collectionView>
+                    <navigationItem key="navigationItem" id="sd2-To-ccD"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4kl-Ug-zhz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3128.985507246377" y="-405.13392857142856"/>
+            <point key="canvasLocation" x="4410.144927536232" y="-397.09821428571428"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="GeT-vo-dbU">
+        <scene sceneID="OlP-4o-ULb">
             <objects>
-                <navigationController storyboardIdentifier="NavigationChat" automaticallyAdjustsScrollViewInsets="NO" id="7hh-Lg-4uQ" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationChat" automaticallyAdjustsScrollViewInsets="NO" id="A7G-Fw-Jpj" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="8BR-s1-6am">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="0u8-h5-dfk">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="4az-HF-duR" kind="relationship" relationship="rootViewController" id="8Pi-Zr-7av"/>
+                        <segue destination="Huy-l8-vev" kind="relationship" relationship="rootViewController" id="geu-pI-D62"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Wzk-9l-rox" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sI8-rP-BAx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2141" y="-405"/>
+            <point key="canvasLocation" x="3500.0000000000005" y="-397.09821428571428"/>
         </scene>
     </scenes>
 </document>
