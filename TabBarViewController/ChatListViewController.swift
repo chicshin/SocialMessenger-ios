@@ -11,22 +11,16 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 import ProgressHUD
-import Alamofire
-import AlamofireImage
 
 class ChatListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var tableView: UITableView! = UITableView()
-    
-//    var user: UserModel?
     
     var User = [UserModel]()
     var Chat = [ChatModel]()
     var messageDictionary = [String: ChatModel]()
     
     var timer: Timer?
-    
-//    var chatPartnerUid: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,35 +87,14 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
                     cell.profileImage.layer.cornerRadius = 55/2
                     cell.profileImage.clipsToBounds = true
                     cell.profileImage.contentMode = .scaleAspectFill
-                    
-                    cell.timestamp(chat: chat)
+                    if chat.datestampString() != chat.today()! {
+                        cell.timestampLabel.text = chat.datestampString()
+                    } else {
+                        cell.timestampLabel.text = chat.timestampString()
+                    }
                 }
             })
         }
-//        if currentUid == toUid {
-//            chatPartnerUid = senderUid
-//        } else {
-//            chatPartnerUid = toUid
-//        }
-//        Ref().databaseSpecificUser(uid: chatPartnerUid!).observe(.value, with: { (snapshot) in
-//            if let dict = snapshot.value as? [String:Any] {
-//                let imageUrl = dict["profileImageUrl"] as? String
-//                let username = dict["username"] as? String
-//                let url = URL(string: imageUrl!)
-//
-//                let user = UserModel()
-//                user.setValuesForKeys(dict)
-//                self.User.append(user)
-//
-//                cell.nameLabel.text = username
-//                cell.profileImage.kf.setImage(with: url)
-//                cell.profileImage.layer.cornerRadius = 55/2
-//                cell.profileImage.clipsToBounds = true
-//                cell.profileImage.contentMode = .scaleAspectFill
-//
-//                cell.timestamp(chat: chat)
-//            }
-//        })
         return cell
     }
     

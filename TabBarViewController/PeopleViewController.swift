@@ -46,6 +46,13 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         super.viewWillAppear(animated)
         setupImage()
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if Auth.auth().currentUser != nil{
+//            self.performSegue(withIdentifier: "signInToTabBarVC", sender: nil)
+//        }
+//    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count:Int?

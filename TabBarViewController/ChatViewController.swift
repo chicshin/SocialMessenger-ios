@@ -10,8 +10,6 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
-//import Alamofire
-//import AlamofireImage
 import Kingfisher
 import AVFoundation
 
@@ -89,9 +87,18 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.chatViewController = self
         
         let chat = Chat[indexPath.row]
+        
+        cell.timestampLabel.isHidden = false
+        if indexPath.row - 1 == -1 {
+            cell.timestampLabel.isHidden = false
+        } else {
+            if chat.timestampString() == Chat[indexPath.row - 1].timestampString() {
+                cell.timestampLabel.isHidden = true
+            }
+        }
         cell.chat = chat
-
         cell.textView.text = chat.text
+        cell.timestampLabel.text = chat.timestampString()
         setupCell(cell: cell, chat: chat)
         
         if let text = chat.text {
@@ -125,6 +132,9 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.bubbleRightAnchor?.isActive = true
             cell.bubbleLeftAnchor?.isActive = false
             
+            cell.timestampLeftAnchor?.isActive = false
+            cell.timestampRightAnchor?.isActive = true
+            
         } else {
             cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
             cell.textView.textColor = .black
@@ -134,6 +144,9 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             
             cell.bubbleRightAnchor?.isActive = false
             cell.bubbleLeftAnchor?.isActive = true
+            
+            cell.timestampLeftAnchor?.isActive = true
+            cell.timestampRightAnchor?.isActive = false
         }
     }
     
@@ -282,6 +295,14 @@ class chatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
+    let timestampLabel: UILabel = {
+        let timestamp = UILabel()
+        timestamp.translatesAutoresizingMaskIntoConstraints = false
+        timestamp.font = UIFont.systemFont(ofSize: 12)
+        timestamp.textColor = UIColor.lightGray
+        return timestamp
+    }()
+    
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
         if chat?.videoUrl != nil {
             return
@@ -294,12 +315,15 @@ class chatMessageCell: UICollectionViewCell {
     var bubbleWidthAnchor: NSLayoutConstraint?
     var bubbleLeftAnchor: NSLayoutConstraint?
     var bubbleRightAnchor: NSLayoutConstraint?
+    var timestampLeftAnchor: NSLayoutConstraint?
+    var timestampRightAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(bubbleView)
         addSubview(textView)
         addSubview(profileImageView)
+        addSubview(timestampLabel)
         
         bubbleView.addSubview(messageImageView)
         messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
@@ -337,31 +361,17 @@ class chatMessageCell: UICollectionViewCell {
         profileImageView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         profileImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -5).isActive = true
+        timestampLeftAnchor = timestampLabel.leftAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 5)
+        timestampLeftAnchor?.isActive = false
+        timestampRightAnchor = timestampLabel.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -5)
+        timestampRightAnchor?.isActive = true
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    //    override init(style: UICollectionView.CellStyle, reuseIdentifier: String?) {
-//        super.init(style: style, reuseIdentifier: reuseIdentifier)
-//        addSubview(bubbleView)
-//        addSubview(textView)
-//
-//        bubbleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-//        bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8).isActive = true
-//        bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
-//        bubbleWidthAnchor!.isActive = true
-//        bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
-//
-//        textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
-//        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-//        textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
-//        textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
-//
-//    }
-//
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
 }
