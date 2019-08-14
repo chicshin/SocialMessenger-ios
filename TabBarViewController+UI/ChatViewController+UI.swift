@@ -10,8 +10,6 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
-import Alamofire
-import AlamofireImage
 import ProgressHUD
 import MobileCoreServices
 import AVFoundation

@@ -32,27 +32,11 @@ extension ChatListViewController {
                         let message = ChatModel(dictionary: dict)
 //                        message.setValuesForKeys(dict)
                         self.Chat.append(message)
-
-//                        if message.toUid == Auth.auth().currentUser?.uid {
-//                            self.chatPartnerUid = message.senderUid
-//                        } else {
-//                            self.chatPartnerUid = message.toUid
-//                        }
                         if let chatPartnerUid = message.chatPartnerUid() {
                             self.messageDictionary[chatPartnerUid] = message
                         }
-
-//                        self.messageDictionary[self.chatPartnerUid!] = message
                     }
                     self.attemptReloadTable()
-//                    self.Chat = Array(self.messageDictionary.values)
-//                    self.Chat.sort(by: { (message1, message2) -> Bool in
-//                        return message1.timestamp!.intValue > message2.timestamp!.intValue
-//                    })
-//
-//                    DispatchQueue.main.async {
-//                        self.tableView.reloadData();
-//                    }
                 })
             })
         })
@@ -82,27 +66,5 @@ extension ChatListViewController {
         tableView.rowHeight = 70
         tableView.allowsMultipleSelection = true
     }
-    
-//    func fetchUser() {
-//        let myUid = Auth.auth().currentUser?.uid
-//        Ref().databaseUsers.observe(.value, with: { (snapshot) in
-//            self.User.removeAll()
-//            self.messageDictionary.removeAll()
-//            let dict = snapshot.value as? [String:Any]
-//            for child in dict!.keys {
-//                if child != myUid && child != "activeUsernames" {
-//                    let uid = child
-//                    let user = UserModel()
-//                    Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
-//                        if let dictionary = data.value as? [String:Any] {
-//                            user.setValuesForKeys(dictionary)
-//                            self.User.append(user)
-//                        }
-//                    })
-//                }
-//            }
-//        })
-//    }
-
 }
 
