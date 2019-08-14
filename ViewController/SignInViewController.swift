@@ -34,12 +34,12 @@ class SignInViewController: UIViewController {
         self.view.endEditing(true)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if Auth.auth().currentUser != nil{
-            self.performSegue(withIdentifier: "signInToTabBarVC", sender: nil)
-        }
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if Auth.auth().currentUser != nil{
+//            self.performSegue(withIdentifier: "signInToTabBarVC", sender: nil)
+//        }
+//    }
     
     func setupUI() {
         setupTitle()

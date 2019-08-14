@@ -64,6 +64,7 @@ class CreateUsernameViewController: UIViewController {
     
     @IBAction func signInDidTapped(_ sender: Any) {
         self.view.endEditing(true)
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
+//        navigationController?.popViewController(animated: true)
     }
 }
