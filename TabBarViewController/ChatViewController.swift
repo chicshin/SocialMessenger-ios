@@ -14,13 +14,30 @@ import Kingfisher
 import AVFoundation
 
 class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
+    struct dateModelStructure: Hashable {
+        var date: String
+        var content: String
+        var timestamp: NSNumber
+    }
     
     let inputTextField: UITextField! = UITextField()
-
+    
     var userModel: UserModel?
     var destination = [CurrentUserModel]()
     var Chat = [ChatModel]()
-    var messagesDictionary = [String: ChatModel]()
+    
+    var messagesPerDateDictionary: [dateModelStructure] = []
+    var dateSection: [Any] = [] {
+        didSet{
+            collectionView.reloadData()
+        }
+    }
+    var groupedMessagesByDates = [[dateModelStructure]]()
+    var messagesFromServer = [dateModelStructure]()
+    
+    var result = [dateModelStructure]()
+    var sections: Int?
+//    var IdCount = [String]()
     
     var selectedImageFromPicker: UIImage?
     var startingFrame: CGRect?
@@ -30,8 +47,8 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         collectionView.register(chatMessageCell.self, forCellWithReuseIdentifier: "chatMessageCell")
+        collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
         collectionView.delegate = self
         collectionView.dataSource = self
         inputTextField.delegate = self
@@ -45,8 +62,66 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     }
     
     func setupUI() {
+        groupMessages()
         observeMessageLog()
         setupNavigationBar()
+    }
+    
+    func groupMessages() {
+        let uid = Auth.auth().currentUser?.uid
+        Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.value, with: { (snapshot) in
+            let totalMessagesCount = snapshot.childrenCount
+            let messageId = snapshot.value as! NSDictionary
+            var dataStructure = [dateModelStructure]()
+            var retrievedMessagesFromServer = self.messagesFromServer
+            for id in messageId.allKeys {
+                Ref().databaseRoot.child("messages").child(id as! String).observeSingleEvent(of: .value, with: { (snapshot) in
+                    guard let dictionary = snapshot.value as? [String:Any] else {
+                        return
+                    }
+                    
+//                    dataStructure.append(dictionary)
+                    let timestamp = dictionary["timestamp"] as? NSNumber
+                    let returnValue = dictionary["text"] != nil ? dictionary["text"] : dictionary["videoUrl"] != nil ? dictionary["videoUrl"] : dictionary["imageUrl"]
+                    func datestampString() -> String? {
+                        var dateString: String?
+                        if let seconds = timestamp?.doubleValue {
+                            let timestampDate = NSDate(timeIntervalSince1970: seconds)
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            dateString = dateFormatter.string(from: timestampDate as Date)
+                        }
+                        return dateString
+                    }
+                    let date = datestampString()
+//                    dataStructure.append(["date": date!, "content": returnValue as! String, "timestamp": timestamp!])
+                    dataStructure.append(dateModelStructure(date: date!, content: returnValue as! String, timestamp: timestamp!))
+                    
+                    if dataStructure.count != totalMessagesCount {
+                        return
+                    } else if dataStructure.count == totalMessagesCount {
+                        retrievedMessagesFromServer = dataStructure
+                    }
+
+                    self.messagesFromServer = retrievedMessagesFromServer
+                    
+                    let groupedMessages = Dictionary(grouping: self.messagesFromServer, by: { (element: dateModelStructure) in
+                        return element.date
+                    })
+                    
+                    let sortedKeys = groupedMessages.keys.sorted()
+                    sortedKeys.forEach( { (key) in
+                        let values = groupedMessages[key]
+                        self.groupedMessagesByDates.append(values ?? [])
+                    })
+
+//                    DispatchQueue.main.async {
+//                        self.collectionView.reloadData()
+//                    }
+                })
+            }
+        })
+
     }
     
     @objc func dismissChat() {
@@ -76,18 +151,35 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], context: nil)
     }
 
-    
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return Chat.count
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return self.groupedMessagesByDates.count
     }
     
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerId", for: indexPath) as! HeaderView
+        let dates = self.groupedMessagesByDates[indexPath.section]
+        if let firstMessage = dates.first?.date {
+            header.date.text = firstMessage
+        }
+        return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return .init(width: view.frame.width, height: 30)
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        let dates = dateSection[section] as! [dateModelStructure]
+        sections = section
+        return self.groupedMessagesByDates[section].count
+//        return Chat.count
+    }
+
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "chatMessageCell", for: indexPath) as! chatMessageCell
-        
         cell.chatViewController = self
-        
         let chat = Chat[indexPath.row]
-        
+//        let groupedMessages = self.groupedMessagesByDates[indexPath.section]
         cell.timestampLabel.isHidden = false
         if indexPath.row - 1 == -1 {
             cell.timestampLabel.isHidden = false
@@ -100,7 +192,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.textView.text = chat.text
         cell.timestampLabel.text = chat.timestampString()
         setupCell(cell: cell, chat: chat)
-        
         if let text = chat.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
@@ -161,13 +252,17 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
 
         additionalButton.translatesAutoresizingMaskIntoConstraints = false
         sendButton.translatesAutoresizingMaskIntoConstraints = false
-
+        inputTextField.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 60)
         containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
 
         inputTextField.placeholder = "Enter text here..."
-        inputTextField.frame = CGRect(x: 40, y: 5, width: 310, height: 35)
+//        inputTextField.frame = CGRect(x: 40, y: 5, width: 310, height: 35)
+        inputTextField.leftAnchor.constraint(equalTo: additionalButton.rightAnchor, constant: 5).isActive = true
+        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor, constant: 5).isActive = true
+        inputTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        inputTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8).isActive = true
 
         additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5).isActive = true
         additionalButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
@@ -185,8 +280,8 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         inputTextField.layer.cornerRadius = 18
         inputTextField.clipsToBounds = true
 
-        let leftView = UILabel(frame: CGRect(x: 10, y: 0, width: 14, height: 30))
-        let rightView = UILabel(frame: CGRect(x: -10, y: 0, width: 5, height: 30))
+        let leftView = UILabel(frame: CGRect(x: 10, y: 0, width: 14, height: 35))
+        let rightView = UILabel(frame: CGRect(x: -10, y: 0, width: 5, height: 35))
         inputTextField.leftView = leftView
         inputTextField.leftViewMode = .always
         inputTextField.rightView = rightView
@@ -205,7 +300,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
 
         return containerView
     }()
-
+    
     override var inputAccessoryView: UIView? {
         get {
             return inputContainerVeiw
@@ -303,6 +398,15 @@ class chatMessageCell: UICollectionViewCell {
         return timestamp
     }()
     
+//    let dateLabel: UILabel = {
+//        let date = UILabel()
+//        date.translatesAutoresizingMaskIntoConstraints = false
+//        date.font = UIFont.systemFont(ofSize: 12)
+//        date.textColor = UIColor.lightGray
+//        date.backgroundColor = .yellow
+//        return date
+//    }()
+    
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
         if chat?.videoUrl != nil {
             return
@@ -320,10 +424,18 @@ class chatMessageCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+//        addSubview(dateLabel)
         addSubview(bubbleView)
         addSubview(textView)
         addSubview(profileImageView)
         addSubview(timestampLabel)
+        
+//        dateLabel.topAnchor.constraint(equalTo: topAnchor).isActive = true
+////        dateTopAnchor = dateLabel.topAnchor.constraint(equalTo: bubbleView.bottomAnchor)
+////        dateTopAnchor?.isActive = false
+//        dateLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+//        dateHeightAnchor = dateLabel.heightAnchor.constraint(equalToConstant: 20)
+//        dateHeightAnchor?.isActive = true
         
         bubbleView.addSubview(messageImageView)
         messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
@@ -351,9 +463,21 @@ class chatMessageCell: UICollectionViewCell {
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor!.isActive = true
         bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+//        bubbleDateBottomAnchor = bubbleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 30)
+//        bubbleDateBottomAnchor?.isActive = true
+//        bubbleTopAnchor = bubbleView.topAnchor.constraint(equalTo: self.topAnchor)
+//        bubbleTopAnchor?.isActive = false
+//        bubbleLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
+//        bubbleLeftAnchor?.isActive = false
+//        bubbleRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
+//        bubbleRightAnchor?.isActive = true
+//        bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
+//        bubbleWidthAnchor!.isActive = true
+//        bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
 
         textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
-        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+//        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        textView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
@@ -367,6 +491,7 @@ class chatMessageCell: UICollectionViewCell {
         timestampLeftAnchor?.isActive = false
         timestampRightAnchor = timestampLabel.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -5)
         timestampRightAnchor?.isActive = true
+        
         
         
     }

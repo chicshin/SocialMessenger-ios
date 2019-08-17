@@ -66,8 +66,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! listCell
         let chat = Chat[indexPath.row]
-        
-        cell.lastMessageLabel.text = chat.text
+        setupCell(cell: cell, chat: chat)
         
         //if currentUid == toUid -> show senderUid
         //else show toUid
@@ -96,6 +95,18 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
             })
         }
         return cell
+    }
+    
+    private func setupCell(cell: listCell, chat: ChatModel) {
+        if chat.text != nil {
+            cell.lastMessageLabel.text = chat.text
+        } else {
+            if chat.videoUrl != nil {
+                cell.lastMessageLabel.text = "Sent video"
+            } else if chat.imageUrl != nil{
+                cell.lastMessageLabel.text = "Sent Image"
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
