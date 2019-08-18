@@ -18,12 +18,16 @@ extension ChatViewController {
     
     func observeMessageLog() {
         let uid = Auth.auth().currentUser?.uid
-//        var IdCount = [String]()
-//        var makeArray = [dateModelStructure]()
+        var totalMessagesCount: Int?
+        Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.value, with: { (snapshot) in
+            //            let totalMessagesCount = snapshot.childrenCount
+            totalMessagesCount = Int(snapshot.childrenCount)
+            guard let messageId = snapshot.value as? NSDictionary else {
+                return
+            }
+        })
         Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
-//            IdCount.append(messageId)
-
             Ref().databaseRoot.child("messages").child(messageId).observeSingleEvent(of: .value, with: { (data) in
                 guard let dictionary = data.value as? [String:Any] else {
                     return
@@ -31,56 +35,11 @@ extension ChatViewController {
                 let chat = ChatModel(dictionary: dictionary)
                 self.Chat.append(chat)
                 
-//                if let returnValue = chat.text != nil ? chat.text : chat.videoUrl != nil ? chat.videoUrl : chat.imageUrl {
-//
-//                    makeArray.append(ChatViewController.dateModelStructure(date: chat.datestampString()!, content: returnValue, timestamp: chat.timestamp!))
+//                DispatchQueue.main.async {
+//                    self.collectionView.reloadData()
+////                    let indexPath = NSIndexPath(item: self.Chat.count - 1, section: 0)
+////                    self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.bottom, animated: true)
 //                }
-//                self.messagesPerDateDictionary = makeArray
-//
-//                var dd = self.dateSection
-//                if self.messagesPerDateDictionary.count == 12 {
-//                    self.result = self.messagesPerDateDictionary
-//
-//                    let dates = Set(self.result.map({return $0.date}))
-//                    var array = [dateModelStructure]()
-//                    for date in dates {
-//                        array = self.result.filter({$0.date == date})
-//                        dd.append(array)
-////                        print(self.dateSection)
-//                    }
-////                    self.dateSection = dd
-////                    print("UI : ", self.dateSection.count)
-////                    let group = Dictionary(grouping: self.result, by:  { $0.date })
-////                    print(group)
-//                }
-//                self.dateSection = dd
-
-                
-//                array = self.messagesPerDateDictionary.filter { $0.date == chat.datestampString()}
-//                let arrayUnordered = Array(Set(array))
-//                self.dateSection.append(arrayUnordered)
-//////                self.dateSection = array
-
-                
-//                let returnValue = chat.text != nil ? chat.text : chat.videoUrl != nil ? chat.videoUrl : chat.imageUrl
-//                let dateWithContents = DateModel()
-//                let contents = dateModelStructure(date: chat.datestampString()!, contents: returnValue!)
-//                self.messagesPerDateDictionary.append(contents)
-//                dateWithContents.dateModel = self.messagesPerDateDictionary as! [dateModelStructure]
-//                let dict = Dictionary(grouping: dateWithContents.dateModel, by: { (element: dateModelStructure) in
-//                    return element.date
-//                })
-//                self.dateSection = dict
-                
-//                                var mpdd = self.messagesPerDateDictionary
-                //                mpdd.append(chat.datestampString()!)
-                //                self.messagesPerDateDictionary = mpdd
-                //                print(self.messagesPerDateDictionary)
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-//                    let indexPath = NSIndexPath(item: self.Chat.count - 1, section: 0)
-//                    self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.bottom, animated: true)
-                }
             })
         })
     }
