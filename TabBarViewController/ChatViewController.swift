@@ -33,6 +33,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     var groupedMessagesByDates = [[ChatModel.dateModelStructure]]()
     var messagesFromServer = [ChatModel.dateModelStructure]()
     var sections: Int?
+    var dateSection = [[ChatModel.dateModelStructure]]()
     
 //    var result = [dateModelStructure]()
 //    var dateSection: [Any] = []
@@ -62,10 +63,12 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     }
     
     func setupUI() {
-        groupMessages()
         observeMessageLog()
+//        groupMessages()
         setupNavigationBar()
+        setupKeyboardObserver()
     }
+    
     
     func groupMessages() {
         let uid = Auth.auth().currentUser?.uid
@@ -84,32 +87,30 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
                     let chat = ChatModel(dictionary: dictionary)
                     self.Chat.append(chat)
                     
-                    let timestamp = dictionary["timestamp"] as? NSNumber
-//                    let returnValue = dictionary["text"] != nil ? dictionary["text"] : dictionary["videoUrl"] != nil ? dictionary["videoUrl"] : dictionary["imageUrl"]
-                    func datestampString() -> String? {
-                        var dateString: String?
-                        if let seconds = timestamp?.doubleValue {
+//                    let timestamp = dictionary["timestamp"] as? NSNumber
+                    
+                    func timestampString() -> String? {
+                        var timeString: String?
+                        if let seconds = chat.timestamp?.doubleValue {
                             let timestampDate = NSDate(timeIntervalSince1970: seconds)
                             let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd"
-                            dateString = dateFormatter.string(from: timestampDate as Date)
+                            dateFormatter.dateFormat = "hh:mm a"
+                            timeString = dateFormatter.string(from: timestampDate as Date)
                         }
-                        return dateString
+                        return timeString
                     }
                     
 //                    let returnValue = chat.text != nil ? chat.text : chat.videoUrl != nil ? chat.videoUrl : chat.imageUrl
                     let contentType = chat.text != nil ? "text" : chat.videoUrl != nil ? "videoUrl" : "imageUrl"
-                    
-
 //                    dataStructure.append(["date": date!, "content": returnValue as! String, "timestamp": timestamp!])
 //                    dataStructure.append(dateModelStructure(date: date!, content: returnValue as! String, timestamp: timestamp!))
                     
                     if contentType == "text" {
-                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: chat.text!, imageUrl: nil, imageWidth: nil, imageHeight: nil, videoUrl: nil, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: chat.text!, imageUrl: nil, imageWidth: nil, imageHeight: nil, videoUrl: nil, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
                     } else if contentType == "videoUrl" {
-                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: chat.videoUrl!, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: chat.videoUrl!, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
                     } else if contentType == "imageUrl" {
-                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: nil, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                        dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: nil, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
                     }
 
                     if dataStructure.count != totalMessagesCount {
@@ -119,23 +120,29 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
                     }
 
                     self.messagesFromServer = retrievedMessagesFromServer
-
 //                    let groupedMessages = Dictionary(grouping: self.messagesFromServer, by: { (element: dateModelStructure) in
 //                        return element.date
 //                    })
                     let groupedMessages = Dictionary(grouping: self.messagesFromServer, by: { (element: ChatModel.dateModelStructure) in
                         return element.date
                     })
+                    
+                    
                     let sortedKeys = groupedMessages.keys.sorted()
                     sortedKeys.forEach( { (key) in
-                        let values = groupedMessages[key]
+                        var values = groupedMessages[key]
+                        values = values?.sorted(by: { (lhs: ChatModel.dateModelStructure, rhs: ChatModel.dateModelStructure) in
+                            let lhsValue = lhs.timestamp as! Int
+                            let rhsValue = rhs.timestamp as! Int
+                            return lhsValue < rhsValue
+                        })
                         self.groupedMessagesByDates.append(values ?? [])
                     })
                     
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
-                        //                    let indexPath = NSIndexPath(item: self.Chat.count - 1, section: 0)
-                        //                    self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.bottom, animated: true)
+//                        let indexPath = NSIndexPath(item: self.Chat.count - 1, section: 0)
+//                        self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.bottom, animated: true)
                     }
                 })
             }
@@ -211,48 +218,47 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
 
         cell.timestampLabel.isHidden = false
 
-//        cell.chat = self.groupedMessages
-//        cell.textView.text = self.groupedMessages.text
-//        cell.timestampLabel.text = self.groupedMessages.timestampString()
-//        setupCell(cell: cell, chat: self.groupedMessages)
-//        if let text = self.groupedMessages.text {
-//            cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
-//            cell.textView.isHidden = false
-//        } else if self.groupedMessages.imageUrl != nil {
-//            cell.bubbleWidthAnchor?.constant = 200
-//            cell.bubbleView.backgroundColor = .clear
-//            cell.textView.isHidden = true
-//        }
-
-//        cell.playButton.isHidden = self.groupedMessages.videoUrl == nil
-        
-        let chat = Chat[indexPath.row]
-        cell.timestampLabel.isHidden = false
-        if indexPath.row - 1 == -1 {
-            cell.timestampLabel.isHidden = false
-        } else {
-            if chat.timestampString() == Chat[indexPath.row - 1].timestampString() {
-                cell.timestampLabel.isHidden = true
-            }
-        }
-        cell.chat = chat
-        cell.timestampLabel.text = chat.timestampString()
-        setupCell(cell: cell, chat: chat)
-        if let text = chat.text {
+        cell.chat = groupedMessages
+        cell.textView.text = groupedMessages.text
+        cell.timestampLabel.text = groupedMessages.timestampString
+        setupCell(cell: cell, chat: groupedMessages)
+        if let text = groupedMessages.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
-        } else if chat.imageUrl != nil {
+        } else if groupedMessages.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
             cell.bubbleView.backgroundColor = .clear
             cell.textView.isHidden = true
         }
 
-        cell.playButton.isHidden = chat.videoUrl == nil
+        cell.playButton.isHidden = groupedMessages.videoUrl == nil
+        
+//        let chat = Chat[indexPath.row]
+//        cell.timestampLabel.isHidden = false
+//        if indexPath.row - 1 == -1 {
+//            cell.timestampLabel.isHidden = false
+//        } else {
+//            if chat.timestampString() == Chat[indexPath.row - 1].timestampString() {
+//                cell.timestampLabel.isHidden = true
+//            }
+//        }
+//        cell.chat = chat
+//        cell.timestampLabel.text = chat.timestampString()
+//        setupCell(cell: cell, chat: chat)
+//        if let text = chat.text {
+//            cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
+//            cell.textView.isHidden = false
+//        } else if chat.imageUrl != nil {
+//            cell.bubbleWidthAnchor?.constant = 200
+//            cell.bubbleView.backgroundColor = .clear
+//            cell.textView.isHidden = true
+//        }
+//
+//        cell.playButton.isHidden = chat.videoUrl == nil
         return cell
     }
     
-    private func setupCell(cell: chatMessageCell, chat: ChatModel) {
-        
+    private func setupCell(cell: chatMessageCell, chat: ChatModel.dateModelStructure) {
         if let messageImageUrl = chat.imageUrl {
             let url = URL(string: messageImageUrl)
             cell.messageImageView.kf.setImage(with: url)
@@ -285,6 +291,38 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.timestampLeftAnchor?.isActive = true
             cell.timestampRightAnchor?.isActive = false
         }
+//        if let messageImageUrl = chat.imageUrl {
+//            let url = URL(string: messageImageUrl)
+//            cell.messageImageView.kf.setImage(with: url)
+//            cell.messageImageView.isHidden = false
+//            cell.bubbleView.backgroundColor = .clear
+//        } else {
+//            cell.messageImageView.isHidden = true
+//        }
+//        if chat.senderUid == Auth.auth().currentUser?.uid {
+//            cell.bubbleView.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.9)
+//            cell.textView.textColor = .white
+//            cell.profileImageView.isHidden = true
+//
+//            cell.bubbleRightAnchor?.isActive = true
+//            cell.bubbleLeftAnchor?.isActive = false
+//
+//            cell.timestampLeftAnchor?.isActive = false
+//            cell.timestampRightAnchor?.isActive = true
+//
+//        } else {
+//            cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
+//            cell.textView.textColor = .black
+//            cell.profileImageView.isHidden = false
+//            let url = URL(string: userModel!.profileImageUrl!)
+//            cell.profileImageView.kf.setImage(with: url)
+//
+//            cell.bubbleRightAnchor?.isActive = false
+//            cell.bubbleLeftAnchor?.isActive = true
+//
+//            cell.timestampLeftAnchor?.isActive = true
+//            cell.timestampRightAnchor?.isActive = false
+//        }
     }
     
     lazy var inputContainerVeiw: UIView = {
@@ -359,7 +397,8 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
 
 class chatMessageCell: UICollectionViewCell {
     
-    var chat: ChatModel?
+    var chat: ChatModel.dateModelStructure?
+//    var chat: ChatModel?
     var chatViewController: ChatViewController?
     var playerLayer: AVPlayerLayer?
     var player: AVPlayer?
