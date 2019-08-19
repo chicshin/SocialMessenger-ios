@@ -83,7 +83,7 @@ extension ChatViewController {
                     self.collectionView.reloadData()
                     let section = (self.collectionView?.numberOfSections)! - 1
                     let lastItemIndex = IndexPath(item: self.groupedMessagesByDates[section].count - 1, section: section)
-                    self.collectionView?.scrollToItem(at: lastItemIndex, at: UICollectionView.ScrollPosition.bottom, animated: true)t
+                    self.collectionView?.scrollToItem(at: lastItemIndex, at: UICollectionView.ScrollPosition.bottom, animated: true)
                 }
             })
         })
@@ -100,10 +100,6 @@ extension ChatViewController {
             let indexPath = NSIndexPath(item: groupedMessagesByDates[section].count - 1, section: section)
             self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
         }
-//        if Chat.count > 0 {
-//            let indexPath = NSIndexPath(item: Chat.count - 1, section: 0)
-//            collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
-//        }
     }
 
     func setupNavigationBar() {
@@ -194,8 +190,11 @@ extension ChatViewController {
     }
     
     @objc func handleSend() {
+        guard let text = inputTextField.text, !text.isEmpty else {
+            return
+        }
         let properties : Dictionary<String,Any> = [
-            "text": inputTextField.text!,
+            "text": text,
         ]
         sendMessageWithProperties(properties: properties)
     }
@@ -264,16 +263,6 @@ extension ChatViewController {
     }
 }
 
-//    @objc func keyboardWillHide(notification: NSNotification) {
-//        let keyboardDuration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval)
-//        containerViewBottomAnchor?.constant = 0
-//        containerViewHeightAnchor?.constant = 60
-//        inputTextFieldBottomAnchor?.constant = -20
-//
-//        UIView.animate(withDuration: keyboardDuration, animations: {
-//            self.view.layoutIfNeeded()
-//        })
-//    }
 extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL{
