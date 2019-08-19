@@ -20,14 +20,13 @@ extension ChatViewController {
         let uid = Auth.auth().currentUser?.uid
         var totalMessagesCount: Int?
         Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.value, with: { (snapshot) in
-            //            let totalMessagesCount = snapshot.childrenCount
             totalMessagesCount = Int(snapshot.childrenCount)
-            guard let messageId = snapshot.value as? NSDictionary else {
-                return
-            }
         })
+        var dataStructure = [ChatModel.dateModelStructure]()
+        var retrievedMessagesFromServer = self.messagesFromServer
         Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
+            self.groupedMessagesByDates.removeAll()
             Ref().databaseRoot.child("messages").child(messageId).observeSingleEvent(of: .value, with: { (data) in
                 guard let dictionary = data.value as? [String:Any] else {
                     return
@@ -35,25 +34,76 @@ extension ChatViewController {
                 let chat = ChatModel(dictionary: dictionary)
                 self.Chat.append(chat)
                 
-//                DispatchQueue.main.async {
-//                    self.collectionView.reloadData()
-////                    let indexPath = NSIndexPath(item: self.Chat.count - 1, section: 0)
-////                    self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.bottom, animated: true)
-//                }
+                func timestampString() -> String? {
+                    var timeString: String?
+                    if let seconds = chat.timestamp?.doubleValue {
+                        let timestampDate = NSDate(timeIntervalSince1970: seconds)
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "hh:mm a"
+                        timeString = dateFormatter.string(from: timestampDate as Date)
+                    }
+                    return timeString
+                }
+                
+                let contentType = chat.text != nil ? "text" : chat.videoUrl != nil ? "videoUrl" : "imageUrl"
+                //                    dataStructure.append(["date": date!, "content": returnValue as! String, "timestamp": timestamp!])
+                //                    dataStructure.append(dateModelStructure(date: date!, content: returnValue as! String, timestamp: timestamp!))
+                if contentType == "text" {
+                    dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: chat.text!, imageUrl: nil, imageWidth: nil, imageHeight: nil, videoUrl: nil, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                } else if contentType == "videoUrl" {
+                    dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: chat.videoUrl!, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                } else if contentType == "imageUrl" {
+                    dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: nil, imageUrl: chat.imageUrl!, imageWidth: chat.imageWidth!, imageHeight: chat.imageHeight!, videoUrl: nil, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
+                }
+                
+                if dataStructure.count != totalMessagesCount {
+                    return
+                } else if dataStructure.count == totalMessagesCount  {
+                    retrievedMessagesFromServer = dataStructure
+                }
+                
+                self.messagesFromServer = retrievedMessagesFromServer
+
+                let groupedMessages = Dictionary(grouping: self.messagesFromServer, by: { (element: ChatModel.dateModelStructure) in
+                    return element.date
+                })
+                
+                let sortedKeys = groupedMessages.keys.sorted()
+                sortedKeys.forEach( { (key) in
+                    var values = groupedMessages[key]
+                    values = values?.sorted(by: { (lhs: ChatModel.dateModelStructure, rhs: ChatModel.dateModelStructure) in
+                        let lhsValue = lhs.timestamp as! Int
+                        let rhsValue = rhs.timestamp as! Int
+                        return lhsValue < rhsValue
+                    })
+                    self.groupedMessagesByDates.append(values ?? [])
+                })
+                
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                    let section = (self.collectionView?.numberOfSections)! - 1
+                    let lastItemIndex = IndexPath(item: self.groupedMessagesByDates[section].count - 1, section: section)
+                    self.collectionView?.scrollToItem(at: lastItemIndex, at: UICollectionView.ScrollPosition.bottom, animated: true)t
+                }
             })
         })
     }
     
     func setupKeyboardObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
 //            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func handleKeyboardDidShow() {
-        if Chat.count > 0 {
-            let indexPath = NSIndexPath(item: Chat.count - 1, section: 0)
-            collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
+        if groupedMessagesByDates.count > 0 {
+            let section = (self.collectionView?.numberOfSections)! - 1
+            let indexPath = NSIndexPath(item: groupedMessagesByDates[section].count - 1, section: section)
+            self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
         }
+//        if Chat.count > 0 {
+//            let indexPath = NSIndexPath(item: Chat.count - 1, section: 0)
+//            collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
+//        }
     }
 
     func setupNavigationBar() {
