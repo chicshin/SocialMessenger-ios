@@ -113,7 +113,8 @@ extension ChatViewController {
         let url = "https://fcm.googleapis.com/fcm/send"
         let header: HTTPHeaders = [
             "Content-Type": "application/json",
-            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
+//            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
+            "Authorization": "key=SECURE API KEY"
         ]
         
         let name = Auth.auth().currentUser?.displayName
