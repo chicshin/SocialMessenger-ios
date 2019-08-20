@@ -14,11 +14,16 @@ import Alamofire
 import AlamofireImage
 import Kingfisher
 
-class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var friendsTableView: UITableView!
     @IBOutlet weak var friendsTitleLabel: UILabel!
+    
+    let searchBar: UISearchBar = UISearchBar()
+    var searchButton: UIBarButtonItem = UIBarButtonItem()
+    let placeholderWidth: CGFloat = 200
+    var isSearching = false
     
     var Users = [UserModel]()
     var CurrentUser = [CurrentUserModel]()
@@ -33,19 +38,27 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         friendsTableView.dataSource = self
         tableView.delegate = self
         friendsTableView.delegate = self
+        searchBar.delegate = self
         setupTableView()
         
         loadMyProfile()
         loadPeople()
         setupFriendsCountTitle()
         setupImage()
-        setupSearchButton()
+//        setupSearchButton()
+        showSearchInputTextField()
+        setupNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+//        navigationItem.titleView?.isHidden = true
+//        setupSearchButton()
+        showSearchInputTextField()
+        searchBar.text = nil
         setupImage()
     }
+    
     
 //    override func viewDidAppear(_ animated: Bool) {
 //        super.viewDidAppear(animated)
@@ -113,6 +126,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 //            navigationController?.present(view, animated: true, completion: nil)
             currentIndexPathRow = indexPath.row
             performSegue(withIdentifier: "sendUserDataSegue", sender: self)
+            friendsTableView.deselectRow(at: indexPath, animated: true)
         }
 
     }

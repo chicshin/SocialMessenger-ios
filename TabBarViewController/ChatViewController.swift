@@ -11,6 +11,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 import Kingfisher
+import Alamofire
 import AVFoundation
 
 class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
@@ -20,6 +21,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     var userModel: UserModel?
     var destination = [CurrentUserModel]()
     var Chat = [ChatModel]()
+    var username: String?
     
     var groupedMessagesByDates = [[ChatModel.dateModelStructure]]()
     var messagesFromServer = [ChatModel.dateModelStructure]()
@@ -109,22 +111,22 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "chatMessageCell", for: indexPath) as! chatMessageCell
         cell.chatViewController = self
         let groupedMessages = self.groupedMessagesByDates[indexPath.section][indexPath.row]
+        cell.chat = groupedMessages
+        
         cell.textView.text = groupedMessages.text
-
         cell.timestampLabel.text = groupedMessages.timestampString
+        setupCell(cell: cell, chat: groupedMessages)
+        
         cell.timestampLabel.isHidden = false
         if indexPath.row - 1 == -1 {
             cell.timestampLabel.isHidden = false
         } else {
             if groupedMessages.timestampString == self.groupedMessagesByDates[indexPath.section][indexPath.row - 1].timestampString {
                 cell.timestampLabel.isHidden = true
+                cell.profileImageView.isHidden = true
             }
         }
 
-
-        cell.chat = groupedMessages
-        cell.textView.text = groupedMessages.text
-        setupCell(cell: cell, chat: groupedMessages)
         if let text = groupedMessages.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
@@ -135,7 +137,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         }
 
         cell.playButton.isHidden = groupedMessages.videoUrl == nil
-
 
         return cell
     }
