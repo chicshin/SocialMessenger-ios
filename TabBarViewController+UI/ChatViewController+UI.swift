@@ -11,6 +11,7 @@ import Firebase
 import FirebaseDatabase
 import FirebaseStorage
 import ProgressHUD
+import Alamofire
 import MobileCoreServices
 import AVFoundation
 
@@ -106,6 +107,29 @@ extension ChatViewController {
         navigationItem.title = self.userModel!.username!
         let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
         navigationItem.leftBarButtonItem = dismissButton
+    }
+    
+    func sendFcm(){
+        let url = "https://fcm.googleapis.com/fcm/send"
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
+        ]
+        
+        let name = Auth.auth().currentUser?.displayName
+        
+        let notificationModel = NotificationModel()
+        notificationModel.to = userModel?.pushToken
+        notificationModel.notification.title = name
+        notificationModel.notification.text = inputTextField.text
+        notificationModel.data.title = name
+        notificationModel.data.text = inputTextField.text
+        
+        let params = notificationModel.toJSON()
+        
+        Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
+            print(response.result.value as Any)
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -218,6 +242,7 @@ extension ChatViewController {
             "timestamp": timestamp,
         ]
         properties.forEach({(values[$0] = $1)})
+        sendFcm()
         inputTextField.text = nil
         DatabaseService.updateMessagesWithValues(toUid: toUid!, uid: uid!, values: values)
     }

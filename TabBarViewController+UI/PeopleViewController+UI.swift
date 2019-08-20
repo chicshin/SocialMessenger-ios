@@ -52,6 +52,12 @@ extension PeopleViewController {
         })
     }
     
+    func setupNavigationBar() {
+        navigationController?.navigationBar.barTintColor = UIColor.white
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+    }
+    
     func setupImage() {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! MyCell
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
@@ -84,13 +90,45 @@ extension PeopleViewController {
         friendsTitleLabel.attributedText = attributedText
     }
     
-    func setupSearchButton() {
-        let searchButton = UIBarButtonItem(image: #imageLiteral(resourceName: "search"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSearchInputTextField))
-        searchButton.tintColor = .lightGray
-        navigationItem.rightBarButtonItem = searchButton
+//    func setupSearchButton() {
+//        searchButton = UIBarButtonItem(image: #imageLiteral(resourceName: "search"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSearchInputTextField))
+//        searchButton.tintColor = .lightGray
+//        navigationItem.rightBarButtonItem = searchButton
+//    }
+    
+    func showSearchInputTextField() {
+        navigationItem.rightBarButtonItem = nil
+        let frame = CGRect(x: 0, y: 0, width: 250, height: 44)
+        let titleView = UIView(frame: frame)
+        searchBar.frame = frame
+        searchBar.placeholder = "Search"
+        let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
+        searchTextField?.layer.cornerRadius = 20
+        searchTextField?.clipsToBounds = true
+        searchTextField?.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.5)
+        searchBar.isTranslucent = true
+        let offset = UIOffset(horizontal: (searchBar.frame.width - placeholderWidth) / 2 + 50, vertical: 0)
+        searchBar.setPositionAdjustment(offset, for: .search)
+        titleView.addSubview(searchBar)
+        navigationItem.titleView = titleView
+
     }
     
-    @objc func showSearchInputTextField() {
-        
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        let noOffset = UIOffset(horizontal: 8, vertical: 0)
+        searchBar.setPositionAdjustment(noOffset, for: .search)
+        isSearching = true
+        return true
     }
+    
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+//        searchBar.setPositionAdjustment(offset, for: .search)
+        isSearching = false
+//        navigationItem.titleView?.isHidden = true
+//        setupSearchButton()
+        return true
+    }
+    
+    
 }
+
