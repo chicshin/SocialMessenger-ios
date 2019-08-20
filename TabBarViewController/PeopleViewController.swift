@@ -21,12 +21,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var friendsTitleLabel: UILabel!
     
     let searchBar: UISearchBar = UISearchBar()
-    var searchButton: UIBarButtonItem = UIBarButtonItem()
     let placeholderWidth: CGFloat = 200
     var isSearching = false
     
     var Users = [UserModel]()
     var CurrentUser = [CurrentUserModel]()
+    var filteredUser = [UserModel]()
 
     var currentIndexPathRow: Int?
     
@@ -39,23 +39,23 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.delegate = self
         friendsTableView.delegate = self
         searchBar.delegate = self
-        setupTableView()
         
+        setupUI()
+    }
+    
+    func setupUI() {
+        setupTableView()
         loadMyProfile()
         loadPeople()
         setupFriendsCountTitle()
         setupImage()
-//        setupSearchButton()
-        showSearchInputTextField()
+        setSearchBar()
         setupNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        navigationItem.titleView?.isHidden = true
-//        setupSearchButton()
-        showSearchInputTextField()
-        searchBar.text = nil
+        setSearchBar()
         setupImage()
     }
     
@@ -75,7 +75,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
         
         if tableView == self.friendsTableView {
-            count =  Users.count
+            if !isSearching {
+                count =  Users.count
+            } else {
+                count = filteredUser.count
+            }
+//            count =  Users.count
         }
         return count!
     }
@@ -97,17 +102,32 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             
         }
         if tableView == self.friendsTableView {
-            let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
-            let user = Users[indexPath.row]
-            
-            let url = URL(string: user.profileImageUrl!)
-            cell.profileImage.kf.setImage(with: url)
-            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-            cell.profileImage.contentMode = .scaleAspectFill
-            cell.profileImage.clipsToBounds = true
-            cell.usernameLabel.text = user.username!
-            
-            cellToReturn = cell
+            if !isSearching {
+                let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
+                let user = Users[indexPath.row]
+                
+                let url = URL(string: user.profileImageUrl!)
+                cell.profileImage.kf.setImage(with: url)
+                cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+                cell.profileImage.contentMode = .scaleAspectFill
+                cell.profileImage.clipsToBounds = true
+                cell.usernameLabel.text = user.username!
+                
+                cellToReturn = cell
+                
+            } else if isSearching {
+                let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
+                let user = filteredUser[indexPath.row]
+                
+                let url = URL(string: user.profileImageUrl!)
+                cell.profileImage.kf.setImage(with: url)
+                cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+                cell.profileImage.contentMode = .scaleAspectFill
+                cell.profileImage.clipsToBounds = true
+                cell.usernameLabel.text = user.username!
+                
+                cellToReturn = cell
+            }
             
         }
 
@@ -124,6 +144,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 //            friendsTableView.deselectRow(at: indexPath, animated: true)
 //            let view = storyboard?.instantiateViewController(withIdentifier: "DestinationProfileVC") as! DestinationProfileViewController
 //            navigationController?.present(view, animated: true, completion: nil)
+            print("issearching---------", isSearching)
             currentIndexPathRow = indexPath.row
             performSegue(withIdentifier: "sendUserDataSegue", sender: self)
             friendsTableView.deselectRow(at: indexPath, animated: true)
@@ -134,7 +155,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "sendUserDataSegue" {
             let vc = segue.destination as! DestinationProfileViewController
-            vc.user = self.Users[currentIndexPathRow!]
+            if !isSearching {
+                vc.user = self.Users[currentIndexPathRow!]
+            } else if isSearching {
+                vc.user = self.filteredUser[currentIndexPathRow!]
+            }
         }
     }
 }

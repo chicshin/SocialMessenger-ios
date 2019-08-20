@@ -38,6 +38,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func setupUI() {
         setupTableView()
     }
+    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
