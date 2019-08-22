@@ -18,14 +18,22 @@ import AVFoundation
 extension ChatViewController {
     
     func observeMessageLog() {
+        print("________", isSearching)
         let uid = Auth.auth().currentUser?.uid
         var totalMessagesCount: Int?
-        Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.value, with: { (snapshot) in
+        var toUid: String?
+        
+        if isSearching {
+            toUid = allUser!.uid!
+        } else if !isSearching {
+            toUid = userModel!.uid!
+        }
+        Ref().databaseRoot.child("user-messages").child(uid!).child(toUid!).observe(.value, with: { (snapshot) in
             totalMessagesCount = Int(snapshot.childrenCount)
         })
         var dataStructure = [ChatModel.dateModelStructure]()
         var retrievedMessagesFromServer = self.messagesFromServer
-        Ref().databaseRoot.child("user-messages").child(uid!).child(userModel!.uid!).observe(.childAdded, with: { (snapshot) in
+        Ref().databaseRoot.child("user-messages").child(uid!).child(toUid!).observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
             self.groupedMessagesByDates.removeAll()
             Ref().databaseRoot.child("messages").child(messageId).observeSingleEvent(of: .value, with: { (data) in
@@ -104,7 +112,11 @@ extension ChatViewController {
     }
 
     func setupNavigationBar() {
-        navigationItem.title = self.userModel!.username!
+        if isSearching {
+            navigationItem.title = self.allUser!.username!
+        } else if !isSearching {
+            navigationItem.title = self.userModel!.username!
+        }
         let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
         navigationItem.leftBarButtonItem = dismissButton
     }
@@ -113,14 +125,19 @@ extension ChatViewController {
         let url = "https://fcm.googleapis.com/fcm/send"
         let header: HTTPHeaders = [
             "Content-Type": "application/json",
-//            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
-            "Authorization": "key=SECURE API KEY"
+            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
+//            "Authorization": "key=SECURE API KEY"
         ]
         
         let name = Auth.auth().currentUser?.displayName
         
         let notificationModel = NotificationModel()
-        notificationModel.to = userModel?.pushToken
+        if isSearching {
+            notificationModel.to = allUser?.pushToken
+        } else if !isSearching {
+            notificationModel.to = userModel?.pushToken
+        }
+//        notificationModel.to = userModel?.pushToken
         notificationModel.notification.title = name
         notificationModel.notification.text = inputTextField.text
         notificationModel.data.title = name
@@ -235,7 +252,13 @@ extension ChatViewController {
     
     private func sendMessageWithProperties(properties: [String:Any]) {
         let uid = Auth.auth().currentUser?.uid
-        let toUid = userModel!.uid
+        var toUid: String?
+        if isSearching {
+            toUid = allUser?.uid
+        } else if !isSearching {
+            toUid = userModel?.uid
+        }
+//        let toUid = userModel!.uid
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
         var values : Dictionary<String,Any> = [
             "senderUid": uid!,

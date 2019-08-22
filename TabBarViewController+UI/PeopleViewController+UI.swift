@@ -29,29 +29,58 @@ extension PeopleViewController {
             }
         })
     }
-    func loadPeople() {
+    
+    func loadSearch() {
         let myUid = Auth.auth().currentUser?.uid
         Ref().databaseUsers.observe(.value, with: { (snapshot) in
-            self.Users.removeAll()
+            self.AllUsers.removeAll()
             let dict = snapshot.value as? [String:Any]
             for child in dict!.keys {
                 if child != myUid && child != "activeUsernames" {
                     let uid = child
-                    let user = UserModel()
+                    let user = AllUserModel()
                     Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
                         if let dictionary = data.value as? [String:Any] {
                             user.setValuesForKeys(dictionary)
-                            self.Users.append(user)
+                            self.AllUsers.append(user)
                             
-                            self.filteredUser = self.Users
-                        }
-                        DispatchQueue.main.async {
-                            self.friendsTableView.reloadData();
+//                            if dictionary["followers"] != nil {
+//                                Ref().databaseUsers.child(uid).child("followers").observe(.childAdded, with: { (snapshot) in
+//                                    let follower = snapshot.key as String
+//                                    if follower == myUid {
+//                                        let cell = self.friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
+//                                        cell.followButton.isHidden = true
+//                                        print("1")
+//                                    }
+//                                })
+//                            }
+                            
+//                            self.filteredUser = self.AllUsers
                         }
                     })
                 }
             }
         })
+    }
+    
+    func loadFriends() {
+        let uid = Auth.auth().currentUser?.uid
+        if !isSearching {
+            Ref().databaseSpecificUser(uid: uid!).child("following").observe(.childAdded, with: { (snapshot) in
+//                self.Users.removeAll()
+                let followingUid = snapshot.value
+                let user = UserModel()
+                Ref().databaseUsers.child(followingUid as! String).observe(.value, with: { (snapshot) in
+                    if let dictionary = snapshot.value as? [String:Any] {
+                        user.setValuesForKeys(dictionary)
+                        self.Users.append(user)
+                    }
+                    DispatchQueue.main.async {
+                        self.friendsTableView.reloadData();
+                    }
+                })
+            })
+        }
     }
     
     func setupNavigationBar() {
@@ -92,39 +121,11 @@ extension PeopleViewController {
         friendsTitleLabel.attributedText = attributedText
     }
     
-//    func setupSearchButton() {
-//        searchButton = UIBarButtonItem(image: #imageLiteral(resourceName: "search"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSearchInputTextField))
-//        searchButton.tintColor = .lightGray
-//        navigationItem.rightBarButtonItem = searchButton
-//    }
-    
-    
-//    func showCancleSearchButton() {
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(handleCancelSearchButton))
-//        navigationItem.rightBarButtonItem?.tintColor = .black
-//        navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], for:UIControl.State.normal)
-//
-//    }
-//
-//    @objc func handleCancelSearchButton() {
-//        setSearchBar()
-//        searchBar.text = nil
-//        isSearching = false
-//        navigationItem.rightBarButtonItem = nil
-//        friendsTitleLabel.isHidden = false
-//        friendsTableView.reloadData()
-//    }
-    
     func setSearchBar() {
-        searchBar.returnKeyType = UIReturnKeyType.search
-        navigationItem.rightBarButtonItem = nil
         let frame = CGRect(x: 0, y: 0, width: 250, height: 44)
         let titleView = UIView(frame: frame)
         searchBar.frame = frame
-        searchBar.placeholder = "Search"
-        searchBar.isTranslucent = true
-        
-        setupSearchBarTextField()
+        setupSearchBarUI()
         
         let offset = UIOffset(horizontal: (searchBar.frame.width - placeholderWidth) / 2 + 50, vertical: 0)
         searchBar.setPositionAdjustment(offset, for: .search)
@@ -133,7 +134,12 @@ extension PeopleViewController {
 
     }
     
-    func setupSearchBarTextField() {
+    func setupSearchBarUI() {
+        
+        searchBar.returnKeyType = UIReturnKeyType.search
+        searchBar.placeholder = "Search"
+        searchBar.isTranslucent = true
+        
         let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
         searchTextField?.layer.cornerRadius = 20
         searchTextField?.clipsToBounds = true
@@ -142,20 +148,25 @@ extension PeopleViewController {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredUser = Users.filter({ user -> Bool in
+        filteredUser = AllUsers.filter({ user -> Bool in
             if searchText.isEmpty {
                 isSearching = false
+                friendsTitleLabel.isHidden = false
                 return true
+            } else if !searchText.isEmpty {
+                isSearching = true
+                return (user.username?.lowercased().contains(searchText.lowercased()))!
             }
-            return (user.username?.contains(searchText))!
+            return false
         })
         friendsTableView.reloadData()
+        loadSearch()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         let noOffset = UIOffset(horizontal: 8, vertical: 0)
         searchBar.setPositionAdjustment(noOffset, for: .search)
-        isSearching = true
+        isSearching = false
         friendsTitleLabel.isHidden = true
         return true
     }
@@ -166,7 +177,17 @@ extension PeopleViewController {
 //        isSearching = false
 //        return true
 //    }
-    
-    
+    func setupFollowButton(cell: FriendsCell) {
+        cell.followButton.isHidden = false
+        cell.followButton.setTitle(" Add", for: UIControl.State.normal)
+        cell.followButton.setImage(#imageLiteral(resourceName: "addFriend"), for: UIControl.State.normal)
+        cell.followButton.tintColor = .white
+        //        cell.followButton.imageEdgeInsets = UIEdgeInsets(top: 6, left: 4, bottom: 6, right:3)
+        cell.followButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        cell.followButton.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1).withAlphaComponent(0.9)
+        cell.followButton.layer.cornerRadius = 15
+        cell.followButton.clipsToBounds = true
+        cell.followButton.setTitleColor(.white, for: UIControl.State.normal)
+    }
 }
 

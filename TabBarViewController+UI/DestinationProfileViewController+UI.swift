@@ -19,15 +19,27 @@ extension DestinationProfileViewController {
         
     }
     func setupDestinationName() {
-        nameLabel.text = self.user!.username!
+        if isSearching! {
+            nameLabel.text = self.allUser!.username!
+        } else if !isSearching! {
+            nameLabel.text = self.user!.username!
+        }
     }
     
     func setupProfileImage() {
-        let url = URL(string: self.user!.profileImageUrl!)
-        profileImage.kf.setImage(with: url)
-        profileImage.layer.cornerRadius = profileImage.frame.width/2
-        profileImage.clipsToBounds = true
-        profileImage.contentMode = .scaleAspectFill
+        if isSearching! {
+            let url = URL(string: self.allUser!.profileImageUrl!)
+            profileImage.kf.setImage(with: url)
+            profileImage.layer.cornerRadius = profileImage.frame.width/2
+            profileImage.clipsToBounds = true
+            profileImage.contentMode = .scaleAspectFill
+        } else if !isSearching! {
+            let url = URL(string: self.user!.profileImageUrl!)
+            profileImage.kf.setImage(with: url)
+            profileImage.layer.cornerRadius = profileImage.frame.width/2
+            profileImage.clipsToBounds = true
+            profileImage.contentMode = .scaleAspectFill
+        }
     }
     func setupCloseButton() {
         closeButton.setImage(#imageLiteral(resourceName: "close_icon"), for: UIControl.State.normal)
