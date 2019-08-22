@@ -19,9 +19,11 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     let inputTextField: UITextField! = UITextField()
     
     var userModel: UserModel?
+    var allUser: AllUserModel?
     var destination = [CurrentUserModel]()
     var Chat = [ChatModel]()
     var username: String?
+    var isSearching = true
     
     var groupedMessagesByDates = [[ChatModel.dateModelStructure]]()
     var messagesFromServer = [ChatModel.dateModelStructure]()
@@ -165,8 +167,15 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
             cell.textView.textColor = .black
             cell.profileImageView.isHidden = false
-            let url = URL(string: userModel!.profileImageUrl!)
-            cell.profileImageView.kf.setImage(with: url)
+            if isSearching {
+                let url = URL(string: allUser!.profileImageUrl!)
+                cell.profileImageView.kf.setImage(with: url)
+            } else if !isSearching {
+                let url = URL(string: userModel!.profileImageUrl!)
+                cell.profileImageView.kf.setImage(with: url)
+            }
+//            let url = URL(string: userModel!.profileImageUrl!)
+//            cell.profileImageView.kf.setImage(with: url)
             
             cell.bubbleRightAnchor?.isActive = false
             cell.bubbleLeftAnchor?.isActive = true

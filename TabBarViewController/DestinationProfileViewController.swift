@@ -22,6 +22,8 @@ class DestinationProfileViewController: UIViewController {
     @IBOutlet weak var chatButton: UIButton!
     
     var user: UserModel?
+    var allUser: AllUserModel?
+    var isSearching: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +49,13 @@ class DestinationProfileViewController: UIViewController {
         if segue.identifier == "chatRoomSegue" {
             let nav = segue.destination as! UINavigationController
             let vc = nav.topViewController as! ChatViewController
-            vc.userModel = self.user
+            if isSearching! {
+                vc.allUser = self.allUser
+                vc.isSearching = true
+            } else if !isSearching! {
+                vc.userModel = self.user
+                vc.isSearching = false
+            }
         }
     }
 }

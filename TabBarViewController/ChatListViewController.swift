@@ -17,6 +17,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     var tableView: UITableView! = UITableView()
     
     var User = [UserModel]()
+    var AllUser = [AllUserModel]()
     var Chat = [ChatModel]()
     var messageDictionary = [String: ChatModel]()
     
@@ -81,6 +82,9 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
                     let user = UserModel()
                     user.setValuesForKeys(dict)
                     self.User.append(user)
+                    let allUsers = AllUserModel()
+                    allUsers.setValuesForKeys(dict)
+                    self.AllUser.append(allUsers)
                     
                     cell.nameLabel.text = username
                     cell.profileImage.kf.setImage(with: url)
@@ -115,12 +119,18 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         if let chatPartnerUid = message.chatPartnerUid() {
             Ref().databaseSpecificUser(uid: chatPartnerUid).observeSingleEvent(of: .value, with: { (snapshot) in
                 self.User.removeAll()
+                self.AllUser.removeAll()
                 guard let dictionary = snapshot.value as? [String:Any] else {
                     return
                 }
                 let user = UserModel()
                 user.setValuesForKeys(dictionary)
                 self.User.append(user)
+                
+                let allUsers = AllUserModel()
+                allUsers.setValuesForKeys(dictionary)
+                self.AllUser.append(allUsers)
+                
                 self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
                 tableView.deselectRow(at: indexPath, animated: true)
             })
@@ -148,6 +158,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
             let nav = segue.destination as! UINavigationController
             let vc = nav.topViewController as! ChatViewController
             vc.userModel = self.User[0]
+            vc.allUser = self.AllUser[0]
         }
     }
 }
