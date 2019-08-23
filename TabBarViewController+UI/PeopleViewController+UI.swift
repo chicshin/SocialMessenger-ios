@@ -32,35 +32,37 @@ extension PeopleViewController {
     
     func loadSearch() {
         let myUid = Auth.auth().currentUser?.uid
-        Ref().databaseUsers.observe(.value, with: { (snapshot) in
+        Ref().databaseUsers.queryOrderedByKey().observeSingleEvent(of: .value, with: { (snapshot) in
             self.AllUsers.removeAll()
-            let dict = snapshot.value as? [String:Any]
-            for child in dict!.keys {
-                if child != myUid && child != "activeUsernames" {
-                    let uid = child
+            let users = snapshot.value as! [String:AnyObject]
+            for (key, value) in users {
+                let uid = value.value(forKey: "uid") as? String
+                if key != "activeUsernames" && uid != myUid {
+                    let dictionary = value as? [String:Any]
                     let user = AllUserModel()
-                    Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
-                        if let dictionary = data.value as? [String:Any] {
-                            user.setValuesForKeys(dictionary)
-                            self.AllUsers.append(user)
-                            
-//                            if dictionary["followers"] != nil {
-//                                Ref().databaseUsers.child(uid).child("followers").observe(.childAdded, with: { (snapshot) in
-//                                    let follower = snapshot.key as String
-//                                    if follower == myUid {
-//                                        let cell = self.friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-//                                        cell.followButton.isHidden = true
-//                                        print("1")
-//                                    }
-//                                })
-//                            }
-                            
-//                            self.filteredUser = self.AllUsers
-                        }
-                    })
+                    user.setValuesForKeys(dictionary!)
+                    self.AllUsers.append(user)
                 }
+                
             }
         })
+//        Ref().databaseUsers.observe(.value, with: { (snapshot) in
+//            self.AllUsers.removeAll()
+//            let dict = snapshot.value as? [String:Any]
+//            for child in dict!.keys {
+//                let user = AllUserModel()
+//                if child != myUid && child != "activeUsernames" {
+//                    let uid = child
+////                    let user = AllUserModel()
+//                    Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
+//                        if let dictionary = data.value as? [String:Any] {
+//                            user.setValuesForKeys(dictionary)
+//                            self.AllUsers.append(user)
+//                        }
+//                    })
+//                }
+//            }
+//        })
     }
     
     func loadFriends() {
@@ -167,7 +169,6 @@ extension PeopleViewController {
         let noOffset = UIOffset(horizontal: 8, vertical: 0)
         searchBar.setPositionAdjustment(noOffset, for: .search)
         isSearching = false
-        friendsTitleLabel.isHidden = true
         return true
     }
     
@@ -178,7 +179,7 @@ extension PeopleViewController {
 //        return true
 //    }
     func setupFollowButton(cell: FriendsCell) {
-        cell.followButton.isHidden = false
+//        cell.followButton.isHidden = false
         cell.followButton.setTitle(" Add", for: UIControl.State.normal)
         cell.followButton.setImage(#imageLiteral(resourceName: "addFriend"), for: UIControl.State.normal)
         cell.followButton.tintColor = .white

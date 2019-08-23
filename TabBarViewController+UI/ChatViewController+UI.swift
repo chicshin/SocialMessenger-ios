@@ -137,7 +137,6 @@ extension ChatViewController {
         } else if !isSearching {
             notificationModel.to = userModel?.pushToken
         }
-//        notificationModel.to = userModel?.pushToken
         notificationModel.notification.title = name
         notificationModel.notification.text = inputTextField.text
         notificationModel.data.title = name
