@@ -28,7 +28,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     var AllUsers = [AllUserModel]()
     var CurrentUser = [CurrentUserModel]()
     var filteredUser = [AllUserModel]()
-
     var currentIndexPathRow: Int?
     
     var friendsCount = 0
@@ -46,7 +45,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func setupUI() {
-        print("-8-")
         setupTableView()
         loadMyProfile()
         loadSearch()
@@ -59,7 +57,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("-7-")
         setSearchBar()
         setupImage()
     }
@@ -117,6 +114,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 
                 setupCell(cell: cell, user: user)
                 cell.followButton.isHidden = true
+                friendsTitleLabel.isHidden = false
 
                 
                 cellToReturn = cell
@@ -124,18 +122,25 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             } else if isSearching {
                 let user = filteredUser[indexPath.row]
                 
+                friendsTitleLabel.isHidden = true
                 cell.followButton.tag = indexPath.row
                 setupCellForSearch(cell: cell, user: user)
                 setupFollowButton(cell: cell)
-                didTapFollow(cell: cell, user: user)
+                didTapFollow(cell: cell)
                 
-                if user.followers != nil {
-                    for (_, value) in user.followers! {
-                        if value as? String == Auth.auth().currentUser?.uid {
+                Ref().databaseSpecificUser(uid: user.uid!).child("followers").observeSingleEvent(of: .value, with: { (snapshot) in
+                    guard let followers = snapshot.value as? [String:Any] else {
+                        return
+                    }
+                    for value in followers.values {
+                        let follower = value as! String
+                        if follower == Auth.auth().currentUser?.uid {
                             cell.followButton.isHidden = true
                         }
-                    }                    
-                }
+                    }
+                })
+                cell.followButton.isHidden = false
+
                 cellToReturn = cell
             }
         } 
@@ -160,7 +165,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         cell.profileImage.clipsToBounds = true
     }
     
-    func didTapFollow(cell: FriendsCell, user: AllUserModel) {
+    func didTapFollow(cell: FriendsCell) {
         cell.followButton.isUserInteractionEnabled = true
         cell.followButton.addTarget(self, action: #selector(handleFollow(sender:)), for: .touchUpInside)
     }
@@ -170,11 +175,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let uid = Auth.auth().currentUser?.uid
         let followUid = filteredUser[tag].uid
         let key = Ref().databaseUsers.childByAutoId().key
-        
-//        Ref().databaseSpecificUser(uid: uid!).child("following").observeSingleEvent(of: .value, with: { (snapshot) in
-//            let following = ["following/\(followUid!)": 1]
-//            Ref().databaseSpecificUser(uid: uid!).updateChildValues(following)
-//        })
+
         let following = ["following/\(key!)": followUid!]
         Ref().databaseSpecificUser(uid: uid!).updateChildValues(following)
         let followers = ["followers/\(key!)": uid!]
@@ -183,6 +184,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        print("isSearching ", isSearching)
         
         if tableView == self.tableView {
             let view = storyboard?.instantiateViewController(withIdentifier: "MyProfileVC") as! ProfileViewController
