@@ -51,6 +51,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
         setupUI()
+        
     }
     
     func setupUI() {
@@ -59,8 +60,10 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         setupKeyboardObserver()
     }
 
+    
     @objc func dismissChat() {
         self.view.endEditing(true)
+        print(isSearching, "---")
         dismiss(animated: true, completion: nil)
     }
     

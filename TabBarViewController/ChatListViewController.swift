@@ -15,6 +15,7 @@ import ProgressHUD
 class ChatListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var tableView: UITableView! = UITableView()
+
     
     var User = [UserModel]()
     var AllUser = [AllUserModel]()
@@ -35,6 +36,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         observeUserMessages()
         setupUI()
     }
+
     
     func setupUI() {
         setupTableView()
@@ -68,39 +70,12 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! listCell
         let chat = Chat[indexPath.row]
-        setupCell(cell: cell, chat: chat)
         
-        //if currentUid == toUid -> show senderUid
-        //else show toUid
-        if let chatPartnerUid = chat.chatPartnerUid() {
-            Ref().databaseSpecificUser(uid: chatPartnerUid).observe(.value, with: { (snapshot) in
-                if let dict = snapshot.value as? [String:Any] {
-                    let imageUrl = dict["profileImageUrl"] as? String
-                    let username = dict["username"] as? String
-                    let url = URL(string: imageUrl!)
-                    
-                    let user = UserModel()
-                    user.setValuesForKeys(dict)
-                    self.User.append(user)
-                    let allUsers = AllUserModel()
-                    allUsers.setValuesForKeys(dict)
-                    self.AllUser.append(allUsers)
-                    
-                    cell.nameLabel.text = username
-                    cell.profileImage.kf.setImage(with: url)
-                    cell.profileImage.layer.cornerRadius = 55/2
-                    cell.profileImage.clipsToBounds = true
-                    cell.profileImage.contentMode = .scaleAspectFill
-                    if chat.datestampString() != chat.today()! {
-                        cell.timestampLabel.text = chat.datestampString()
-                    } else {
-                        cell.timestampLabel.text = chat.timestampString()
-                    }
-                }
-            })
-        }
+        setupCell(cell: cell, chat: chat)
+        cell.chat = chat
         return cell
     }
+    
     
     private func setupCell(cell: listCell, chat: ChatModel) {
         if chat.text != nil {
@@ -135,22 +110,7 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
                 tableView.deselectRow(at: indexPath, animated: true)
             })
         }
-//        if Auth.auth().currentUser?.uid == message.toUid {
-//            chatPartnerUid = message.senderUid
-//        } else {
-//            chatPartnerUid = message.toUid
-//        }
-//        Ref().databaseSpecificUser(uid: chatPartnerUid!).observeSingleEvent(of: .value, with: { (snapshot) in
-//            self.User.removeAll()
-//            guard let dictionary = snapshot.value as? [String:Any] else {
-//                return
-//            }
-//            let user = UserModel()
-//            user.setValuesForKeys(dictionary)
-//            self.User.append(user)
-//            self.performSegue(withIdentifier: "enterChatRoomSegue", sender: self)
-//            tableView.deselectRow(at: indexPath, animated: true)
-//        })
+
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -165,10 +125,37 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
 
 class listCell: UITableViewCell {
     
+    var chat: ChatModel? {
+        didSet {
+            if let chatPartnerUid = chat!.chatPartnerUid() {
+                Ref().databaseSpecificUser(uid: chatPartnerUid).observeSingleEvent(of: .value, with: { (snapshot) in
+                    if let dict = snapshot.value as? [String:Any] {
+                        let imageUrl = dict["profileImageUrl"] as? String
+                        let username = dict["username"] as? String
+                        let url = URL(string: imageUrl!)
+                        
+                        self.nameLabel.text = username
+                        self.profileImage.kf.setImage(with: url)
+                        self.profileImage.layer.cornerRadius = 55/2
+                        self.profileImage.clipsToBounds = true
+                        self.profileImage.contentMode = .scaleAspectFill
+                        if self.chat!.datestampString() != self.chat!.today()! {
+                            self.timestampLabel.text = self.chat!.datestampString()
+                        } else {
+                            self.timestampLabel.text = self.chat!.timestampString()
+                        }
+                    }
+                })
+            }
+        }
+    }
+    
     let profileImage: UIImageView! = UIImageView()
     let nameLabel = UILabel()
     let lastMessageLabel = UILabel()
     let timestampLabel = UILabel()
+    
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

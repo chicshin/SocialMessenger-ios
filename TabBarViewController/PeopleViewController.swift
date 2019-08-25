@@ -180,12 +180,14 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         Ref().databaseSpecificUser(uid: uid!).updateChildValues(following)
         let followers = ["followers/\(key!)": uid!]
         Ref().databaseSpecificUser(uid: followUid!).updateChildValues(followers)
+        
+        if filteredUser[tag].notifications!["newFollowers"] as! String == "enabled" {
+            sendFcm(tag: tag)
+        }
     }
-
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        print("isSearching ", isSearching)
         
         if tableView == self.tableView {
             let view = storyboard?.instantiateViewController(withIdentifier: "MyProfileVC") as! ProfileViewController

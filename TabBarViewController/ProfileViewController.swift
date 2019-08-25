@@ -23,6 +23,7 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var editImage: UIImageView!
+    @IBOutlet weak var statusLabel: UILabel!
     
     var users = [UserModel]()
     var image: UIImage? = nil
