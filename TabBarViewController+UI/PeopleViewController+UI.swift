@@ -180,15 +180,41 @@ extension PeopleViewController {
 //    }
     func setupFollowButton(cell: FriendsCell) {
 //        cell.followButton.isHidden = false
-        cell.followButton.setTitle(" Add", for: UIControl.State.normal)
+        cell.followButton.setTitle("", for: UIControl.State.normal)
         cell.followButton.setImage(#imageLiteral(resourceName: "addFriend"), for: UIControl.State.normal)
         cell.followButton.tintColor = .white
         //        cell.followButton.imageEdgeInsets = UIEdgeInsets(top: 6, left: 4, bottom: 6, right:3)
-        cell.followButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+//        cell.followButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.followButton.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1).withAlphaComponent(0.9)
-        cell.followButton.layer.cornerRadius = 15
+        cell.followButton.layer.cornerRadius = 13
         cell.followButton.clipsToBounds = true
-        cell.followButton.setTitleColor(.white, for: UIControl.State.normal)
+//        cell.followButton.setTitleColor(.white, for: UIControl.State.normal)
+    }
+    
+    func sendFcm(tag: Int) {
+        let url = "https://fcm.googleapis.com/fcm/send"
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
+            //            "Authorization": "key=SECURE API KEY"
+        ]
+        
+        let name = Auth.auth().currentUser?.displayName
+        
+        let notificationModel = NotificationModel()
+        if isSearching {
+            notificationModel.to = filteredUser[tag].pushToken
+        }
+        //        notificationModel.notification.title = name
+        notificationModel.notification.text = "\(String(describing: name!)) started following you"
+        //        notificationModel.data.title = name
+        notificationModel.data.text = "\(String(describing: name!)) started following you"
+        
+        let params = notificationModel.toJSON()
+        
+        Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
+            print(response.result.value as Any)
+        }
     }
 }
 

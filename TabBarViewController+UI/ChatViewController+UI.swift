@@ -18,7 +18,6 @@ import AVFoundation
 extension ChatViewController {
     
     func observeMessageLog() {
-        print("________", isSearching)
         let uid = Auth.auth().currentUser?.uid
         var totalMessagesCount: Int?
         var toUid: String?
@@ -28,6 +27,7 @@ extension ChatViewController {
         } else if !isSearching {
             toUid = userModel!.uid!
         }
+        
         Ref().databaseRoot.child("user-messages").child(uid!).child(toUid!).observe(.value, with: { (snapshot) in
             totalMessagesCount = Int(snapshot.childrenCount)
         })
@@ -120,7 +120,7 @@ extension ChatViewController {
         let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
         navigationItem.leftBarButtonItem = dismissButton
     }
-    
+
     func sendFcm(){
         let url = "https://fcm.googleapis.com/fcm/send"
         let header: HTTPHeaders = [
@@ -128,25 +128,37 @@ extension ChatViewController {
             "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
 //            "Authorization": "key=SECURE API KEY"
         ]
-        
+
         let name = Auth.auth().currentUser?.displayName
-        
+
         let notificationModel = NotificationModel()
         if isSearching {
             notificationModel.to = allUser?.pushToken
+            if allUser?.notifications!["showPreview"] as! String == "enabled" {
+                notificationModel.notification.text = inputTextField.text
+            } else {
+                notificationModel.notification.text = "Sent a new message"
+            }
+            
         } else if !isSearching {
             notificationModel.to = userModel?.pushToken
+            if userModel?.notifications!["showPreview"] as! String == "enabled" {
+                notificationModel.notification.text = inputTextField.text
+            } else {
+                notificationModel.notification.text = "Sent a new message"
+            }
         }
         notificationModel.notification.title = name
-        notificationModel.notification.text = inputTextField.text
         notificationModel.data.title = name
         notificationModel.data.text = inputTextField.text
-        
+
         let params = notificationModel.toJSON()
-        
+
         Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
             print(response.result.value as Any)
         }
+        
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

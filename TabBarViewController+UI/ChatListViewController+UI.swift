@@ -22,7 +22,6 @@ extension ChatListViewController {
         }
 
         Ref().databaseRoot.child("user-messages").child(uid).observe(.childAdded, with: { (snapshot) in
-            self.User.removeAll()
 //            self.messageDictionary.removeAll()
             let toUid = snapshot.key
             Ref().databaseRoot.child("user-messages").child(uid).child(toUid).observe(.childAdded, with: { (dataSanpshot) in
@@ -31,12 +30,13 @@ extension ChatListViewController {
                     if let dict = messageSnapshot.value as? [String:Any] {
                         let message = ChatModel(dictionary: dict)
 //                        message.setValuesForKeys(dict)
-                        self.Chat.append(message)
+//                        self.Chat.append(message)
                         if let chatPartnerUid = message.chatPartnerUid() {
                             self.messageDictionary[chatPartnerUid] = message
                         }
+                        self.attemptReloadTable()
                     }
-                    self.attemptReloadTable()
+//                    self.attemptReloadTable()
                 })
             })
         })
@@ -48,7 +48,7 @@ extension ChatListViewController {
     
     func attemptReloadTable() {
         self.timer?.invalidate()
-        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(handleReloadTable), userInfo: nil, repeats: false)
+        self.timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(handleReloadTable), userInfo: nil, repeats: false)
     }
     
     @objc func handleReloadTable() {
