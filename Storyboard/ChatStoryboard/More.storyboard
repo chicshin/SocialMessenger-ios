@@ -13,28 +13,52 @@
         <!--More View Controller-->
         <scene sceneID="yDd-0h-mYn">
             <objects>
-                <viewController id="v3d-QV-BO3" customClass="MoreViewController" customModule="Tikitalka" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="v3d-QV-BO3" customClass="MoreViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="set-m6-fyY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Wh-QL-92K">
-                                <rect key="frame" x="147" y="433" width="48" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Logout"/>
-                                <connections>
-                                    <action selector="logOutDidTapped:" destination="v3d-QV-BO3" eventType="touchUpInside" id="GGY-p3-F9w"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="cXF-Lc-C6X"/>
                     </view>
                     <navigationItem key="navigationItem" id="r1v-pl-E0T"/>
+                    <connections>
+                        <segue destination="YHg-L9-SvA" kind="show" identifier="showProfileAccountSegue" id="UgT-Fy-zaO"/>
+                        <segue destination="Xqm-r2-hZt" kind="show" identifier="notificationSettingSegue" id="SOz-wc-J2Y"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lZD-ED-XaL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1960.8695652173915" y="65.625"/>
+        </scene>
+        <!--Notifications Setting View Controller-->
+        <scene sceneID="J2x-lQ-KlM">
+            <objects>
+                <viewController id="Xqm-r2-hZt" customClass="NotificationsSettingViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="IUI-Qc-MFq">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="GHh-Li-E34"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xg3-VN-qsI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2764" y="-260"/>
+        </scene>
+        <!--Account View Controller-->
+        <scene sceneID="I0u-k1-IfT">
+            <objects>
+                <viewController id="YHg-L9-SvA" customClass="AccountViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BD2-fw-4Qz">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="EOt-0a-9aH"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zTf-yC-gvb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2765" y="457"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="CSJ-Vf-BkO">
