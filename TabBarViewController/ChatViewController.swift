@@ -348,15 +348,6 @@ class chatMessageCell: UICollectionViewCell {
         return timestamp
     }()
     
-//    let dateLabel: UILabel = {
-//        let date = UILabel()
-//        date.translatesAutoresizingMaskIntoConstraints = false
-//        date.font = UIFont.systemFont(ofSize: 12)
-//        date.textColor = UIColor.lightGray
-//        date.backgroundColor = .yellow
-//        return date
-//    }()
-    
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
         if chat?.videoUrl != nil {
             return

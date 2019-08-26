@@ -15,6 +15,14 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     var CurrentUser = [CurrentUserModel]()
     var contents = ["ProfileImageUrl", "Name", "Username", "Email", "Status"]
+    var editInAction = false
+    var doneEditTriggered = false
+    
+//    var textField = ""
+    var image : UIImage? = nil
+    var status = ""
+    var fullname = ""
+    var username = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +33,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         view.addSubview(tableView)
         
+        keyboardTapGestureRecognizer()
         setupUI()
     }
     
@@ -49,34 +58,52 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileCell
         let content = contents[indexPath.row]
-        cell.textLabel?.text = content
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+        cell.contentTitle.text = content
+        cell.contentTitle.font = UIFont.systemFont(ofSize: 15)
         
+        cell.inputTextField.tag = indexPath.row
         
-        Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+        didTapEditProfile(cell: cell)
+        didTapDoneEdit(cell: cell)
+        didTapEditProfileImage(cell: cell)
+        
+        setEditInAction(cell: cell)
+        
+        Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).observe(.value, with: { (snapshot) in
             if let dictionary = snapshot.value as? [String:Any] {
                 switch indexPath.row {
                 case 0:
-                    cell.textLabel?.isHidden = true
+                    cell.contentTitle.isHidden = true
                     cell.bottomLine.isHidden = true
+                    
                     let url = URL(string: dictionary["profileImageUrl"] as! String)
-                    cell.profileImageView.kf.setImage(with: url)
-                    cell.profileImageView.contentMode = .scaleAspectFill
-                    cell.profileImageView.layer.cornerRadius = 100 / 2
-                    cell.profileImageView.clipsToBounds = true
+                    self.setProfileImage(cell: cell, url: url!)
+                    
+                    cell.inputTextField.isHidden = true
+                    cell.editTextFieldIndicator.isHidden = true
                 case 1:
                     cell.contentLabel.text = dictionary["fullname"] as? String
-                    cell.seperateLine.isHidden = true
+                    self.fullname = cell.contentLabel.text!
+                    self.setCell(cell: cell)
+                    self.setTextField(cell: cell)
                 case 2:
                     cell.contentLabel.text = dictionary["username"] as? String
-                    cell.seperateLine.isHidden = true
+                    self.username = cell.contentLabel.text!
+                    self.setCell(cell: cell)
+                    self.setTextField(cell: cell)
                 case 3:
                     cell.contentLabel.text = dictionary["email"] as? String
                     cell.contentLabel.textColor = .lightGray
-                    cell.seperateLine.isHidden = true
+                    
+                    self.setCell(cell: cell)
+                    cell.inputTextField.isHidden = true
+                    cell.editTextFieldIndicator.isHidden = true
+                    cell.contentLabel.isHidden = false
                 case 4:
-                    cell.contentLabel.text = "hello this is status"
-                    cell.seperateLine.isHidden = true
+                    cell.contentLabel.text = dictionary["status"] as? String
+                    self.status = cell.contentLabel.text!
+                    self.setCell(cell: cell)
+                    self.setTextField(cell: cell)
                 default:
                     break
                 }
@@ -84,10 +111,70 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         })
         return cell
     }
+    
+    func setCell(cell: ProfileCell) {
+        cell.editProfileLabel.isHidden = true
+        cell.doneEditLabel.isHidden = true
+        cell.seperateLine.isHidden = true
+        cell.editProfileImage.isHidden = true
+    }
+    
+    func setTextField(cell: ProfileCell) {
+        self.setupTextField(cell: cell, text: cell.contentLabel.text)
+        self.didTapTextField(cell: cell)
+    }
+    
+    func setEditInAction(cell: ProfileCell) {
+        if editInAction == true {
+            cell.inputTextField.isHidden = false
+            cell.editTextFieldIndicator.isHidden = false
+            cell.contentLabel.isHidden = true
+            cell.editProfileLabel.isHidden = true
+            cell.doneEditLabel.isHidden = false
+            cell.editProfileImage.isHidden = false
+            
+            cell.inputTextField.isUserInteractionEnabled = true
+            
+        } else {
+            cell.inputTextField.isHidden = true
+            cell.editTextFieldIndicator.isHidden = true
+            cell.contentLabel.isHidden = false
+            cell.editProfileLabel.isHidden = false
+            cell.doneEditLabel.isHidden = true
+            cell.editProfileImage.isHidden = true
+        }
+    }
+    
+    func didTapEditProfile(cell: ProfileCell) {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleEditProfile(sender:)))
+        cell.editProfileLabel.addGestureRecognizer(tapGesture)
+    }
+
+    func didTapTextField(cell: ProfileCell) {
+        cell.inputTextField.addTarget(self, action: #selector(handleTextField(sender:)), for: .allEditingEvents)
+    }
+    
+    func didTapEditProfileImage(cell: ProfileCell) {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
+        cell.editProfileImage.addGestureRecognizer(tapGesture)
+    }
+    
+    func didTapDoneEdit(cell: ProfileCell) {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoneEdit(sender:)))
+        cell.doneEditLabel.addGestureRecognizer(tapGesture)
+    }
 
 }
 
+
 class ProfileCell: UITableViewCell {
+    var contentTitle: UILabel = {
+        let text = UILabel()
+        text.translatesAutoresizingMaskIntoConstraints = false
+        text.font = UIFont.systemFont(ofSize: 15)
+        return text
+    }()
+    
     var contentLabel: UILabel = {
         let text = UILabel()
         text.translatesAutoresizingMaskIntoConstraints = false
@@ -115,13 +202,74 @@ class ProfileCell: UITableViewCell {
         return line
     }()
     
+    var inputTextField: UITextField = {
+        let textfield = UITextField()
+        textfield.translatesAutoresizingMaskIntoConstraints = false
+        textfield.borderStyle = .none
+        textfield.backgroundColor = .clear
+        return textfield
+    }()
+    
+    var editProfileLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isUserInteractionEnabled = true
+        label.text = "Edit profile"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
+        return label
+    }()
+    
+    var editTextFieldIndicator: UIImageView = {
+        let image = UIImageView()
+        image.isUserInteractionEnabled = true
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = #imageLiteral(resourceName: "edit")
+        image.tintColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1)
+        return image
+    }()
+    
+    var doneEditLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isUserInteractionEnabled = true
+        label.text = "Done edit"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
+        return label
+    }()
+    
+    var editProfileImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.isUserInteractionEnabled = true
+        image.image = #imageLiteral(resourceName: "add_photo").withRenderingMode(.alwaysTemplate)
+        image.tintColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
+        image.clipsToBounds = true
+        return image
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        addSubview(contentTitle)
         addSubview(contentLabel)
         addSubview(bottomLine)
         addSubview(profileImageView)
         addSubview(seperateLine)
+        addSubview(editProfileLabel)
+        addSubview(doneEditLabel)
+        addSubview(editProfileImage)
+        
+        addSubview(inputTextField)
+        addSubview(editTextFieldIndicator)
+        
+        contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+        contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
@@ -138,10 +286,36 @@ class ProfileCell: UITableViewCell {
         profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
         
+        editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+        editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+        editProfileImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+        editProfileImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        editProfileImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+        doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
         seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
         seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
         seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+        inputTextField.widthAnchor.constraint(equalToConstant: 230).isActive = true
+        inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+        editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

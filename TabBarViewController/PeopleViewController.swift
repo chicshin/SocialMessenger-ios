@@ -28,6 +28,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     var AllUsers = [AllUserModel]()
     var CurrentUser = [CurrentUserModel]()
     var filteredUser = [AllUserModel]()
+    var userDictionary = [String: UserModel]()
     var currentIndexPathRow: Int?
     
     var friendsCount = 0
@@ -45,6 +46,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func setupUI() {
+        loadFriends()
         setupTableView()
         loadMyProfile()
         loadSearch()
@@ -52,7 +54,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         setupImage()
         setSearchBar()
         setupNavigationBar()
-        loadFriends()
+//        loadFriends()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,6 +85,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         
         if tableView == self.friendsTableView {
             if !isSearching {
+                print("number of Rows in Section Users count: ", Users.count)
                 count =  Users.count
             } else {
                 count = filteredUser.count
@@ -111,35 +114,46 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
             if !isSearching {
                 let user = Users[indexPath.row]
-                
+                print("user count: ", Users.count)
                 setupCell(cell: cell, user: user)
                 cell.followButton.isHidden = true
                 friendsTitleLabel.isHidden = false
+                cell.unfollowButton.isHidden = true
 
-                
                 cellToReturn = cell
                 
             } else if isSearching {
                 let user = filteredUser[indexPath.row]
                 
                 friendsTitleLabel.isHidden = true
-                cell.followButton.tag = indexPath.row
                 setupCellForSearch(cell: cell, user: user)
                 setupFollowButton(cell: cell)
-                didTapFollow(cell: cell)
+                setupUnfollowButton(cell: cell)
                 
+                print("1. return to cell")
                 Ref().databaseSpecificUser(uid: user.uid!).child("followers").observeSingleEvent(of: .value, with: { (snapshot) in
+                    print("2. returned to cell observe")
                     guard let followers = snapshot.value as? [String:Any] else {
+                        cell.followButton.isHidden = false
+                        cell.unfollowButton.isHidden = true
                         return
                     }
                     for value in followers.values {
                         let follower = value as! String
                         if follower == Auth.auth().currentUser?.uid {
+                            cell.unfollowButton.isHidden = false
                             cell.followButton.isHidden = true
+                        } else {
+                            cell.followButton.isHidden = false
+                            cell.unfollowButton.isHidden = true
                         }
                     }
                 })
-                cell.followButton.isHidden = false
+                
+                cell.followButton.tag = indexPath.row
+                cell.unfollowButton.tag = indexPath.row
+                didTapFollow(cell: cell)
+                didTapUnfollow(cell: cell)
 
                 cellToReturn = cell
             }
@@ -170,7 +184,13 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         cell.followButton.addTarget(self, action: #selector(handleFollow(sender:)), for: .touchUpInside)
     }
     
+    func didTapUnfollow(cell: FriendsCell) {
+        cell.unfollowButton.isUserInteractionEnabled = true
+        cell.unfollowButton.addTarget(self, action: #selector(handleUnfollow(sender:)), for: .touchUpInside)
+    }
+    
     @objc func handleFollow(sender:UIButton) {
+        print("clicked follow")
         let tag = sender.tag
         let uid = Auth.auth().currentUser?.uid
         let followUid = filteredUser[tag].uid
@@ -184,6 +204,29 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         if filteredUser[tag].notifications!["newFollowers"] as! String == "enabled" {
             sendFcm(tag: tag)
         }
+
+    }
+    
+    @objc func handleUnfollow(sender:UIButton) {
+        print("Unfollow clicked")
+        let tag = sender.tag
+        let uid = Auth.auth().currentUser?.uid
+        let followUid = filteredUser[tag].uid
+        
+        Ref().databaseSpecificUser(uid: uid!).child("following").observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionary = snapshot.value as? [String:Any] else {
+                return
+            }
+            for key in dictionary.keys {
+                if dictionary[key] as? String == followUid {
+                    Ref().databaseSpecificUser(uid: uid!).child("following").child(key).removeValue()
+                    Ref().databaseSpecificUser(uid: followUid!).child("followers").child(key).removeValue()
+                    self.userDictionary.removeValue(forKey: followUid!)
+                    self.attemptReloadTable()
+                    print("removed from searching user count is: ", self.Users.count)
+                }
+            }
+        })
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -238,5 +281,6 @@ class FriendsCell: UITableViewCell {
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var followButton: UIButton!
+    @IBOutlet weak var unfollowButton: UIButton!
 }
 
