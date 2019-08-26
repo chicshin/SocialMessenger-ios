@@ -53,6 +53,15 @@ class SignInViewController: UIViewController {
     @IBAction func signInDidTapped(_ sender: Any) {
         self.view.endEditing(true)
         signIn(onSuccess: {
+//            self.performSegue(withIdentifier: "signInToTabBarVC", sender: self)
+            let uid = Auth.auth().currentUser?.uid
+            InstanceID.instanceID().instanceID { (result, error) in
+                if let error = error {
+                    print("Error fetching remote instance ID: \(error)")
+                }else if let result = result{
+                    Ref().databaseSpecificUser(uid: uid!).updateChildValues(["pushToken": result.token])
+                }
+            }
             self.performSegue(withIdentifier: "signInToTabBarVC", sender: self)
         }) { (errorMessage) in
             ProgressHUD.showError()

@@ -35,24 +35,28 @@ class ProfileImageViewController: UIViewController {
         setupAddPhotoButton()
         setupSkip()
         setupDone()
+        didTapAddPhoto()
     }
     
-    
-    @IBAction func addPhotoDidTapped(_ sender: Any) {
+    func didTapAddPhoto() {
         submitButton.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
         submitButton.addGestureRecognizer(tapGesture)
-        
     }
     
     @IBAction func skipDidTapped(_ sender: Any) {
-        self.performSegue(withIdentifier: "ProfileImageToTabBarVC", sender: self)
+        image = #imageLiteral(resourceName: "defaultAvatar")
+        self.imageStorage(onSuccess: {
+            self.performSegue(withIdentifier: "ProfileImageToTabBarVC", sender: self)
+        }) { (errorMessage) in
+            ProgressHUD.showError(errorMessage)
+        }
+//        self.performSegue(withIdentifier: "ProfileImageToTabBarVC", sender: self)
     }
     @IBAction func doneDidTapped(_ sender: Any) {
         self.imageStorage(onSuccess: {
             self.performSegue(withIdentifier: "ProfileImageToTabBarVC", sender: self)
         }) { (errorMessage) in
-            print("Something wrong1")
             ProgressHUD.showError(errorMessage)
         }
     }

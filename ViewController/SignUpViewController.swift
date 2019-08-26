@@ -53,7 +53,8 @@ class SignUpViewController: UIViewController {
 
     @IBAction func backDidTapped(_ sender: Any) {
         self.view.endEditing(true)
-        navigationController?.popViewController(animated: true)
+        self.dismiss(animated: true, completion: nil)
+//        navigationController?.popViewController(animated: true)
     }
     
     @IBAction func signUpDidTapped(_ sender: Any) {
