@@ -165,6 +165,7 @@ extension ChatViewController {
         handleSend()
         return true
     }
+    
     @objc func presentPicker() {
         let picker = UIImagePickerController()
         picker.delegate = self
