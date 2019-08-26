@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseStorage
+import Alamofire
 
 extension PeopleViewController {
     
@@ -46,23 +47,6 @@ extension PeopleViewController {
                 
             }
         })
-//        Ref().databaseUsers.observe(.value, with: { (snapshot) in
-//            self.AllUsers.removeAll()
-//            let dict = snapshot.value as? [String:Any]
-//            for child in dict!.keys {
-//                let user = AllUserModel()
-//                if child != myUid && child != "activeUsernames" {
-//                    let uid = child
-////                    let user = AllUserModel()
-//                    Ref().databaseUsers.child(uid).observe(.value, with: { (data) in
-//                        if let dictionary = data.value as? [String:Any] {
-//                            user.setValuesForKeys(dictionary)
-//                            self.AllUsers.append(user)
-//                        }
-//                    })
-//                }
-//            }
-//        })
     }
     
     func loadFriends() {
@@ -72,16 +56,32 @@ extension PeopleViewController {
 //                self.Users.removeAll()
                 let followingUid = snapshot.value
                 let user = UserModel()
-                Ref().databaseUsers.child(followingUid as! String).observe(.value, with: { (snapshot) in
+                Ref().databaseUsers.child(followingUid as! String).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dictionary = snapshot.value as? [String:Any] {
+//                        let user = UserModel()
                         user.setValuesForKeys(dictionary)
-                        self.Users.append(user)
-                    }
-                    DispatchQueue.main.async {
-                        self.friendsTableView.reloadData();
+//                        self.Users.append(user)
+                        self.userDictionary[followingUid as! String] = user
+                        self.attemptReloadTable()
+                        print("loadfriends childadded Users count: ", self.Users.count)
                     }
                 })
             })
+            Ref().databaseSpecificUser(uid: uid!).child("following").observeSingleEvent(of: .childRemoved, with: { (snapshot) in
+                print(snapshot.value!, " // will be removed")
+                self.Users.removeAll()
+                self.userDictionary.removeValue(forKey: snapshot.value as! String)
+                print(self.userDictionary)
+                self.attemptReloadTable()
+            })
+        }
+        
+    }
+    
+    func attemptReloadTable() {
+        self.Users = Array(self.userDictionary.values)
+        DispatchQueue.main.async {
+            self.friendsTableView.reloadData();
         }
     }
     
@@ -151,7 +151,9 @@ extension PeopleViewController {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filteredUser = AllUsers.filter({ user -> Bool in
+            print("TexstDidChange")
             if searchText.isEmpty {
+                print("isSearching is: ", isSearching, "in textdidchange")
                 isSearching = false
                 friendsTitleLabel.isHidden = false
                 return true
@@ -161,34 +163,32 @@ extension PeopleViewController {
             }
             return false
         })
+        print("textDidchange will reload table")
         friendsTableView.reloadData()
         loadSearch()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        print("searchBarShouldBeginEdting")
         let noOffset = UIOffset(horizontal: 8, vertical: 0)
         searchBar.setPositionAdjustment(noOffset, for: .search)
         isSearching = false
         return true
     }
-    
-//    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
-//        print("didend ^^^^")
-////        searchBar.setPositionAdjustment(offset, for: .search)
-//        isSearching = false
-//        return true
-//    }
+
     func setupFollowButton(cell: FriendsCell) {
-//        cell.followButton.isHidden = false
         cell.followButton.setTitle("", for: UIControl.State.normal)
         cell.followButton.setImage(#imageLiteral(resourceName: "addFriend"), for: UIControl.State.normal)
         cell.followButton.tintColor = .white
-        //        cell.followButton.imageEdgeInsets = UIEdgeInsets(top: 6, left: 4, bottom: 6, right:3)
-//        cell.followButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+
         cell.followButton.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1).withAlphaComponent(0.9)
         cell.followButton.layer.cornerRadius = 13
         cell.followButton.clipsToBounds = true
-//        cell.followButton.setTitleColor(.white, for: UIControl.State.normal)
+    }
+    
+    func setupUnfollowButton(cell: FriendsCell) {
+        cell.unfollowButton.setTitle("Unfollow", for: UIControl.State.normal)
+        cell.unfollowButton.tintColor = .lightGray
     }
     
     func sendFcm(tag: Int) {

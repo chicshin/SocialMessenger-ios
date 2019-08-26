@@ -47,7 +47,33 @@ extension ProfileViewController {
             }
         })
     }
+    
+    func setupStatusLabel() {
+        let uid = Auth.auth().currentUser?.uid
+        
+        Ref().databaseSpecificUser(uid: uid!).observe(.value, with: { (dataSnapShot: DataSnapshot) in
+            if let dict = dataSnapShot.value as? [String:Any] {
+                guard let status = dict["status"] as? String else {
+                    self.statusLabel.text = ""
+                    return
+                }
+                self.statusLabel.text = status
+                self.statusLabel.font = UIFont.systemFont(ofSize: 15)
+                self.statusLabel.textAlignment = .center
+            }
+        })
+    }
+    
+    func setupEditProfileImage() {
+        editProfileImage.image = UIImage(imageLiteralResourceName: "add_circle")
+        editProfileImage.layer.cornerRadius = 25/2
+        editProfileImage.clipsToBounds = true
+        editProfileImage.backgroundColor = .white
+    }
 
+    func setupStatusUnderline() {
+        textFieldUnderlinde.backgroundColor = .lightGray
+    }
     
     func setupEditButton() {
         editButton.tintColor = .darkGray
@@ -58,12 +84,20 @@ extension ProfileViewController {
         editButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
         editImage.image = #imageLiteral(resourceName: "edit")
     }
+
+    func editStatusTextField() {
+        statusTextField.borderStyle = .none
+        let placeholderAttr = NSMutableAttributedString(string: "Please type status", attributes:
+            [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        statusTextField.attributedPlaceholder = placeholderAttr
+        statusTextField.textAlignment = .center
+        statusTextField.font = UIFont.systemFont(ofSize: 15)
+    }
     
     func setupDoneButton() {
         let title = "Done"
         let attributedText = NSMutableAttributedString(string: title, attributes:
             [NSAttributedString.Key.foregroundColor : UIColor.darkGray])
-        
         doneButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
     }
     
@@ -74,6 +108,24 @@ extension ProfileViewController {
     func setupCloseButton() {
         closeButton.setImage(#imageLiteral(resourceName: "close_icon"), for: UIControl.State.normal)
         closeButton.tintColor = .black
+    }
+    
+    @objc func editDidStart() {
+        editProfileImage.isHidden = false
+        doneButton.isHidden = false
+        statusTextField.isHidden = false
+        statusLabel.isHidden = true
+        editImage.isHidden = true
+        editButton.isHidden = true
+        textFieldUnderlinde.isHidden = false
+    }
+    
+    func didTapEditProfileImage() {
+        editProfileImage.isUserInteractionEnabled = true
+        profileImage.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
+        editProfileImage.addGestureRecognizer(tapGesture)
+        profileImage.addGestureRecognizer(tapGesture)
     }
     
     @objc func presentPicker() {
@@ -91,6 +143,11 @@ extension ProfileViewController {
         }) { (errorMessage) in
             onError(errorMessage)
         }
+    }
+    
+    func updateChangedValues() {
+        self.statusText = self.statusTextField.text!
+        Api.User.status(text: statusText!)
     }
 }
 
