@@ -54,7 +54,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         setupImage()
         setSearchBar()
         setupNavigationBar()
-//        loadFriends()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,19 +61,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         setSearchBar()
         setupImage()
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        tap.cancelsTouchesInView = false
-//        self.view.endEditing(true)
-//    }
-    
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        if Auth.auth().currentUser != nil{
-//            self.performSegue(withIdentifier: "signInToTabBarVC", sender: nil)
-//        }
-//    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count:Int?
@@ -85,7 +71,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         
         if tableView == self.friendsTableView {
             if !isSearching {
-                print("number of Rows in Section Users count: ", Users.count)
                 count =  Users.count
             } else {
                 count = filteredUser.count
@@ -113,6 +98,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         if tableView == self.friendsTableView {
             let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
             if !isSearching {
+                setupFriendsCountTitle()
                 let user = Users[indexPath.row]
                 print("user count: ", Users.count)
                 setupCell(cell: cell, user: user)
@@ -190,7 +176,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     @objc func handleFollow(sender:UIButton) {
-        print("clicked follow")
         let tag = sender.tag
         let uid = Auth.auth().currentUser?.uid
         let followUid = filteredUser[tag].uid
@@ -208,7 +193,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     @objc func handleUnfollow(sender:UIButton) {
-        print("Unfollow clicked")
         let tag = sender.tag
         let uid = Auth.auth().currentUser?.uid
         let followUid = filteredUser[tag].uid
