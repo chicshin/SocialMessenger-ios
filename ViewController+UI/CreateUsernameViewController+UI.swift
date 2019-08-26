@@ -44,7 +44,7 @@ extension CreateUsernameViewController {
     
     func setupNext() {
         nextButton.setTitle("Next", for: UIControl.State.normal)
-        nextButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+        nextButton.backgroundColor = .lightGray
         nextButton.layer.cornerRadius = 5
         nextButton.clipsToBounds = true
         nextButton.setTitleColor(.white, for: UIControl.State.normal)
@@ -73,7 +73,8 @@ extension CreateUsernameViewController {
     
     @objc func textFieldDidChange(){
         guard let username = usernameTextField.text, !username.isEmpty else{
-            nextButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+//            nextButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+            nextButton.backgroundColor = .lightGray
             nextButton.isUserInteractionEnabled = false
             dismissError()
             return

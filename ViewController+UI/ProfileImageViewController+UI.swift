@@ -10,11 +10,14 @@ import UIKit
 
 extension ProfileImageViewController {
     func setupImageView() {
-        imageContainerView.layer.borderWidth = 1
+//        imageContainerView.layer.borderWidth = 1
         imageContainerView.layer.cornerRadius = 10
         imageContainerView.clipsToBounds = true
         
-        imageView.image = #imageLiteral(resourceName: "add_photo")
+        imageView.image = #imageLiteral(resourceName: "defaultAvatar")
+        imageView.layer.cornerRadius = imageView.frame.width/2
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         
 //        imageView.isUserInteractionEnabled = true
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
@@ -32,25 +35,26 @@ extension ProfileImageViewController {
     
     func setupTitle() {
         let title = "Add Profile Picture"
-        let subTitle = "\nAdd a profile photo so your friends know it's you. You can always change it later."
+        let subTitle = "\n\nAdd a profile photo so your friends know it's you. You can always change it later."
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30),
-             NSAttributedString.Key.foregroundColor : UIColor.black])
+            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 25),
+             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         
         let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 14)!,
-             NSAttributedString.Key.foregroundColor : UIColor.black.withAlphaComponent(0.9)])
+            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 13)!,
+             NSAttributedString.Key.foregroundColor : UIColor.darkGray.withAlphaComponent(0.9)])
         
         attributedText.append(attributedSubText)
         titleLabel.attributedText = attributedText
         titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 4
+        titleLabel.numberOfLines = 0
     }
     func setupAddPhotoButton() {
         submitButton.setTitle("Add a photo", for: UIControl.State.normal)
         submitButton.setTitleColor(.white, for: UIControl.State.normal)
-        submitButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+//        submitButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+        submitButton.backgroundColor = .lightGray
         submitButton.layer.cornerRadius = 5
         submitButton.clipsToBounds = true
         
@@ -64,7 +68,7 @@ extension ProfileImageViewController {
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
             [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+             NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
         
         skipButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
     }
@@ -73,10 +77,11 @@ extension ProfileImageViewController {
         let title = "Done"
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16),
+             NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
         
         doneButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
+        doneButton.isHidden = true
     }
     
     func imageStorage(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
@@ -99,7 +104,8 @@ extension ProfileImageViewController: UIImagePickerControllerDelegate, UINavigat
             image = imageEdited
             imageView.image = imageEdited
         }
-        
+        doneButton.isHidden = false
+        submitButton.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1)
         dismiss(animated: true, completion: nil)
     }
 }

@@ -10,18 +10,18 @@ import UIKit
 
 extension SignInViewController {
     func setupTitle() {
-        let title = "Tiki"
-        let subTitle = "  Talka"
+        let title = "CLUSTER"
+//        let subTitle = "  Talk"
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.init(name: "Zapfino", size: 45)!
+            [NSAttributedString.Key.font : UIFont.init(name: "TrebuchetMS", size: 45)!
             ])
         
-        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.init(name: "Copperplate", size: 10)!
-            ])
-        
-        attributedText.append(attributedSubText)
+//        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
+//            [NSAttributedString.Key.font : UIFont.init(name: "Copperplate", size: 10)!
+//            ])
+//
+//        attributedText.append(attributedSubText)
         titleLabel.attributedText = attributedText
     }
     
@@ -55,7 +55,8 @@ extension SignInViewController {
     
     func setupSignIn() {
         signInButton.setTitle("Sign In", for: UIControl.State.normal)
-        signInButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+//        signInButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+        signInButton.backgroundColor = .lightGray
         signInButton.layer.cornerRadius = 5
         signInButton.setTitleColor(.white, for: UIControl.State.normal)
         signInButton.isUserInteractionEnabled = false
@@ -64,7 +65,7 @@ extension SignInViewController {
     func setupForgotPassword() {
         forgotPasswordButton.setTitle("Forgot password?", for: UIControl.State.normal)
         forgotPasswordButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        forgotPasswordButton.setTitleColor(.lightGray, for: UIControl.State.normal)
+        forgotPasswordButton.setTitleColor(UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8), for: UIControl.State.normal)
     }
     
     func setupSignUp() {
@@ -90,7 +91,7 @@ extension SignInViewController {
     
     @objc func textFieldDidChange(){
         guard let email = emailTextField.text, !email.isEmpty, let password = passwordTextField.text, !password.isEmpty else{
-            signInButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+            signInButton.backgroundColor = .lightGray
             signInButton.isUserInteractionEnabled = false
             return
         }
