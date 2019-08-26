@@ -46,5 +46,6 @@ class DatabaseService {
         
         let recipientUserMessageRef = Ref().databaseRoot.child("user-messages").child(toUid).child(uid)
         recipientUserMessageRef.updateChildValues([messageId: 1])
+        
     }
 }

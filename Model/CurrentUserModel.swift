@@ -14,6 +14,12 @@ class CurrentUserModel: NSObject {
     @objc var profileImageUrl: String?
     @objc var uid: String?
     @objc var username: String?
+    @objc var pushToken: String?
+//    @objc var showPreview: String?
+    @objc var notifications: [String:Any]?
+    @objc var following: [String:Any]?
+    @objc var followers: [String:Any]?
+    @objc var status: String?
     
 //    init(username: String, profileImageUrlString: String, uid: String) {
 //        usernameText = username

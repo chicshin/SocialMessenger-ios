@@ -20,6 +20,21 @@ class ChatModel: NSObject{
     @objc var imageHeight: NSNumber?
     @objc var videoUrl: String?
     
+    struct dateModelStructure: Hashable {
+        var date: String
+        var content: String
+        var timestamp: NSNumber
+        var text: String?
+        var imageUrl: String?
+        var imageWidth: NSNumber?
+        var imageHeight: NSNumber?
+        var videoUrl: String?
+        var timestampString: String
+
+        var toUid: String
+        var senderUid: String
+    }
+    
     func chatPartnerUid() -> String? {
         return senderUid == Auth.auth().currentUser?.uid ? toUid : senderUid
     }
@@ -28,7 +43,6 @@ class ChatModel: NSObject{
         var timeString: String?
         if let seconds = timestamp?.doubleValue {
             let timestampDate = NSDate(timeIntervalSince1970: seconds)
-            print(timestampDate)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "hh:mm a"
             timeString = dateFormatter.string(from: timestampDate as Date)
@@ -46,6 +60,8 @@ class ChatModel: NSObject{
         }
         return dateString
     }
+    
+    
     func today() -> String? {
         var today: String?
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))

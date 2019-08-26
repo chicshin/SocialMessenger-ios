@@ -13,6 +13,7 @@ import FirebaseDatabase
 import ProgressHUD
 
 class StorageService {
+    
 //    static func savePhoto(username: String, uid: String, data: Data, metadata: StorageMetadata, storageProfile: StorageReference, dict: Dictionary<String,Any>, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
 //        storageProfile.putData(data, metadata: metadata, completion: {
 //            (storageMetadata, error) in

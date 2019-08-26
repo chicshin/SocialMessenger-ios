@@ -27,7 +27,11 @@ class UserApi {
     
     func createUsername(withUsername username: String, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
         
-        Ref().databaseUsers.child("activeUsernames").child(username).observeSingleEvent(of: .value, with: { (usernameSnap) in
+//        let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+//        changeRequest?.displayName = username
+//        changeRequest?.commitChanges(completion: nil)
+        
+        Ref().databaseUsers.child(ACTIVEUSERNAMES).child(username).observeSingleEvent(of: .value, with: { (usernameSnap) in
             if usernameSnap.exists() {
                 let errorMessage = "username exists"
                 onError(errorMessage)
@@ -47,24 +51,38 @@ class UserApi {
                 return
             }
             
+            let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+            changeRequest?.displayName = username
+            changeRequest?.commitChanges(completion: nil)
+    
+            
             if let authData = result {
-                let dict : Dictionary<String,Any> = [
-                    UID : authData.user.uid,
-                    FULLNAME: fullname,
-                    EMAIL : email,
-                    USERNAME : username
-                ]
-                let ActiveUsernameDict : Dictionary<String,Any> = [
-                    username : true,
-                ]
-            Ref().databaseUsers.child(authData.user.uid).updateChildValues(dict, withCompletionBlock: { (error, ref) in
-                    if error == nil {
-                        Ref().databaseUsers.child("activeUsernames").updateChildValues(ActiveUsernameDict)
-                        onSuccess()
-                    } else {
-                        onError(error!.localizedDescription)
-                    }
-                })
+                InstanceID.instanceID().instanceID { (ref, error) in
+                
+                    let dict : Dictionary<String,Any> = [
+                        UID : authData.user.uid,
+                        FULLNAME: fullname,
+                        EMAIL : email,
+                        USERNAME : username,
+                        PUSHTOKEN : ref!.token,
+                        NOTIFICATIONS : [SHOWPREVIEW: ENABLED, NEWFOLLOWERS: ENABLED],
+                        STATUS: ""
+//                        "showPreview": "enabled"
+                    ]
+                
+                    let ActiveUsernameDict : Dictionary<String,Any> = [
+                        username : true,
+                    ]
+                    Ref().databaseUsers.child(authData.user.uid).updateChildValues(dict, withCompletionBlock: { (error, ref) in
+                        if error == nil {
+//                            Ref().databaseUsers.child("activeUsernames").updateChildValues(ActiveUsernameDict)
+                            onSuccess()
+                        } else {
+                            onError(error!.localizedDescription)
+                        }
+                    })
+                    Ref().databaseUsers.child(ACTIVEUSERNAMES).updateChildValues(ActiveUsernameDict)
+                }
             }
         
         }
@@ -102,6 +120,21 @@ class UserApi {
         }) { (errorMessage) in
             onError(errorMessage)
             }
+    }
+    
+    func status(text: String?) {
+        let uid = Auth.auth().currentUser?.uid
+        Ref().databaseSpecificUser(uid: uid!).updateChildValues(["status": text!])
+    }
+    
+    func updateUsername(text: String?) {
+        let uid = Auth.auth().currentUser?.uid
+        Ref().databaseSpecificUser(uid: uid!).updateChildValues(["username": text!])
+    }
+    
+    func updateFullname(text: String?) {
+        let uid = Auth.auth().currentUser?.uid
+        Ref().databaseSpecificUser(uid: uid!).updateChildValues(["fullname": text!])
     }
     
 //    func ChatLogImageData(image: UIImage?, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {

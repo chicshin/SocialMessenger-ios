@@ -22,6 +22,14 @@ let ERROR_EMPTY_USERNAME = "Please enter an username"
 let ERROR_EMPTY_PASSWORD = "Please enter a password"
 let ERROR_EMPTY_EMAIL_RESET = "please enter an email address for password reset"
 let SUCCESS_EMAIL_RESET = "We have just sent you a password email reset. Please check your inbox and follow the instructions to reset your password."
+let PUSHTOKEN = "pushToken"
+let NOTIFICATIONS = "notifications"
+let STATUS = "status"
+let SHOWPREVIEW = "showPreview"
+let NEWFOLLOWERS = "newFollowers"
+let ENABLED = "enabled"
+let DISABLED = "disabled"
+let ACTIVEUSERNAMES = "activeUsernames"
 
 class Ref {
     let databaseRoot : DatabaseReference = Database.database().reference()
