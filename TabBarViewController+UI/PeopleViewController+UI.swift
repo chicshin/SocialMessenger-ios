@@ -62,6 +62,8 @@ extension PeopleViewController {
                         user.setValuesForKeys(dictionary)
 //                        self.Users.append(user)
                         self.userDictionary[followingUid as! String] = user
+                        self.friendsCount = self.userDictionary.count
+                        print(self.friendsCount)
                         self.attemptReloadTable()
                         print("loadfriends childadded Users count: ", self.Users.count)
                     }
@@ -107,8 +109,10 @@ extension PeopleViewController {
     }
     
     func setupFriendsCountTitle() {
+        print("friends")
         let title = "Friends "
         let subTitle = String(self.friendsCount)
+//        String(self.friendsCount)
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
             [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),

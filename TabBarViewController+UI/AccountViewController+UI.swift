@@ -30,10 +30,6 @@ extension AccountViewController {
      Control Cell TextFields
     */
     func setupTextField(cell: ProfileCell, text: String?) {
-//        let placeholderAttr = NSMutableAttributedString(string: text!, attributes:
-//            [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-//        cell.inputTextField.attributedPlaceholder = placeholderAttr
-//        cell.inputTextField.textAlignment = .center
         cell.inputTextField.text = text!
         cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
     }
@@ -41,17 +37,57 @@ extension AccountViewController {
     @objc func handleTextField(sender: UITextField) {
         let indexPath = IndexPath(row: sender.tag, section: 0)
         let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
+        
         switch sender.tag {
         case 1:
             fullname = cell.inputTextField.text!
+            let initCount = fullname.count
+            cell.textCountLabel.text = "\(initCount)/25"
         case 2:
             username = cell.inputTextField.text!
+            let initCount = username.count
+            cell.textCountLabel.text = "\(initCount)/20"
         case 4:
             status = cell.inputTextField.text!
+            let initCount = status.count
+            cell.textCountLabel.text = "\(initCount)/25"
         default:
             break
         }
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let tag = textField.tag
+        let indexPath = IndexPath(row: tag, section: 0)
+        let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
+        let length = cell.inputTextField.text!.count + string.utf16.count - range.length
+        
+        switch tag {
+        case 1:
+            if length <= 25 {
+                return true
+            } else {
+                return false
+            }
+        case 2:
+            if length <= 20 {
+                return true
+            } else {
+                return false
+            }
+        case 4:
+            if length <= 25 {
+                return true
+            } else {
+                return false
+            }
+        default:
+            break
+        }
+        return true
+    }
+    
+
     
     
     

@@ -111,8 +111,9 @@ extension ProfileViewController {
     }
     
     @objc func editDidStart() {
+        showDoneButton()
         editProfileImage.isHidden = false
-        doneButton.isHidden = false
+//        doneButton.isHidden = false
         statusTextField.isHidden = false
         statusLabel.isHidden = true
         editImage.isHidden = true
@@ -148,6 +149,20 @@ extension ProfileViewController {
     func updateChangedValues() {
         self.statusText = self.statusTextField.text!
         Api.User.status(text: statusText!)
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let length = self.statusTextField.text!.count + string.utf16.count - range.length
+        textCountLabel.isHidden = false
+        if length <= 25 {
+            self.textCountLabel.text = "\(length)/25"
+            self.textCountLabel.font = UIFont.systemFont(ofSize: 13)
+            self.textCountLabel.textColor = .lightGray
+            return true
+        } else {
+            print("text count out of range")
+            return false
+        }
     }
 }
 
