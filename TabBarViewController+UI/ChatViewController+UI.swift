@@ -121,7 +121,8 @@ extension ChatViewController {
         navigationItem.leftBarButtonItem = dismissButton
     }
 
-    func sendFcm(){
+//    func sendFcm(){
+    func setFcm(payloadDict: [String:Any]) {
         let url = "https://fcm.googleapis.com/fcm/send"
         let header: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -129,8 +130,63 @@ extension ChatViewController {
 //            "Authorization": "key=SECURE API KEY"
         ]
 
-        let name = Auth.auth().currentUser?.displayName
+//        let name = Auth.auth().currentUser?.displayName
+//
+//        let notificationModel = NotificationModel()
+//        if isSearching {
+//            notificationModel.to = allUser?.pushToken
+//            if allUser?.notifications!["showPreview"] as! String == "enabled" {
+//                notificationModel.notification.text = inputTextField.text
+//            } else {
+//                notificationModel.notification.text = "Sent a new message"
+//            }
+//            
+//        } else if !isSearching {
+//            notificationModel.to = userModel?.pushToken
+//            if userModel?.notifications!["showPreview"] as! String == "enabled" {
+//                notificationModel.notification.text = inputTextField.text
+//            } else {
+//                notificationModel.notification.text = "Sent a new message"
+//            }
+//        }
+//        notificationModel.notification.title = name
+//        notificationModel.data.title = name
+//        notificationModel.data.text = inputTextField.text
 
+//        let paramString  = ["to" : notificationModel.to!, "notification" : ["title" : name, "body" : notificationModel.notification.text], "data" : ["user" : Auth.auth().currentUser!.uid]] as [String : Any]
+
+//        let params = notificationModel.toJSON()
+//
+//        Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
+//            print(response.result.value as Any)
+//        }
+        
+        let NSUrl = NSURL(string: url)!
+        let request = NSMutableURLRequest(url: NSUrl as URL)
+        request.httpMethod = "POST"
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payloadDict, options: [])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw", forHTTPHeaderField: "Authorization")
+        
+        let task =  URLSession.shared.dataTask(with: request as URLRequest)  { (data, response, error) in
+            do {
+                if let jsonData = data {
+                    if let jsonDataDict  = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: AnyObject] {
+                        NSLog("Received data:\n\(jsonDataDict))")
+                    }
+                }
+            } catch let err as NSError {
+                print(err.debugDescription)
+            }
+        }
+        task.resume()
+        
+    }
+    
+    func sendFcm() {
+        print("sendFcm")
+        let name = Auth.auth().currentUser?.displayName
+        
         let notificationModel = NotificationModel()
         if isSearching {
             notificationModel.to = allUser?.pushToken
@@ -151,14 +207,11 @@ extension ChatViewController {
         notificationModel.notification.title = name
         notificationModel.data.title = name
         notificationModel.data.text = inputTextField.text
-
-        let params = notificationModel.toJSON()
-
-        Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
-            print(response.result.value as Any)
-        }
         
-        
+        let token = notificationModel.to
+        let senderUid = Auth.auth().currentUser?.uid
+        let payload: [String: Any] = ["to": token!, "notification": ["title":name!, "body": notificationModel.notification.text!, "badge":1, "sound":"default"], "data" : ["senderUid" : senderUid!]]
+        self.setFcm(payloadDict: payload)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

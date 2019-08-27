@@ -154,10 +154,14 @@ extension PeopleViewController {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredUser = AllUsers.filter({ user -> Bool in
+        let sortedArr = AllUsers.sorted(by: {(lhs: AllUserModel, rhs: AllUserModel) in
+            let lhsValue = lhs.username
+            let rhsValue = rhs.username
+            return lhsValue! < rhsValue!
+        })
+        filteredUser = sortedArr.filter({ user -> Bool in
             print("TexstDidChange")
             if searchText.isEmpty {
-                print("isSearching is: ", isSearching, "in textdidchange")
                 isSearching = false
                 friendsTitleLabel.isHidden = false
                 return true
