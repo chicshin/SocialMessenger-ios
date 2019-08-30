@@ -7,13 +7,10 @@
 //
 
 import UIKit
+import Firebase
+import ProgressHUD
 
 class SignUpTwoViewController: UIViewController, UITextFieldDelegate {
-//    @IBOutlet weak var createAccountButton: UIButton!
-//    @IBOutlet weak var backButton: UIButton!
-//    @IBOutlet weak var restrictCharactersLabel: UILabel!
-//    @IBOutlet weak var usernameLabel: UILabel!
-//    @IBOutlet weak var createButtonTopLayout: NSLayoutConstraint!
     var backgroundImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -203,6 +200,7 @@ class SignUpTwoViewController: UIViewController, UITextFieldDelegate {
     func handleFunctions() {
         didTapDismiss()
         handleTextFields()
+        didTapCreateAccount()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -220,6 +218,26 @@ class SignUpTwoViewController: UIViewController, UITextFieldDelegate {
         dismiss(animated: true, completion: nil)
     }
     
+    func didTapCreateAccount() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleCreateDatabase))
+        createAccountButton.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleCreateDatabase() {
+        self.view.endEditing(true)
+        signUp(onSuccess: {
+            self.performSegue(withIdentifier: "ProfileImageTwoSegue", sender: nil)
+        }) { (errorMessage) in
+            ProgressHUD.showError(errorMessage)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ProfileImageTwoSegue" {
+            let vc = segue.destination as! ProfileImageTwoViewController
+            vc.usernameReceived = self.usernameReceived.lowercased()
+        }
+    }
 }
 
 extension SignUpTwoViewController {
@@ -277,6 +295,15 @@ extension SignUpTwoViewController {
         } else {
             print("text count out of range")
             return false
+        }
+    }
+    
+    func signUp(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
+        Api.User.signUp(fullname: fullnameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, username: usernameReceived, onSuccess: {
+            print("database created")
+            onSuccess()
+        }) { (errorMessage) in
+            onError(errorMessage)
         }
     }
     

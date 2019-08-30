@@ -300,17 +300,6 @@ extension CreateUsernameTwoViewController {
             nextButton.isUserInteractionEnabled = false
             return false
         }
-        
-//        if length == 0 {
-//            usernameTextCount.isHidden = true
-//        }
-//        if length <= 25 {
-//            self.usernameTextCount.text = "\(length)/25"
-//            return true
-//        } else {
-//            print("text count out of range")
-//            return false
-//        }
     }
     
     func dismissError() {
