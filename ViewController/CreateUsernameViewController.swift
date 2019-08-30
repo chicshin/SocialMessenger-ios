@@ -14,7 +14,7 @@ import FirebaseStorage
 import ProgressHUD
 
 
-class CreateUsernameViewController: UIViewController {
+class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var usernameContainerView: UIView!
     @IBOutlet weak var usernameTextField: UITextField!
@@ -22,12 +22,14 @@ class CreateUsernameViewController: UIViewController {
     @IBOutlet weak var signInButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var nextButtonTopLayout: NSLayoutConstraint!
+    @IBOutlet weak var restrictSpecialCharactersMessageLabel: UILabel!
     
     var usernameSelected = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        usernameTextField.delegate = self
         setupUI()
     }
     
@@ -38,6 +40,7 @@ class CreateUsernameViewController: UIViewController {
         setupSignIn()
         setupNext()
         handleTextFields()
+        setupRestricCharactersLabel()
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -58,7 +61,7 @@ class CreateUsernameViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "usernameSegue" {
             let vc = segue.destination as! SignUpViewController
-            vc.usernameReceived = self.usernameSelected
+            vc.usernameReceived = self.usernameSelected.lowercased()
         }
     }
     

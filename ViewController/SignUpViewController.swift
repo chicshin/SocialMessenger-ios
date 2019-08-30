@@ -13,7 +13,7 @@ import FirebaseDatabase
 import FirebaseStorage
 import ProgressHUD
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var fullnameContainerView: UIView!
     @IBOutlet weak var emailContainerView: UIView!
@@ -23,14 +23,18 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var createAccountButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
-    
+    @IBOutlet weak var restrictCharactersLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var createButtonTopLayout: NSLayoutConstraint!
     
     var usernameReceived = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fullnameTextField.delegate = self
+        
+        restrictCharactersLabel.isHidden = true
         usernameLabel.text = usernameReceived
         setupUI()
         
@@ -49,6 +53,7 @@ class SignUpViewController: UIViewController {
         setupSubmitButton()
         hideUsername()
         handleTextFields()
+        setupRestricCharactersLabel()
     }
 
     @IBAction func backDidTapped(_ sender: Any) {

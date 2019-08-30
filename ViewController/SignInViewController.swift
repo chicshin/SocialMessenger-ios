@@ -23,7 +23,7 @@ class SignInViewController: UIViewController {
     @IBOutlet weak var signInButton: UIButton!
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var forgotPasswordButton: UIButton!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -50,6 +50,7 @@ class SignInViewController: UIViewController {
         setupSignUp()
         handleTextFields()
     }
+    
     @IBAction func signInDidTapped(_ sender: Any) {
         self.view.endEditing(true)
         signIn(onSuccess: {
