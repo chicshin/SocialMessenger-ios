@@ -9,10 +9,18 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--MainTabBarID-->
+        <scene sceneID="8si-P6-bbW">
+            <objects>
+                <viewControllerPlaceholder storyboardName="MainTabBar" referencedIdentifier="MainTabBarID" id="BqI-ZZ-xpV" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GBq-83-UyA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5161" y="-397"/>
+        </scene>
         <!--Chat View Controller-->
         <scene sceneID="GQx-81-RWm">
             <objects>
-                <collectionViewController storyboardIdentifier="ChatVC" id="Huy-l8-vev" customClass="ChatViewController" customModule="Tikitalka" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="ChatVC" id="Huy-l8-vev" customClass="ChatViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="aAV-JV-a1b">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -39,6 +47,9 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" id="sd2-To-ccD"/>
+                    <connections>
+                        <segue destination="BqI-ZZ-xpV" kind="show" identifier="showChatListSegueFromNotification" id="YXQ-ZG-Hrp"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4kl-Ug-zhz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

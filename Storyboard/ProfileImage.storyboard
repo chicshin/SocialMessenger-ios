@@ -10,6 +10,24 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Profile Image Two View Controller-->
+        <scene sceneID="LVJ-If-Bc7">
+            <objects>
+                <viewController storyboardIdentifier="ProfileImageTwoVC" id="F4a-iG-kf3" customClass="ProfileImageTwoViewController" customModule="TikiTalka" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="LOR-ed-voD">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="Ytt-Av-3NZ"/>
+                    </view>
+                    <connections>
+                        <segue destination="0oq-Ci-2cg" kind="show" identifier="MainTabBarVC" id="ctX-U3-8la"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="02P-9T-Bzf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3570" y="113"/>
+        </scene>
         <!--Profile Image View Controller-->
         <scene sceneID="rkq-9F-Tp3">
             <objects>
@@ -100,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="USl-rI-4DJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3748" y="277"/>
+            <point key="canvasLocation" x="3571" y="790"/>
         </scene>
         <!--MainTabBarID-->
         <scene sceneID="21j-uH-VfU">
@@ -111,4 +129,7 @@
             <point key="canvasLocation" x="4361" y="277"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="ctX-U3-8la"/>
+    </inferredMetricsTieBreakers>
 </document>

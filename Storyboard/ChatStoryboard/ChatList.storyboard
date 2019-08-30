@@ -13,7 +13,7 @@
         <!--Chat List View Controller-->
         <scene sceneID="reO-OF-okc">
             <objects>
-                <viewController id="LCO-YH-aC0" customClass="ChatListViewController" customModule="Tikitalka" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChatListVC" id="LCO-YH-aC0" customClass="ChatListViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="n95-gO-ETd">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
