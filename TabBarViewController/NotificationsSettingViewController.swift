@@ -129,33 +129,37 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
                 showPreviewIsOn = false
                 newFollwersIsOn = false
                 allowNotificationIsOn = false
+                let showPreview = ["notifications/showPreview": DISABLED]
+                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(showPreview)
+                let newFollowers = ["notifications/newFollowers": DISABLED]
+                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowers)
             } else {
                 createPushToken()
-                showPreviewIsOn = true
-                newFollwersIsOn = true
+//                showPreviewIsOn = true
+//                newFollwersIsOn = true
                 allowNotificationIsOn = true
             }
             tableView.reloadData()
         case 1:
             if showPreviewIsOn {
-                let showPreview = ["notifications/showPreview": "disabled"]
+                let showPreview = ["notifications/showPreview": DISABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(showPreview)
 //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "disabled"])
                 showPreviewIsOn = false
             } else {
-                let showPreview = ["notifications/showPreview": "enabled"]
+                let showPreview = ["notifications/showPreview": ENABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(showPreview)
 //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "enabled"])
                 showPreviewIsOn = true
             }
         case 2:
             if newFollwersIsOn {
-                let newFollowerNotification = ["notifications/newFollowers": "disabled"]
+                let newFollowerNotification = ["notifications/newFollowers": DISABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowerNotification)
                 //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "disabled"])
                 newFollwersIsOn = false
             } else {
-                let newFollowerNotification = ["notifications/newFollowers": "enabled"]
+                let newFollowerNotification = ["notifications/newFollowers": ENABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowerNotification)
                 //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "enabled"])
                 newFollwersIsOn = true

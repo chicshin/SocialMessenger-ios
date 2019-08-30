@@ -32,13 +32,12 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.register(listCell.self, forCellReuseIdentifier: "listCell")
         
         view.addSubview(tableView)
-        
         observeUserMessages()
         setupUI()
     }
-
     
     func setupUI() {
+        setupNavigationBar()
         setupTableView()
     }
     

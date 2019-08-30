@@ -14,7 +14,7 @@ import ProgressHUD
 import Alamofire
 import AlamofireImage
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var profileImage: UIImageView!
@@ -27,14 +27,23 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var editProfileImage: UIImageView!
     @IBOutlet weak var statusTextField: UITextField!
     @IBOutlet weak var textFieldUnderlinde: UIView!
-
+    @IBOutlet weak var textCountLabel: UILabel!
+    
+    var blurBackground: UIVisualEffectView?
+    var textFieldFrame: CGRect?
     var users = [UserModel]()
     var image: UIImage? = nil
     var statusText: String? = nil
+//    var textCount = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        statusTextField.delegate = self
+        
         setupUI()
+        tapRecognizerAction()
+        
+        textCountLabel.isHidden = true
         doneButton.isHidden = true
         editProfileImage.isHidden = true
         statusTextField.isHidden = true
@@ -50,14 +59,19 @@ class ProfileViewController: UIViewController {
         setupDoneButton()
         setupCloseButton()
         editStatusTextField()
-        setupStatusUnderline()
         setupEditProfileImage()
+
+    }
+    
+    func tapRecognizerAction() {
         didTapEditButton()
-        didTapEditProfileImage() 
+        didTapEditProfileImage()
+        didTapTextField()
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+        self.removeBlurEffect()
     }
     
     @IBAction func dismissAction(_ sender: Any) {
@@ -69,8 +83,6 @@ class ProfileViewController: UIViewController {
         editButton.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(editDidStart))
         editButton.addGestureRecognizer(tapGesture)
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
-//        editButton.addGestureRecognizer(tapGesture)
     }
     
     @IBAction func saveChange(_ sender: Any) {
@@ -91,6 +103,7 @@ class ProfileViewController: UIViewController {
         editProfileImage.isHidden = true
         statusTextField.isHidden = true
         textFieldUnderlinde.isHidden = true
+        textCountLabel.isHidden = true
         
         doneButton.isHidden = true
     }

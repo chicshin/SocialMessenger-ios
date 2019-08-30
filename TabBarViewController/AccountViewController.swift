@@ -9,7 +9,7 @@
 import UIKit
 import FirebaseAuth
 
-class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     var tableView: UITableView! = UITableView()
 
@@ -58,6 +58,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileCell
         let content = contents[indexPath.row]
+        cell.inputTextField.delegate = self
+        
         cell.contentTitle.text = content
         cell.contentTitle.font = UIFont.systemFont(ofSize: 15)
         
@@ -73,14 +75,12 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             if let dictionary = snapshot.value as? [String:Any] {
                 switch indexPath.row {
                 case 0:
-                    cell.contentTitle.isHidden = true
-                    cell.bottomLine.isHidden = true
-                    
                     let url = URL(string: dictionary["profileImageUrl"] as! String)
                     self.setProfileImage(cell: cell, url: url!)
                     
-                    cell.inputTextField.isHidden = true
-                    cell.editTextFieldIndicator.isHidden = true
+                    cell.contentTitle.isHidden = true
+                    cell.bottomLine.isHidden = true
+                    self.setEmailAndProfileCell(cell: cell)
                 case 1:
                     cell.contentLabel.text = dictionary["fullname"] as? String
                     self.fullname = cell.contentLabel.text!
@@ -95,10 +95,10 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.contentLabel.text = dictionary["email"] as? String
                     cell.contentLabel.textColor = .lightGray
                     
-                    self.setCell(cell: cell)
-                    cell.inputTextField.isHidden = true
-                    cell.editTextFieldIndicator.isHidden = true
+                    cell.contentTitle.isHidden = false
                     cell.contentLabel.isHidden = false
+                    self.setCell(cell: cell)
+                    self.setEmailAndProfileCell(cell: cell)
                 case 4:
                     cell.contentLabel.text = dictionary["status"] as? String
                     self.status = cell.contentLabel.text!
@@ -122,6 +122,12 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     func setTextField(cell: ProfileCell) {
         self.setupTextField(cell: cell, text: cell.contentLabel.text)
         self.didTapTextField(cell: cell)
+    }
+    
+    func setEmailAndProfileCell(cell: ProfileCell) {
+        cell.textCountLabel.isHidden = true
+        cell.inputTextField.isHidden = true
+        cell.editTextFieldIndicator.isHidden = true
     }
     
     func setEditInAction(cell: ProfileCell) {
@@ -225,8 +231,8 @@ class ProfileCell: UITableViewCell {
         let image = UIImageView()
         image.isUserInteractionEnabled = true
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = #imageLiteral(resourceName: "edit")
-        image.tintColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1)
+        image.image = #imageLiteral(resourceName: "edit").withRenderingMode(.alwaysTemplate)
+        image.tintColor = .lightGray
         return image
     }()
     
@@ -251,6 +257,14 @@ class ProfileCell: UITableViewCell {
         return image
     }()
     
+    var textCountLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -265,6 +279,7 @@ class ProfileCell: UITableViewCell {
         
         addSubview(inputTextField)
         addSubview(editTextFieldIndicator)
+        addSubview(textCountLabel)
         
         contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
@@ -307,8 +322,8 @@ class ProfileCell: UITableViewCell {
         seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
-        inputTextField.widthAnchor.constraint(equalToConstant: 230).isActive = true
+        inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+        inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
         inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -316,6 +331,10 @@ class ProfileCell: UITableViewCell {
         editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
         editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
+        textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+        textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

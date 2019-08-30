@@ -18,9 +18,11 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
 
     let inputTextField: UITextField! = UITextField()
     
+    var isfromNotification = false
     var userModel: UserModel?
     var allUser: AllUserModel?
-    var destination = [CurrentUserModel]()
+//    var destination = [CurrentUserModel]()
+    var CurrentUser = [CurrentUserModel]()
     var Chat = [ChatModel]()
     var username: String?
     var isSearching = true
@@ -39,6 +41,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         collectionView.register(chatMessageCell.self, forCellWithReuseIdentifier: "chatMessageCell")
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
         collectionView.delegate = self
@@ -50,11 +53,20 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         collectionView.backgroundColor = .white
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(showChat(notification:)), name: NSNotification.Name(rawValue: "notificationReceived"), object: nil)
         setupUI()
         
     }
     
+    @objc func showChat(notification: Notification) {
+        print("notification worked")
+        guard let text = notification.userInfo?["uid"] as? String else { return }
+        print ("uid: \(text)")
+    }
+    
     func setupUI() {
+        setCurrentUserInfo()
         observeMessageLog()
         setupNavigationBar()
         setupKeyboardObserver()
@@ -64,8 +76,18 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     @objc func dismissChat() {
         self.view.endEditing(true)
         print(isSearching, "---")
-        dismiss(animated: true, completion: nil)
+        print(isfromNotification, "@@@")
+        if isfromNotification {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            let mainStoryboard = UIStoryboard(name: "MainTabBar", bundle: nil)
+            let homeController =  mainStoryboard.instantiateViewController(withIdentifier: "MainTabBarID") as! UITabBarController
+            appDelegate?.window?.rootViewController = homeController
+            
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
     }
+    
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         collectionView.collectionViewLayout.invalidateLayout()
@@ -147,6 +169,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     }
     
     private func setupCell(cell: chatMessageCell, chat: ChatModel.dateModelStructure) {
+        
         if let messageImageUrl = chat.imageUrl {
             let url = URL(string: messageImageUrl)
             cell.messageImageView.kf.setImage(with: url)
@@ -170,6 +193,20 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
             cell.textView.textColor = .black
             cell.profileImageView.isHidden = false
+            
+//            if isSearching {
+//                if let imageUrl = allUser?.profileImageUrl! {
+//                    let url = URL(string: imageUrl)
+//                    cell.profileImageView.kf.setImage(with: url)
+//                } else {
+//                    let url = URL(string: profileImageUrl!)
+//                    cell.profileImageView.kf.setImage(with: url)
+//                }
+//            } else if !isSearching {
+//                let url = URL(string: userModel!.profileImageUrl!)
+//                cell.profileImageView.kf.setImage(with: url)
+//            }
+
             if isSearching {
                 let url = URL(string: allUser!.profileImageUrl!)
                 cell.profileImageView.kf.setImage(with: url)

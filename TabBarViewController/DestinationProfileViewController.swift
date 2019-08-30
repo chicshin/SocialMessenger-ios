@@ -20,6 +20,7 @@ class DestinationProfileViewController: UIViewController {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var chatButton: UIButton!
+    @IBOutlet weak var statusLabel: UILabel!
     
     var user: UserModel?
     var allUser: AllUserModel?
@@ -31,7 +32,8 @@ class DestinationProfileViewController: UIViewController {
     }
     
     func setupUI() {
-        setupChatButton()
+//        setupChatButton()
+        setupStatus()
         setupDestinationName()
         setupProfileImage()
         setupCloseButton()
