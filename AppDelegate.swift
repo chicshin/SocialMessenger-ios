@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseDatabase
 import UserNotifications
 
 @UIApplicationMain
@@ -15,11 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
+    var User = [AllUserModel]()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         FirebaseApp.configure()
         
+
         if #available(iOS 10.0, *) {
             // For iOS 10 display notification (sent via APNS)
             UNUserNotificationCenter.current().delegate = self
@@ -35,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         application.registerForRemoteNotifications()
+        
         return true
     }
     
@@ -48,13 +52,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Message ID: \(messageId)")
         }
         print(userInfo)
+
+        let dictionary = ["email": userInfo["email"], "uid": userInfo["uid"], "profileImageUrl": userInfo["profileImageUrl"], "username": userInfo["username"], "fullname": userInfo["fullname"], "pushToken": userInfo["pushToken"], "notifications": ["showPreview": userInfo["showPreview"]]]
+        let user = AllUserModel()
+        user.setValuesForKeys(dictionary as [String : Any])
+        self.User.append(user)
+        
+//        let userInfos = ["uid": userInfo["uid"]!, "profileImageUrl": userInfo["profileImageUrl"]!, "username": userInfo["username"]!]
+//        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "notificationReceived"), object: nil, userInfo: userInfos))
+        let storyboard: UIStoryboard = UIStoryboard(name: "Chat", bundle: nil)
+        let presentVC = storyboard.instantiateViewController(withIdentifier: "NavigationChat") as! UINavigationController
+        let chatVC = presentVC.topViewController as! ChatViewController
+//        let chatVC = storyboard.instantiateViewController(withIdentifier: "ChatVC") as! ChatViewController
+        chatVC.allUser = self.User[0]
+        chatVC.isfromNotification = true
+        
+        self.window?.rootViewController = presentVC
+        self.window?.makeKeyAndVisible()
+//        presentVC.pushViewController(chatVC, animated: false)
+//        self.window?.rootViewController!.present(chatVC, animated: false, completion: nil)
+        
+//        presentVC.pushViewController(chatVC, animated: true)
         
 //        let storyboard: UIStoryboard = UIStoryboard(name: "Chat", bundle: nil)
 //        let presentVC = storyboard.instantiateViewController(withIdentifier: "ChatVC") as! ChatViewController
-//        self.window?.rootViewController = presentVC
-//        presentVC.present(presentVC, animated: true, completion: nil)
-//        completionHandler()
+//        presentVC.allUser = self.User[0]
+//        let rootViewController = self.window!.rootViewController as! UINavigationController
+////        self.window?.rootViewController = presentVC
+//        rootViewController.present(presentVC, animated: true, completion: nil)
+        completionHandler()
     }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("this one did called")
+        print(userInfo)
+        completionHandler(.newData)
+    }
+    
+    
     
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
