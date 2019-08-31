@@ -81,9 +81,9 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
             cell.lastMessageLabel.text = chat.text
         } else {
             if chat.videoUrl != nil {
-                cell.lastMessageLabel.text = "Sent video"
+                cell.lastMessageLabel.text = "Sent a video"
             } else if chat.imageUrl != nil{
-                cell.lastMessageLabel.text = "Sent Image"
+                cell.lastMessageLabel.text = "Sent an image"
             }
         }
     }

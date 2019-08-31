@@ -101,7 +101,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if !isSearching {
                 setupFriendsCountTitle()
                 let user = Users[indexPath.row]
-                print("user count: ", Users.count)
                 setupCell(cell: cell, user: user)
                 cell.followButton.isHidden = true
                 friendsTitleLabel.isHidden = false
@@ -119,7 +118,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 cell.followButton.isHidden = false
                 cell.unfollowButton.isHidden = true
                 
-                print("1. return to cell")
                 Ref().databaseSpecificUser(uid: user.uid!).child("followers").observe(.childAdded, with: { (snapshot) in
                     guard let followers = snapshot.value as? String else {
 
@@ -207,7 +205,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     Ref().databaseSpecificUser(uid: followUid!).child("followers").child(key).removeValue()
                     self.userDictionary.removeValue(forKey: followUid!)
                     self.attemptReloadTable()
-                    print("removed from searching user count is: ", self.Users.count)
                 }
             }
         })
@@ -243,13 +240,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             }
         }
     }
-    
-//    @IBAction func didTapFollow(_ sender: Any) {
-//        let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-//        cell.followButton.isUserInteractionEnabled = true
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleFollow))
-//        cell.followButton.addGestureRecognizer(tapGesture)
-//    }
 }
 
 

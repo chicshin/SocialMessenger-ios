@@ -38,6 +38,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     var startingImageView: UIImageView?
     var blurBackground: UIVisualEffectView?
 
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +61,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     }
     
     @objc func showChat(notification: Notification) {
-        print("notification worked")
         guard let text = notification.userInfo?["uid"] as? String else { return }
         print ("uid: \(text)")
     }
@@ -139,6 +139,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.chatViewController = self
         let groupedMessages = self.groupedMessagesByDates[indexPath.section][indexPath.row]
         cell.chat = groupedMessages
+        cell.saveToCameraRollButton.tag = indexPath.row
         
         cell.textView.text = groupedMessages.text
         cell.timestampLabel.text = groupedMessages.timestampString
@@ -147,6 +148,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.timestampLabel.isHidden = false
         if indexPath.row - 1 == -1 {
             cell.timestampLabel.isHidden = false
+            
         } else {
             if groupedMessages.timestampString == self.groupedMessagesByDates[indexPath.section][indexPath.row - 1].timestampString {
                 cell.timestampLabel.isHidden = true
@@ -157,10 +159,12 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         if let text = groupedMessages.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
+            cell.saveToCameraRollButton.isHidden = true
         } else if groupedMessages.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
             cell.bubbleView.backgroundColor = .clear
             cell.textView.isHidden = true
+            cell.saveToCameraRollButton.isHidden = false
         }
 
         cell.playButton.isHidden = groupedMessages.videoUrl == nil
@@ -189,23 +193,13 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.timestampLeftAnchor?.isActive = false
             cell.timestampRightAnchor?.isActive = true
             
+            cell.saveButtonLeftAnchor?.isActive = false
+            cell.saveButtonRightAnchor?.isActive = true
+            
         } else {
             cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
             cell.textView.textColor = .black
             cell.profileImageView.isHidden = false
-            
-//            if isSearching {
-//                if let imageUrl = allUser?.profileImageUrl! {
-//                    let url = URL(string: imageUrl)
-//                    cell.profileImageView.kf.setImage(with: url)
-//                } else {
-//                    let url = URL(string: profileImageUrl!)
-//                    cell.profileImageView.kf.setImage(with: url)
-//                }
-//            } else if !isSearching {
-//                let url = URL(string: userModel!.profileImageUrl!)
-//                cell.profileImageView.kf.setImage(with: url)
-//            }
 
             if isSearching {
                 let url = URL(string: allUser!.profileImageUrl!)
@@ -214,14 +208,15 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
                 let url = URL(string: userModel!.profileImageUrl!)
                 cell.profileImageView.kf.setImage(with: url)
             }
-//            let url = URL(string: userModel!.profileImageUrl!)
-//            cell.profileImageView.kf.setImage(with: url)
             
             cell.bubbleRightAnchor?.isActive = false
             cell.bubbleLeftAnchor?.isActive = true
             
             cell.timestampLeftAnchor?.isActive = true
             cell.timestampRightAnchor?.isActive = false
+            
+            cell.saveButtonLeftAnchor?.isActive = true
+            cell.saveButtonRightAnchor?.isActive = false
         }
     }
     
@@ -377,14 +372,6 @@ class chatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let timestampLabel: UILabel = {
-        let timestamp = UILabel()
-        timestamp.translatesAutoresizingMaskIntoConstraints = false
-        timestamp.font = UIFont.systemFont(ofSize: 12)
-        timestamp.textColor = UIColor.lightGray
-        return timestamp
-    }()
-    
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
         if chat?.videoUrl != nil {
             return
@@ -394,11 +381,54 @@ class chatMessageCell: UICollectionViewCell {
         }
     }
     
+    let timestampLabel: UILabel = {
+        let timestamp = UILabel()
+        timestamp.translatesAutoresizingMaskIntoConstraints = false
+        timestamp.font = UIFont.systemFont(ofSize: 12)
+        timestamp.textColor = UIColor.lightGray
+        timestamp.textAlignment = .right
+        return timestamp
+    }()
+    
+    lazy var saveToCameraRollButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(#imageLiteral(resourceName: "save"), for: UIControl.State.normal)
+        button.tintColor = .lightGray
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(handleSaveToCameraRoll), for: UIControl.Event.touchUpInside)
+        return button
+    }()
+    
+    @objc func handleSaveToCameraRoll() {
+        let url = URL(string: chat!.imageUrl!)
+        let data = try? Data(contentsOf: url!)
+
+        if let imageData = data {
+            let image = UIImage(data: imageData)
+            UIImageWriteToSavedPhotosAlbum(image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            chatViewController!.present(alert, animated: true)
+        } else {
+            let alert = UIAlertController(title: "Saved!", message: "Image saved successfully", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            chatViewController!.present(alert, animated: true)
+        }
+    }
+    
     var bubbleWidthAnchor: NSLayoutConstraint?
     var bubbleLeftAnchor: NSLayoutConstraint?
     var bubbleRightAnchor: NSLayoutConstraint?
     var timestampLeftAnchor: NSLayoutConstraint?
     var timestampRightAnchor: NSLayoutConstraint?
+    var saveButtonLeftAnchor: NSLayoutConstraint?
+    var saveButtonRightAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -406,6 +436,7 @@ class chatMessageCell: UICollectionViewCell {
         addSubview(textView)
         addSubview(profileImageView)
         addSubview(timestampLabel)
+        addSubview(saveToCameraRollButton)
         
         bubbleView.addSubview(messageImageView)
         messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
@@ -461,6 +492,16 @@ class chatMessageCell: UICollectionViewCell {
         timestampLeftAnchor?.isActive = false
         timestampRightAnchor = timestampLabel.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -5)
         timestampRightAnchor?.isActive = true
+        timestampLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        saveToCameraRollButton.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        saveButtonLeftAnchor = saveToCameraRollButton.leftAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 20)
+        saveButtonLeftAnchor?.isActive = false
+        saveButtonRightAnchor = saveToCameraRollButton.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -20)
+        saveButtonRightAnchor?.isActive = true
+        saveToCameraRollButton.widthAnchor.constraint(equalToConstant: 23).isActive = true
+        saveToCameraRollButton.heightAnchor.constraint(equalToConstant: 23).isActive = true
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
