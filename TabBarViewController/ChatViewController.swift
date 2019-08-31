@@ -13,6 +13,7 @@ import FirebaseDatabase
 import Kingfisher
 import Alamofire
 import AVFoundation
+import Photos
 
 class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
 
@@ -139,7 +140,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.chatViewController = self
         let groupedMessages = self.groupedMessagesByDates[indexPath.section][indexPath.row]
         cell.chat = groupedMessages
-        cell.saveToCameraRollButton.tag = indexPath.row
         
         cell.textView.text = groupedMessages.text
         cell.timestampLabel.text = groupedMessages.timestampString
@@ -160,11 +160,13 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
             cell.saveToCameraRollButton.isHidden = true
+//            cell.saveActivityIndicatorView.isHidden = true
         } else if groupedMessages.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
             cell.bubbleView.backgroundColor = .clear
             cell.textView.isHidden = true
             cell.saveToCameraRollButton.isHidden = false
+//            cell.saveActivityIndicatorView.isHidden = false
         }
 
         cell.playButton.isHidden = groupedMessages.videoUrl == nil
@@ -196,6 +198,9 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             cell.saveButtonLeftAnchor?.isActive = false
             cell.saveButtonRightAnchor?.isActive = true
             
+            cell.saveIndicatorLeftAnchor?.isActive = false
+            cell.saveIndicatorRightAnchor?.isActive = true
+            
         } else {
             cell.bubbleView.backgroundColor = #colorLiteral(red: 0.9411043525, green: 0.9412171841, blue: 0.9410660267, alpha: 1).withAlphaComponent(0.8)
             cell.textView.textColor = .black
@@ -217,6 +222,9 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             
             cell.saveButtonLeftAnchor?.isActive = true
             cell.saveButtonRightAnchor?.isActive = false
+            
+            cell.saveIndicatorLeftAnchor?.isActive = true
+            cell.saveIndicatorRightAnchor?.isActive = false
         }
     }
     
@@ -390,6 +398,13 @@ class chatMessageCell: UICollectionViewCell {
         return timestamp
     }()
     
+    let saveActivityIndicatorView: UIActivityIndicatorView = {
+        let aiv = UIActivityIndicatorView(style: .gray)
+        aiv.translatesAutoresizingMaskIntoConstraints = false
+        aiv.hidesWhenStopped = true
+        return aiv
+    }()
+    
     lazy var saveToCameraRollButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -401,12 +416,46 @@ class chatMessageCell: UICollectionViewCell {
     }()
     
     @objc func handleSaveToCameraRoll() {
-        let url = URL(string: chat!.imageUrl!)
-        let data = try? Data(contentsOf: url!)
+        saveToCameraRollButton.isHidden = true
+        saveActivityIndicatorView.startAnimating()
+        if let videoUrl = chat?.videoUrl {
+            let url = URL(string: videoUrl)
+            self.downloadAndSave(videoUrl: url!, completion: { (completed: Bool) -> Void in
+                if completed {
+                    DispatchQueue.main.async {
+                        self.saveToCameraRollButton.isHidden = false
+                        self.saveActivityIndicatorView.stopAnimating()
+                        let alert = UIAlertController(title: "Saved", message: "Video saved successfully", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.chatViewController!.present(alert, animated: true, completion: nil)
+                    }
+                }
+            })
+//            let urlData = NSData(contentsOf: url!)
+//            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0];
+//            let filePath="\(documentsPath)/tempFile.mp4"
+//            urlData!.write(toFile: filePath, atomically: false)
+//            DispatchQueue.main.async {
+//                PHPhotoLibrary.shared().performChanges({
+//                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
+//                }) { completed, error in
+//                    if completed {
+//                        let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
+//                        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//                        alertController.addAction(defaultAction)
+//                        self.chatViewController!.present(alertController, animated: true, completion: nil)
+//                    }
+//                }
+//            }
 
-        if let imageData = data {
-            let image = UIImage(data: imageData)
-            UIImageWriteToSavedPhotosAlbum(image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        } else {
+            let url = URL(string: chat!.imageUrl!)
+            let data = try? Data(contentsOf: url!)
+            
+            if let imageData = data {
+                let image = UIImage(data: imageData)
+                UIImageWriteToSavedPhotosAlbum(image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+            }
         }
     }
     
@@ -416,10 +465,45 @@ class chatMessageCell: UICollectionViewCell {
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             chatViewController!.present(alert, animated: true)
         } else {
-            let alert = UIAlertController(title: "Saved!", message: "Image saved successfully", preferredStyle: .alert)
+            self.saveToCameraRollButton.isHidden = false
+            self.saveActivityIndicatorView.stopAnimating()
+            let alert = UIAlertController(title: "Saved", message: "Image saved successfully", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             chatViewController!.present(alert, animated: true)
         }
+    }
+    
+    func downloadAndSave(videoUrl: URL, completion: @escaping (Bool) -> Void) {
+        let destination: (URL, HTTPURLResponse) -> (URL, DownloadRequest.DownloadOptions) = {
+            tempUrl, response in
+
+            let option = DownloadRequest.DownloadOptions()
+            let finalUrl = tempUrl.deletingPathExtension().appendingPathExtension(videoUrl.pathExtension)
+            return (finalUrl, option)
+        }
+
+        Alamofire.download(videoUrl, to: destination)
+            .response(completionHandler: { [weak self] response in
+                guard response.error == nil,
+                    let destinationUrl = response.destinationURL else {
+                        completion(false)
+                        return
+                }
+                self?.save(videoFileUrl: destinationUrl, completion: completion)
+            })
+    }
+    
+    private func save(videoFileUrl: URL, completion: @escaping (Bool) -> Void) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoFileUrl)
+        }, completionHandler: { succeeded, error in
+            guard error == nil, succeeded else {
+                completion(false)
+                return
+            }
+            
+            completion(true)
+        })
     }
     
     var bubbleWidthAnchor: NSLayoutConstraint?
@@ -429,6 +513,8 @@ class chatMessageCell: UICollectionViewCell {
     var timestampRightAnchor: NSLayoutConstraint?
     var saveButtonLeftAnchor: NSLayoutConstraint?
     var saveButtonRightAnchor: NSLayoutConstraint?
+    var saveIndicatorLeftAnchor: NSLayoutConstraint?
+    var saveIndicatorRightAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -437,6 +523,7 @@ class chatMessageCell: UICollectionViewCell {
         addSubview(profileImageView)
         addSubview(timestampLabel)
         addSubview(saveToCameraRollButton)
+        addSubview(saveActivityIndicatorView)
         
         bubbleView.addSubview(messageImageView)
         messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
@@ -501,6 +588,14 @@ class chatMessageCell: UICollectionViewCell {
         saveButtonRightAnchor?.isActive = true
         saveToCameraRollButton.widthAnchor.constraint(equalToConstant: 23).isActive = true
         saveToCameraRollButton.heightAnchor.constraint(equalToConstant: 23).isActive = true
+        
+        saveActivityIndicatorView.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        saveIndicatorLeftAnchor = saveActivityIndicatorView.leftAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 20)
+        saveIndicatorLeftAnchor?.isActive = false
+        saveIndicatorRightAnchor = saveActivityIndicatorView.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -20)
+        saveIndicatorRightAnchor?.isActive = true
+        saveActivityIndicatorView.widthAnchor.constraint(equalToConstant: 23).isActive = true
+        saveActivityIndicatorView.heightAnchor.constraint(equalToConstant: 23).isActive = true
         
     }
     
