@@ -20,6 +20,5 @@ class AllUserModel: NSObject{
     @objc var notifications: [String:Any]?
     @objc var following: [String:Any]?
     @objc var followers: [String:Any]?
-    @objc var status: String?
-    
+    @objc var status: String?    
 }

@@ -23,17 +23,14 @@ class NotificationModel: Mappable {
     
     func mapping(map: Map) {
         to <- map["to"]
-//        senderId <- map["senderId"]
         notification <- map["notification"]
         data <- map["data"]
     }
     class Notification :Mappable{
-        public var title :String?
-        public var text :String?
-//        public var senderId :String?
+        public var title: String?
+        public var text: String?
         
         init() {
-            
         }
         required init?(map: Map) {
         }
@@ -48,14 +45,11 @@ class NotificationModel: Mappable {
     class Data :Mappable{
         public var title :String?
         public var text :String?
-//        public var senderId :String?
         
         init(){
-            
         }
         
         required init?(map: Map) {
-            
         }
         
         func mapping(map: Map) {

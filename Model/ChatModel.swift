@@ -19,6 +19,7 @@ class ChatModel: NSObject{
     @objc var imageWidth: NSNumber?
     @objc var imageHeight: NSNumber?
     @objc var videoUrl: String?
+    @objc var read: NSNumber?
     
     struct dateModelStructure: Hashable {
         var date: String
@@ -82,5 +83,6 @@ class ChatModel: NSObject{
         imageWidth = dictionary["imageWidth"] as? NSNumber
         imageHeight = dictionary["imageHeight"] as? NSNumber
         videoUrl = dictionary["videoUrl"] as? String
+        read = dictionary["read"] as? NSNumber
     }
 }
