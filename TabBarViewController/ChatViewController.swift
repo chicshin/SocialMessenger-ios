@@ -14,15 +14,23 @@ import Kingfisher
 import Alamofire
 import AVFoundation
 import Photos
-
+import CropViewController
+import MobileCoreServices
+import AVFoundation
+import CropViewController
 class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
 
-    let inputTextField: UITextField! = UITextField()
+    let inputTextField: UITextField! = {
+        let textField = UITextField()
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        textField.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
+        return textField
+    }()
     
     var isfromNotification = false
     var userModel: UserModel?
     var allUser: AllUserModel?
-//    var destination = [CurrentUserModel]()
     var CurrentUser = [CurrentUserModel]()
     var Chat = [ChatModel]()
     var username: String?
@@ -33,51 +41,100 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     var sections: Int?
     var dateSection = [[ChatModel.dateModelStructure]]()
     
+    var isInChatViewController = true
+    
     var selectedImageFromPicker: UIImage?
     var startingFrame: CGRect?
     var backgroundView: UIView?
     var startingImageView: UIImageView?
     var blurBackground: UIVisualEffectView?
 
-
+    let imageView = UIImageView()
+    var croppingStyle = CropViewCroppingStyle.default
+    var croppedRect = CGRect.zero
+    var croppedAngle = 0
+    
+    var inputContainerHeight: NSLayoutConstraint?
+    var inputContainerHeightX: NSLayoutConstraint?
+    var textFieldAppeared = false
+    
+    var badges = 0
+    
+    var menuContents = ["menu"]
+    var tableView = UITableView()
+    let menuHeight: CGFloat = 100
+    var transparentView: UIView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         collectionView.register(chatMessageCell.self, forCellWithReuseIdentifier: "chatMessageCell")
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
+        tableView.register(menuCell.self, forCellReuseIdentifier: "menuCell")
         collectionView.delegate = self
         collectionView.dataSource = self
         inputTextField.delegate = self
-        
-        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.isScrollEnabled = false
+
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
 //        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 2, right: 0)
         collectionView.backgroundColor = .white
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
         
-        NotificationCenter.default.addObserver(self, selector: #selector(showChat(notification:)), name: NSNotification.Name(rawValue: "notificationReceived"), object: nil)
+        inputContainerHeight = inputContainerVeiw.heightAnchor.constraint(equalToConstant: 50)
+        inputContainerHeight?.isActive = false
+        inputContainerHeightX = inputContainerVeiw.heightAnchor.constraint(equalToConstant: 70)
+        inputContainerHeightX?.isActive = false
+        
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+            inputContainerHeightX?.isActive = true
+            inputContainerHeight?.isActive = false
+        }
+        else {
+            inputContainerHeight?.isActive = true
+            inputContainerHeightX?.isActive = false
+        }
+        
         setupUI()
         
     }
+
     
-    @objc func showChat(notification: Notification) {
-        guard let text = notification.userInfo?["uid"] as? String else { return }
-        print ("uid: \(text)")
-    }
+//    @objc func showChat(notification: Notification) {
+//        guard let text = notification.userInfo?["uid"] as? String else { return }
+//        print ("uid: \(text)")
+//    }
     
     func setupUI() {
         setCurrentUserInfo()
         observeMessageLog()
         setupNavigationBar()
+        badgeCount()
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         setupKeyboardObserver()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        isInChatViewController = false
+        NotificationCenter.default.removeObserver(self)
     }
 
     
     @objc func dismissChat() {
         self.view.endEditing(true)
-        print(isSearching, "---")
-        print(isfromNotification, "@@@")
         if isfromNotification {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             let mainStoryboard = UIStoryboard(name: "MainTabBar", bundle: nil)
@@ -98,7 +155,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         var height: CGFloat = 80
         let groupMessage = self.groupedMessagesByDates[indexPath.section][indexPath.row]
         if let text = groupMessage.text {
-            height = estimateFrameText(text: text).height + 20
+            height = estimateFrameText(text: text).height + 17
         } else if let imageWidth = groupMessage.imageWidth?.floatValue, let imageHeight = groupMessage.imageHeight?.floatValue {
             height = CGFloat(imageHeight / imageWidth * 200)
         }
@@ -109,11 +166,17 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     private func estimateFrameText(text: String) -> CGRect {
         let size = CGSize(width: 200, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
-        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], context: nil)
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
+            ], context: nil)
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return self.groupedMessagesByDates.count
+        var count = 0
+        if collectionView == self.collectionView {
+            count = self.groupedMessagesByDates.count
+        }
+//        return self.groupedMessagesByDates.count
+        return count
     }
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -148,29 +211,27 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         cell.timestampLabel.isHidden = false
         if indexPath.row - 1 == -1 {
             cell.timestampLabel.isHidden = false
-            
+
         } else {
             if groupedMessages.timestampString == self.groupedMessagesByDates[indexPath.section][indexPath.row - 1].timestampString {
                 cell.timestampLabel.isHidden = true
                 cell.profileImageView.isHidden = true
             }
         }
-
+        
         if let text = groupedMessages.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameText(text: text).width + 24
             cell.textView.isHidden = false
             cell.saveToCameraRollButton.isHidden = true
-//            cell.saveActivityIndicatorView.isHidden = true
         } else if groupedMessages.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
             cell.bubbleView.backgroundColor = .clear
             cell.textView.isHidden = true
             cell.saveToCameraRollButton.isHidden = false
-//            cell.saveActivityIndicatorView.isHidden = false
         }
-
+        
         cell.playButton.isHidden = groupedMessages.videoUrl == nil
-
+            
         return cell
     }
     
@@ -228,38 +289,57 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         }
     }
     
+    var containerBottomConstraint: NSLayoutConstraint?
+    
     lazy var inputContainerVeiw: UIView = {
         let containerView = UIView()
-        let additionalButton = UIButton()
+        let galleryButton = UIButton(type: .system)
         let sendButton = UIButton(type: .system)
+        let cameraButton = UIButton(type: .system)
 
+        containerView.addSubview(galleryButton)
+        containerView.addSubview(cameraButton)
         containerView.addSubview(inputTextField)
-        containerView.addSubview(additionalButton)
         containerView.addSubview(sendButton)
 
-        additionalButton.translatesAutoresizingMaskIntoConstraints = false
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        galleryButton.translatesAutoresizingMaskIntoConstraints = false
+        cameraButton.translatesAutoresizingMaskIntoConstraints = false
         inputTextField.translatesAutoresizingMaskIntoConstraints = false
+        sendButton.translatesAutoresizingMaskIntoConstraints = false
 
-        containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 60)
-        containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
+//            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 40)
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 70)
+        }
+        else {
+            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+        }
 
+        
+//        containerView.backgroundColor = UIColor(white: 0.95, alpha: 0.9)
+        containerView.backgroundColor = .white
+
+        galleryButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
+        galleryButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
+        galleryButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        galleryButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        cameraButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
+        cameraButton.leftAnchor.constraint(equalTo: galleryButton.rightAnchor, constant: -5).isActive = true
+        cameraButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        cameraButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
         inputTextField.placeholder = "Enter text here..."
-//        inputTextField.frame = CGRect(x: 40, y: 5, width: 310, height: 35)
-        inputTextField.leftAnchor.constraint(equalTo: additionalButton.rightAnchor, constant: 5).isActive = true
+        //        inputTextField.frame = CGRect(x: 40, y: 5, width: 310, height: 35)
+        inputTextField.leftAnchor.constraint(equalTo: cameraButton.rightAnchor, constant: 5).isActive = true
         inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor, constant: 5).isActive = true
         inputTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
         inputTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8).isActive = true
 
-        additionalButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5).isActive = true
-        additionalButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
-        additionalButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        additionalButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
-
+        sendButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
         sendButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -5).isActive = true
         sendButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
         sendButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        sendButton.centerYAnchor.constraint(equalTo: inputTextField.centerYAnchor).isActive = true
 
         inputTextField.backgroundColor = .white
         inputTextField.layer.borderWidth = 1
@@ -273,21 +353,69 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         inputTextField.leftViewMode = .always
         inputTextField.rightView = rightView
         inputTextField.rightViewMode = .always
-        additionalButton.setImage(#imageLiteral(resourceName: "add_circle").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
-        additionalButton.tintColor = UIColor.lightGray
+        galleryButton.setImage(#imageLiteral(resourceName: "gallery").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
+        galleryButton.tintColor = UIColor.lightGray
+        cameraButton.setImage(#imageLiteral(resourceName: "camera").withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: UIControl.State.normal)
+        cameraButton.tintColor = UIColor.lightGray
 
         sendButton.setTitle("Send", for: UIControl.State.normal)
         sendButton.setTitleColor(#colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1), for: UIControl.State.normal)
         sendButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         sendButton.addTarget(self, action: #selector(handleSend), for: UIControl.Event.touchUpInside)
 
-        additionalButton.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
-        additionalButton.addGestureRecognizer(tapGesture)
+        galleryButton.isUserInteractionEnabled = true
+        let galleryTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleGallery))
+//        let galleryTapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
+        galleryButton.addGestureRecognizer(galleryTapGesture)
+        
+        cameraButton.isUserInteractionEnabled = true
+        let cameraTapGesture = UITapGestureRecognizer(target: self, action: #selector(presentCamera))
+        cameraButton.addGestureRecognizer(cameraTapGesture)
+        
+        let textFieldTapGesture = UITapGestureRecognizer(target: self, action: #selector(textFieldAddObserver))
+        inputTextField.addGestureRecognizer(textFieldTapGesture)
         
         return containerView
     }()
     
+    @objc func textFieldAddObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        inputTextField.becomeFirstResponder()
+    }
+    
+    /*
+     Control Show Menu
+    */
+    @objc func handleGallery() {
+//        transparentView.isHidden = false
+        let statusBarHeight = UIApplication.shared.statusBarFrame.height
+        let navHeight = navigationController?.navigationBar.frame.size.height
+        transparentView.backgroundColor = UIColor.black.withAlphaComponent(0.9)
+        transparentView.frame = self.view.frame
+        view.addSubview(transparentView)
+        
+        let screenSize = UIScreen.main.bounds.size
+        tableView.frame = CGRect(x: 0, y: navHeight! + statusBarHeight, width: screenSize.width, height: menuHeight)
+        view.addSubview(tableView)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissMenu))
+        transparentView.addGestureRecognizer(tapGesture)
+        
+        transparentView.alpha = 0
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseOut, animations: {
+            self.transparentView.alpha = 0.5
+            self.tableView.frame = CGRect(x: 0, y: navHeight! + statusBarHeight, width: screenSize.width, height: self.menuHeight)
+        }, completion: nil)
+    }
+    
+    @objc func dismissMenu() {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseOut, animations: {
+            self.transparentView.alpha = 0
+            self.tableView.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        }, completion: nil)
+    }
+
     override var inputAccessoryView: UIView? {
         get {
             return inputContainerVeiw
@@ -297,7 +425,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     override var canBecomeFirstResponder: Bool {
         return true
     }
-
+    
 }
 
 class chatMessageCell: UICollectionViewCell {
@@ -307,6 +435,7 @@ class chatMessageCell: UICollectionViewCell {
     var chatViewController: ChatViewController?
     var playerLayer: AVPlayerLayer?
     var player: AVPlayer?
+    var isMuted = false
     
     let activityIndicatorView: UIActivityIndicatorView = {
         let aiv = UIActivityIndicatorView(style: .whiteLarge)
@@ -326,6 +455,10 @@ class chatMessageCell: UICollectionViewCell {
     
     @objc func handlePlay() {
         if let videoUrlString = chat?.videoUrl, let url = NSURL(string: videoUrlString ) {
+            let asset = AVAsset(url: url as URL)
+            let duration = asset.duration
+            let durationTime = CMTimeGetSeconds(duration)
+            print(durationTime,"------")
             player = AVPlayer(url: url as URL)
             playerLayer = AVPlayerLayer(player: player)
             playerLayer?.frame = bubbleView.bounds
@@ -346,7 +479,7 @@ class chatMessageCell: UICollectionViewCell {
     let textView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.font = UIFont.systemFont(ofSize: 16)
+        tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
         tv.backgroundColor = .clear
         tv.isEditable = false
         return tv
@@ -377,11 +510,18 @@ class chatMessageCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
+        imageView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleZoomPlayer)))
         return imageView
     }()
     
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
-        if chat?.videoUrl != nil {
+        if chat?.videoUrl != nil && self.playerLayer != nil {
+            isMuted = !isMuted
+            player?.isMuted = isMuted
+            player?.pause()
+            playerLayer?.removeFromSuperlayer()
+            playButton.isHidden = false
+            activityIndicatorView.stopAnimating()
             return
         }
         if let imageView = tapGesture.view as? UIImageView {
@@ -389,10 +529,64 @@ class chatMessageCell: UICollectionViewCell {
         }
     }
     
+    var startingFrame: CGRect?
+    var startingImageView: UIImageView?
+    var blurBackground: UIVisualEffectView?
+    var zoomingView: UIView?
+    
+    @objc func handleZoomPlayer(longGesture: UILongPressGestureRecognizer) {
+        if chat?.videoUrl != nil && self.playerLayer != nil && self.player != nil {
+            longGesture.minimumPressDuration = 0.5
+            if let imageView = longGesture.view as? UIImageView {
+                if longGesture.state == .began {
+                    self.startingImageView = imageView
+                    startingFrame = startingImageView?.superview?.convert(startingImageView!.frame, to: nil)
+                    zoomingView = UIView(frame: startingFrame!)
+                    if let keyWindow = UIApplication.shared.keyWindow {
+                        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+                        blurBackground = UIVisualEffectView(effect: blurEffect)
+                        blurBackground?.frame = keyWindow.frame
+                        startingImageView!.isHidden = true
+                        self.playerLayer?.frame = zoomingView!.bounds
+                        zoomingView!.layer.addSublayer(self.playerLayer!)
+                        keyWindow.addSubview(blurBackground!)
+                        keyWindow.addSubview(zoomingView!)
+                        let height = startingFrame!.height / startingFrame!.width * keyWindow.frame.width
+                        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                            self.blurBackground?.alpha = 1
+                            self.chatViewController!.inputContainerVeiw.alpha = 0
+                            self.zoomingView!.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+                            self.playerLayer!.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+                            self.zoomingView!.layer.cornerRadius = 15
+                            self.zoomingView!.clipsToBounds = true
+                            self.zoomingView!.center = keyWindow.center
+                        }, completion: nil)
+                    }
+                } else if longGesture.state == .ended {
+                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                        self.zoomingView!.frame = self.startingFrame!
+                        self.blurBackground?.alpha = 0
+                        self.chatViewController!.inputContainerVeiw.alpha = 1
+                        self.isMuted = !self.isMuted
+                        self.player?.isMuted = self.isMuted
+                        self.player?.pause()
+                        self.player = nil
+                    }, completion: { (completed) in
+                        self.playerLayer?.removeFromSuperlayer()
+                        self.playButton.isHidden = false
+                        self.activityIndicatorView.stopAnimating()
+                        self.zoomingView!.removeFromSuperview()
+                        self.startingImageView?.isHidden = false
+                    })
+                }
+            }
+        }
+    }
+    
     let timestampLabel: UILabel = {
         let timestamp = UILabel()
         timestamp.translatesAutoresizingMaskIntoConstraints = false
-        timestamp.font = UIFont.systemFont(ofSize: 12)
+        timestamp.font = UIFont(name: "AppleSDGothicNeo-Light", size: 11)
         timestamp.textColor = UIColor.lightGray
         timestamp.textAlignment = .right
         return timestamp
@@ -411,13 +605,13 @@ class chatMessageCell: UICollectionViewCell {
         button.setImage(#imageLiteral(resourceName: "save"), for: UIControl.State.normal)
         button.tintColor = .lightGray
         button.isUserInteractionEnabled = true
-        button.addTarget(self, action: #selector(handleSaveToCameraRoll), for: UIControl.Event.touchUpInside)
+        button.addTarget(self, action: #selector(handleSaveToCameraRoll), for: UIControl.Event.touchDown)
         return button
     }()
     
     @objc func handleSaveToCameraRoll() {
-        saveToCameraRollButton.isHidden = true
         saveActivityIndicatorView.startAnimating()
+        saveToCameraRollButton.isHidden = true
         if let videoUrl = chat?.videoUrl {
             let url = URL(string: videoUrl)
             self.downloadAndSave(videoUrl: url!, completion: { (completed: Bool) -> Void in
@@ -563,7 +757,7 @@ class chatMessageCell: UICollectionViewCell {
 //        bubbleWidthAnchor!.isActive = true
 //        bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
 
-        textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
+        textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 7).isActive = true
 //        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         textView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
@@ -575,7 +769,7 @@ class chatMessageCell: UICollectionViewCell {
         profileImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -5).isActive = true
-        timestampLeftAnchor = timestampLabel.leftAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 5)
+        timestampLeftAnchor = timestampLabel.leftAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: -10)
         timestampLeftAnchor?.isActive = false
         timestampRightAnchor = timestampLabel.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -5)
         timestampRightAnchor?.isActive = true
@@ -602,4 +796,117 @@ class chatMessageCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+class menuCell: UITableViewCell {
+    var chatViewController: ChatViewController?
+    var seperatorView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .lightGray
+        return view
+    }()
+    
+    lazy var photoLabelView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.isUserInteractionEnabled = true
+        return view
+    }()
+    
+    
+    lazy var videoLabelView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.isUserInteractionEnabled = true
+        return view
+    }()
+    
+    var photoLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Photo"
+        label.textColor = .lightGray
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 16)
+        return label
+    }()
+    
+    var videoLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Video"
+        label.textColor = .lightGray
+        label.textAlignment = .right
+        label.font = UIFont.systemFont(ofSize: 16)
+        return label
+    }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        addSubview(photoLabelView)
+        addSubview(videoLabelView)
+        addSubview(seperatorView)
+        addSubview(photoLabel)
+        addSubview(videoLabel)
+        
+        photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+        photoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        
+        videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+        videoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        
+        seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+        seperatorView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+        seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+        
+        photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+        photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+        photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        
+        videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+        videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+        videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "menuCell", for: indexPath) as! menuCell
+        didTapPhotoGallery(cell: cell)
+        didTapVideoGallery(cell: cell)
+        cell.selectionStyle = .none
+        return cell
+    }
+    
+    func didTapPhotoGallery(cell: menuCell) {
+        cell.photoLabelView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(photoPresentPicker)))
+    }
+    
+    func didTapVideoGallery(cell: menuCell) {
+        cell.videoLabelView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(videoPresentPicker)))
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+    
+    
 }

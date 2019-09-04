@@ -36,6 +36,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        do {
+//            try Auth.auth().signOut()
+//        } catch let logutError {
+//            print(logutError)
+//        }
         tableView.dataSource = self
         friendsTableView.dataSource = self
         tableView.delegate = self
@@ -92,6 +97,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
             cell.profileImage.clipsToBounds = true
             cell.usernameLabel.text = user.username!
+            cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
             
             cellToReturn = cell
             
@@ -145,6 +151,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let url = URL(string: user.profileImageUrl!)
         cell.profileImage.kf.setImage(with: url)
         cell.usernameLabel.text = user.username!
+        cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.contentMode = .scaleAspectFill
         cell.profileImage.clipsToBounds = true
@@ -154,6 +161,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let url = URL(string: user.profileImageUrl!)
         cell.profileImage.kf.setImage(with: url)
         cell.usernameLabel.text = user.username!
+        cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.contentMode = .scaleAspectFill
         cell.profileImage.clipsToBounds = true

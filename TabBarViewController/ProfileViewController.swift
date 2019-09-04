@@ -13,6 +13,7 @@ import FirebaseDatabase
 import ProgressHUD
 import Alamofire
 import AlamofireImage
+import CropViewController
 
 class ProfileViewController: UIViewController, UITextFieldDelegate {
 
@@ -32,9 +33,13 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     var blurBackground: UIVisualEffectView?
     var textFieldFrame: CGRect?
     var users = [UserModel]()
-    var image: UIImage? = nil
+    var imageSelected: UIImage? = nil
     var statusText: String? = nil
-//    var textCount = 0
+
+    let imageView = UIImageView()
+    var croppingStyle = CropViewCroppingStyle.default
+    var croppedRect = CGRect.zero
+    var croppedAngle = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,6 +93,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     @IBAction func saveChange(_ sender: Any) {
         self.view.endEditing(true)
         self.updateChangedValues()
+        profileImage.image = imageSelected
         self.statusLabel.text = self.statusText
         self.imageStorage(onSuccess: {
             //changed image saved on database and storage

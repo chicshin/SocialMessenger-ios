@@ -41,6 +41,11 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         setupTableView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -70,6 +75,25 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as! listCell
         let chat = Chat[indexPath.row]
         
+        let uid = Auth.auth().currentUser?.uid
+        cell.messagesCountLabel.isHidden = true
+        var unseenMessages = 0
+        Ref().databaseRoot.child("user-messages").child(uid!).child(chat.senderUid!).observe(.childAdded, with: { (dataSanpshot) in
+            let messageId = dataSanpshot.key
+            Ref().databaseRoot.child("messages").child(messageId).observe(.value, with: { (messageSnapshot) in
+                if let dict = messageSnapshot.value as? [String:Any] {
+                    let read = dict["read"] as! Int
+                    let toUid = dict["toUid"] as! String
+                    if toUid == uid {
+                        if read == 1 {
+                            unseenMessages += 1
+                            cell.messagesCountLabel.text = "\(unseenMessages)"
+                            cell.messagesCountLabel.isHidden = false
+                        }
+                    }
+                }
+            })
+        })
         setupCell(cell: cell, chat: chat)
         cell.chat = chat
         return cell
@@ -153,8 +177,17 @@ class listCell: UITableViewCell {
     let nameLabel = UILabel()
     let lastMessageLabel = UILabel()
     let timestampLabel = UILabel()
-    
-    
+    var messagesCountLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1)
+        label.layer.cornerRadius = 10
+        label.clipsToBounds = true
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textColor = .white
+        return label
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -163,17 +196,18 @@ class listCell: UITableViewCell {
         addSubview(nameLabel)
         addSubview(lastMessageLabel)
         addSubview(timestampLabel)
+        addSubview(messagesCountLabel)
         
         lastMessageLabel.translatesAutoresizingMaskIntoConstraints = false
         profileImage.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         timestampLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        lastMessageLabel.font = UIFont.systemFont(ofSize: 14)
+        lastMessageLabel.font = UIFont(name: "Avenir-Light", size: 14)
         lastMessageLabel.textColor = .lightGray
-        nameLabel.font = UIFont.systemFont(ofSize: 18)
+        nameLabel.font = UIFont(name: "Avenir-Medium", size: 18)
         timestampLabel.textColor = .lightGray
-        timestampLabel.font = UIFont.systemFont(ofSize: 13)
+        timestampLabel.font = UIFont(name: "AppleSDGothicNeo-Light", size: 12)
         timestampLabel.text = "HH:MM:SS"
         
         
@@ -184,10 +218,10 @@ class listCell: UITableViewCell {
             lastMessageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 83),
             lastMessageLabel.widthAnchor.constraint(equalToConstant: 250),
             
-            profileImage.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
-            profileImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            profileImage.widthAnchor.constraint(equalToConstant: 55),
-            profileImage.heightAnchor.constraint(equalToConstant: 55),
+            profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
+            profileImage!.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            profileImage!.widthAnchor.constraint(equalToConstant: 55),
+            profileImage!.heightAnchor.constraint(equalToConstant: 55),
             
             nameLabel.topAnchor.constraint(equalTo: topAnchor, constant:15),
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -35),
@@ -195,7 +229,12 @@ class listCell: UITableViewCell {
             nameLabel.widthAnchor.constraint(equalToConstant: 250),
             
             timestampLabel.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0),
-            timestampLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+            timestampLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            
+            messagesCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+            messagesCountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            messagesCountLabel.widthAnchor.constraint(equalToConstant: 20),
+            messagesCountLabel.heightAnchor.constraint(equalToConstant: 20)
         ]
         NSLayoutConstraint.activate(constraints)
     }
