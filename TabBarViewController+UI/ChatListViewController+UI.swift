@@ -16,6 +16,10 @@ import AlamofireImage
 
 extension ChatListViewController {
     
+    func setupNavigationBar() {
+        navigationItem.title = Auth.auth().currentUser?.displayName
+    }
+    
     func observeUserMessages() {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
@@ -31,12 +35,12 @@ extension ChatListViewController {
                         let message = ChatModel(dictionary: dict)
 //                        message.setValuesForKeys(dict)
 //                        self.Chat.append(message)
+
                         if let chatPartnerUid = message.chatPartnerUid() {
                             self.messageDictionary[chatPartnerUid] = message
                         }
                         self.attemptReloadTable()
                     }
-//                    self.attemptReloadTable()
                 })
             })
         })

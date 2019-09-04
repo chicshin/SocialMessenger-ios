@@ -38,19 +38,35 @@ extension AccountViewController {
         let indexPath = IndexPath(row: sender.tag, section: 0)
         let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
         
+        let fullnameIndexPath = IndexPath(row: 1, section: 0)
+        let usernameIndexPath = IndexPath(row: 2, section: 0)
+        let statusIndexPath = IndexPath(row: 4, section: 0)
+        let fullnameCell = tableView.cellForRow(at: fullnameIndexPath) as! ProfileCell
+        let usernameCell = tableView.cellForRow(at: usernameIndexPath) as! ProfileCell
+        let statusCell = tableView.cellForRow(at: statusIndexPath) as! ProfileCell
+        
         switch sender.tag {
         case 1:
             fullname = cell.inputTextField.text!
             let initCount = fullname.count
-            cell.textCountLabel.text = "\(initCount)/25"
+            cell.textCountLabel.text = "\(initCount)/30"
+            cell.textCountLabel.isHidden = false
+            usernameCell.textCountLabel.isHidden = true
+            statusCell.textCountLabel.isHidden = true
         case 2:
             username = cell.inputTextField.text!
             let initCount = username.count
-            cell.textCountLabel.text = "\(initCount)/20"
+            cell.textCountLabel.text = "\(initCount)/25"
+            cell.textCountLabel.isHidden = false
+            fullnameCell.textCountLabel.isHidden = true
+            statusCell.textCountLabel.isHidden = true
         case 4:
             status = cell.inputTextField.text!
             let initCount = status.count
-            cell.textCountLabel.text = "\(initCount)/25"
+            cell.textCountLabel.text = "\(initCount)/30"
+            cell.textCountLabel.isHidden = false
+            fullnameCell.textCountLabel.isHidden = true
+            usernameCell.textCountLabel.isHidden = true
         default:
             break
         }
@@ -64,19 +80,19 @@ extension AccountViewController {
         
         switch tag {
         case 1:
-            if length <= 25 {
+            if length <= 30 {
                 return true
             } else {
                 return false
             }
         case 2:
-            if length <= 20 {
+            if length <= 25 {
                 return true
             } else {
                 return false
             }
         case 4:
-            if length <= 25 {
+            if length <= 30 {
                 return true
             } else {
                 return false

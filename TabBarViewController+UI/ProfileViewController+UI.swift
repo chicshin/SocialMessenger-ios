@@ -12,6 +12,8 @@ import FirebaseAuth
 import FirebaseDatabase
 import Alamofire
 import AlamofireImage
+import CropViewController
+import ProgressHUD
 
 extension ProfileViewController {
     /*
@@ -50,15 +52,16 @@ extension ProfileViewController {
     }
     
     @objc func presentPicker() {
+        self.croppingStyle = .default
         let picker = UIImagePickerController()
-        picker.allowsEditing = true
+        picker.allowsEditing = false
         picker.delegate = self
         picker.sourceType = .photoLibrary
         self.present(picker, animated: true, completion: nil)
     }
     
     func imageStorage(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
-        Api.User.ProfileImage(image: self.image, onSuccess: {
+        Api.User.ProfileImage(image: self.imageSelected, onSuccess: {
             self.doneButton.isHidden = true
             onSuccess()
         }) { (errorMessage) in
@@ -83,7 +86,8 @@ extension ProfileViewController {
     func setupEditButton() {
         editButton.tintColor = .darkGray
         editButton.titleLabel?.text = "Edit Profile"
-        editButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+//        editButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        editButton.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 13)
         editImage.image = #imageLiteral(resourceName: "edit")
     }
     @objc func editDidStart() {
@@ -115,7 +119,8 @@ extension ProfileViewController {
                     return
                 }
                 self.statusLabel.text = status
-                self.statusLabel.font = UIFont.systemFont(ofSize: 15)
+                self.statusLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 15)
+//                self.statusLabel.font = UIFont.systemFont(ofSize: 15)
                 self.statusLabel.textAlignment = .center
             }
         })
@@ -143,10 +148,11 @@ extension ProfileViewController {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        statusTextField.textColor = .white
         let length = self.statusTextField.text!.count + string.utf16.count - range.length
         textCountLabel.isHidden = false
-        if length <= 25 {
-            self.textCountLabel.text = "\(length)/25"
+        if length <= 30 {
+            self.textCountLabel.text = "\(length)/30"
             self.textCountLabel.font = UIFont.systemFont(ofSize: 13)
             self.textCountLabel.textColor = .lightGray
             return true
@@ -205,7 +211,7 @@ extension ProfileViewController {
             if let dict = dataSnapShot.value as? [String:Any] {
                 let name = dict["fullname"] as! String
                 self.nameLabel.text = name
-                self.nameLabel.font = UIFont.systemFont(ofSize: 20)
+                self.nameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 20)
                 self.nameLabel.textAlignment = .center
             }
         })
@@ -224,7 +230,7 @@ extension ProfileViewController {
         blurEffectView.frame = view.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         blurEffectView.alpha = 1
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeBlurEffect)))
+//        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeBlurEffect)))
         view.addSubview(blurEffectView)
         view.addSubview(statusTextField)
         view.addSubview(textFieldUnderlinde)
@@ -235,23 +241,91 @@ extension ProfileViewController {
         let blurredEffectViews = view.subviews.filter{$0 is UIVisualEffectView}
         blurredEffectViews.forEach{ blurView in
             blurView.removeFromSuperview()
+            statusTextField.textColor = .black
         }
     }
 }
 
-extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let imageSelected = info[.originalImage] as? UIImage {
-            image = imageSelected
-            profileImage.image = imageSelected
-        }
-        if let imageSelected = info[.editedImage] as? UIImage {
-            image = imageSelected
-            profileImage.image = imageSelected
-        }
-        dismiss(animated: true, completion: nil)
+extension ProfileViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+        let cropController = CropViewController(croppingStyle: croppingStyle, image: image)
+        cropController.delegate = self
+        
+        imageSelected = image
+        profileImage.image = imageSelected
+        
+        picker.dismiss(animated: true, completion: {
+            self.present(cropController, animated: true, completion: nil)
+        })
+        
+//        dismiss(animated: true, completion: nil)
         showDoneButton()
     }
+    
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        self.croppedRect = cropRect
+        self.croppedAngle = angle
+        updateImageViewWithImage(image, fromCropViewController: cropViewController)
+    }
+    
+    public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
+        imageView.image = image
+        layoutImageView()
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        
+        if cropViewController.croppingStyle != .circular {
+            imageView.isHidden = true
+            
+            cropViewController.dismissAnimatedFrom(self, withCroppedImage: image,
+                                                   toView: imageView,
+                                                   toFrame: CGRect.zero,
+                                                   setup: { self.layoutImageView() },
+                                                   completion: { self.imageView.isHidden = false })
+        }
+        else {
+            self.imageView.isHidden = false
+            cropViewController.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    public func layoutImageView() {
+        guard imageView.image != nil else { return }
+        
+        let padding: CGFloat = 20.0
+        
+        var viewFrame = self.view.bounds
+        viewFrame.size.width -= (padding * 2.0)
+        viewFrame.size.height -= ((padding * 2.0))
+        
+        var imageFrame = CGRect.zero
+        imageFrame.size = imageView.image!.size;
+        
+        if imageView.image!.size.width > viewFrame.size.width || imageView.image!.size.height > viewFrame.size.height {
+            let scale = min(viewFrame.size.width / imageFrame.size.width, viewFrame.size.height / imageFrame.size.height)
+            imageFrame.size.width *= scale
+            imageFrame.size.height *= scale
+            imageFrame.origin.x = (self.view.bounds.size.width - imageFrame.size.width) * 0.5
+            imageFrame.origin.y = (self.view.bounds.size.height - imageFrame.size.height) * 0.5
+            imageView.frame = imageFrame
+        }
+        else {
+            self.imageView.frame = imageFrame;
+            self.imageView.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY)
+        }
+    }
+    
+    @objc public func sharePhoto() {
+        guard let image = imageView.image else {
+            return
+        }
+        
+        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem!
+        present(activityController, animated: true, completion: nil)
+    }
+
 }
 
 extension UIImageView {

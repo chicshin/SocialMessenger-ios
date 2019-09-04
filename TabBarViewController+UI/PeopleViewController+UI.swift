@@ -63,17 +63,13 @@ extension PeopleViewController {
 //                        self.Users.append(user)
                         self.userDictionary[followingUid as! String] = user
                         self.friendsCount = self.userDictionary.count
-                        print(self.friendsCount)
                         self.attemptReloadTable()
-                        print("loadfriends childadded Users count: ", self.Users.count)
                     }
                 })
             })
             Ref().databaseSpecificUser(uid: uid!).child("following").observeSingleEvent(of: .childRemoved, with: { (snapshot) in
-                print(snapshot.value!, " // will be removed")
                 self.Users.removeAll()
                 self.userDictionary.removeValue(forKey: snapshot.value as! String)
-                print(self.userDictionary)
                 self.attemptReloadTable()
             })
         }
@@ -109,17 +105,15 @@ extension PeopleViewController {
     }
     
     func setupFriendsCountTitle() {
-        print("friends")
         let title = "Friends "
         let subTitle = String(self.friendsCount)
-//        String(self.friendsCount)
         
         let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: 12)!,
              NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         
         let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: 12)!,
              NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         
         attributedText.append(attributedSubText)
@@ -160,7 +154,7 @@ extension PeopleViewController {
             return lhsValue! < rhsValue!
         })
         filteredUser = sortedArr.filter({ user -> Bool in
-            print("TexstDidChange")
+            print("TextDidChange")
             if searchText.isEmpty {
                 isSearching = false
                 friendsTitleLabel.isHidden = false
@@ -171,13 +165,11 @@ extension PeopleViewController {
             }
             return false
         })
-        print("textDidchange will reload table")
-        friendsTableView.reloadData()
         loadSearch()
+        friendsTableView.reloadData()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        print("searchBarShouldBeginEdting")
         let noOffset = UIOffset(horizontal: 8, vertical: 0)
         searchBar.setPositionAdjustment(noOffset, for: .search)
         isSearching = false

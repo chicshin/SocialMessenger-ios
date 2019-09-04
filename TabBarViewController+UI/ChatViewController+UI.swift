@@ -14,14 +14,64 @@ import ProgressHUD
 import Alamofire
 import MobileCoreServices
 import AVFoundation
+import CropViewController
 
 extension ChatViewController {
+    func setupNavigationBar() {
+        if isSearching {
+            navigationItem.title = self.allUser!.username!
+        } else if !isSearching {
+            navigationItem.title = self.userModel!.username!
+        }
+        let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
+        navigationItem.leftBarButtonItem = dismissButton
+    }
     
+    
+    
+    
+    /*
+        Control Badge Count
+    */
+    func badgeCount() {
+//        let uid = Auth.auth().currentUser?.uid
+        var chatPartnerUid: String?
+        if isSearching {
+            chatPartnerUid = allUser!.uid!
+        } else if !isSearching {
+            chatPartnerUid = userModel!.uid!
+        }
+        Ref().databaseRoot.child("user-messages").child(chatPartnerUid!).observe(.childAdded, with: { (snapshot) in
+            let toUid = snapshot.key
+            Ref().databaseRoot.child("user-messages").child(chatPartnerUid!).child(toUid).observe(.childAdded, with: { (dataSanpshot) in
+                let messageId = dataSanpshot.key
+                Ref().databaseRoot.child("messages").child(messageId).observe(.value, with: { (messageSnapshot) in
+                    if let dict = messageSnapshot.value as? [String:Any] {
+                        let read = dict["read"] as! Int
+                        let toId = dict["toUid"] as! String
+                        if toId == chatPartnerUid {
+                            if read == 1 {
+                                self.badges += 1
+                            }
+                        }
+                    }
+                })
+            })
+        })
+
+    }
+    
+    
+    
+    
+    
+    /*
+        Control Message Log
+    */
     func observeMessageLog() {
         let uid = Auth.auth().currentUser?.uid
         var totalMessagesCount: Int?
         var toUid: String?
-        
         if isSearching {
             toUid = allUser!.uid!
         } else if !isSearching {
@@ -40,8 +90,13 @@ extension ChatViewController {
                 guard let dictionary = data.value as? [String:Any] else {
                     return
                 }
+
                 let chat = ChatModel(dictionary: dictionary)
                 self.Chat.append(chat)
+                
+                if chat.senderUid != uid && self.isInChatViewController == true {
+                    Ref().databaseRoot.child("messages").child(messageId).updateChildValues(["read": 0])
+                }
                 
                 func timestampString() -> String? {
                     var timeString: String?
@@ -55,8 +110,6 @@ extension ChatViewController {
                 }
                 
                 let contentType = chat.text != nil ? "text" : chat.videoUrl != nil ? "videoUrl" : "imageUrl"
-                //                    dataStructure.append(["date": date!, "content": returnValue as! String, "timestamp": timestamp!])
-                //                    dataStructure.append(dateModelStructure(date: date!, content: returnValue as! String, timestamp: timestamp!))
                 if contentType == "text" {
                     dataStructure.append(ChatModel.dateModelStructure(date: chat.datestampString()!, content: contentType, timestamp: chat.timestamp!, text: chat.text!, imageUrl: nil, imageWidth: nil, imageHeight: nil, videoUrl: nil, timestampString: timestampString()!, toUid: chat.toUid!, senderUid: chat.senderUid!))
                 } else if contentType == "videoUrl" {
@@ -80,11 +133,21 @@ extension ChatViewController {
                 let sortedKeys = groupedMessages.keys.sorted()
                 sortedKeys.forEach( { (key) in
                     var values = groupedMessages[key]
-                    values = values?.sorted(by: { (lhs: ChatModel.dateModelStructure, rhs: ChatModel.dateModelStructure) in
-                        let lhsValue = lhs.timestamp as! Int
-                        let rhsValue = rhs.timestamp as! Int
-                        return lhsValue < rhsValue
-                    })
+                    
+                    var today: String?
+                    let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
+                    let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(truncating: timestamp))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd"
+                    today = dateFormatter.string(from: timestampDate as Date)
+                    
+                    if key != today {
+                        values = values?.sorted(by: { (lhs: ChatModel.dateModelStructure, rhs: ChatModel.dateModelStructure) in
+                            let lhsValue = lhs.timestamp as! Int
+                            let rhsValue = rhs.timestamp as! Int
+                            return lhsValue < rhsValue
+                        })
+                    }
                     self.groupedMessagesByDates.append(values ?? [])
                 })
                 
@@ -98,68 +161,67 @@ extension ChatViewController {
         })
     }
     
-    func setupKeyboardObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-//            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    func setCurrentUserInfo() {
+        let uid = Auth.auth().currentUser?.uid
+        
+        Ref().databaseUsers.child(uid!).observe(.value, with: { (snapshot) in
+            self.CurrentUser.removeAll()
+            if let dict = snapshot.value as? [String:Any] {
+                let user = CurrentUserModel()
+                user.setValuesForKeys(dict)
+                self.CurrentUser.append(user)
+            }
+        })
     }
     
-    @objc func handleKeyboardDidShow() {
+    
+    
+    
+    
+    
+    /*
+        Control Observer
+    */
+    func setupKeyboardObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    
+    @objc func handleKeyboardWillShow() {
+        inputContainerVeiw.translatesAutoresizingMaskIntoConstraints = false
+        inputContainerHeight?.isActive = true
+        inputContainerHeightX?.isActive = false
+        
         if groupedMessagesByDates.count > 0 {
             let section = (self.collectionView?.numberOfSections)! - 1
             let indexPath = NSIndexPath(item: groupedMessagesByDates[section].count - 1, section: section)
             self.collectionView.scrollToItem(at: indexPath as IndexPath, at: UICollectionView.ScrollPosition.top, animated: true)
         }
     }
-
-    func setupNavigationBar() {
-        if isSearching {
-            navigationItem.title = self.allUser!.username!
-        } else if !isSearching {
-            navigationItem.title = self.userModel!.username!
+    
+    @objc func handleKeyboardWillHide() {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+            inputContainerVeiw.translatesAutoresizingMaskIntoConstraints = false
+            inputContainerHeightX?.isActive = true
+            inputContainerHeight?.isActive = false
         }
-        let dismissButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissChat))
-        navigationItem.leftBarButtonItem = dismissButton
+        else {
+            inputContainerVeiw.translatesAutoresizingMaskIntoConstraints = false
+            inputContainerHeight?.isActive = true
+            inputContainerHeightX?.isActive = false
+        }
     }
-
-//    func sendFcm(){
+    
+    
+    
+    
+    /*
+        Control FCM
+    */
     func setFcm(payloadDict: [String:Any]) {
         let url = "https://fcm.googleapis.com/fcm/send"
-        let header: HTTPHeaders = [
-            "Content-Type": "application/json",
-            "Authorization": "key=AIzaSyDA3sKFVIMUl_t5ADdEkKOW-iCo26DIgjw"
-//            "Authorization": "key=SECURE API KEY"
-        ]
-
-//        let name = Auth.auth().currentUser?.displayName
-//
-//        let notificationModel = NotificationModel()
-//        if isSearching {
-//            notificationModel.to = allUser?.pushToken
-//            if allUser?.notifications!["showPreview"] as! String == "enabled" {
-//                notificationModel.notification.text = inputTextField.text
-//            } else {
-//                notificationModel.notification.text = "Sent a new message"
-//            }
-//            
-//        } else if !isSearching {
-//            notificationModel.to = userModel?.pushToken
-//            if userModel?.notifications!["showPreview"] as! String == "enabled" {
-//                notificationModel.notification.text = inputTextField.text
-//            } else {
-//                notificationModel.notification.text = "Sent a new message"
-//            }
-//        }
-//        notificationModel.notification.title = name
-//        notificationModel.data.title = name
-//        notificationModel.data.text = inputTextField.text
-
-//        let paramString  = ["to" : notificationModel.to!, "notification" : ["title" : name, "body" : notificationModel.notification.text], "data" : ["user" : Auth.auth().currentUser!.uid]] as [String : Any]
-
-//        let params = notificationModel.toJSON()
-//
-//        Alamofire.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).responseJSON{ (response) in
-//            print(response.result.value as Any)
-//        }
         
         let NSUrl = NSURL(string: url)!
         let request = NSMutableURLRequest(url: NSUrl as URL)
@@ -183,15 +245,20 @@ extension ChatViewController {
         
     }
     
-    func sendFcm() {
-        print("sendFcm")
+    func sendFcm(videoUrl: String?) {
         let name = Auth.auth().currentUser?.displayName
         
         let notificationModel = NotificationModel()
         if isSearching {
             notificationModel.to = allUser?.pushToken
             if allUser?.notifications!["showPreview"] as! String == "enabled" {
-                notificationModel.notification.text = inputTextField.text
+                if inputTextField.text != "" {
+                    notificationModel.notification.text = inputTextField.text
+                } else if videoUrl != nil {
+                    notificationModel.notification.text = "Sent a video"
+                } else {
+                    notificationModel.notification.text = "Sent an image"
+                }
             } else {
                 notificationModel.notification.text = "Sent a new message"
             }
@@ -199,7 +266,13 @@ extension ChatViewController {
         } else if !isSearching {
             notificationModel.to = userModel?.pushToken
             if userModel?.notifications!["showPreview"] as! String == "enabled" {
-                notificationModel.notification.text = inputTextField.text
+                if inputTextField.text != "" {
+                    notificationModel.notification.text = inputTextField.text
+                } else if videoUrl != nil {
+                    notificationModel.notification.text = "Sent a video"
+                } else {
+                    notificationModel.notification.text = "Sent an image"
+                }
             } else {
                 notificationModel.notification.text = "Sent a new message"
             }
@@ -208,28 +281,60 @@ extension ChatViewController {
         notificationModel.data.title = name
         notificationModel.data.text = inputTextField.text
         
-        let token = notificationModel.to
-        let senderUid = Auth.auth().currentUser?.uid
-        let payload: [String: Any] = ["to": token!, "notification": ["title":name!, "body": notificationModel.notification.text!, "badge":1, "sound":"default"], "data" : ["senderUid" : senderUid!]]
+        guard let token = notificationModel.to else {
+            return
+        }
+        let showPreviewContent = CurrentUser[0].notifications!["showPreview"]
+        let payload: [String: Any] = ["to": token, "notification": ["body": name!.lowercased() + " : " + notificationModel.notification.text!, "badge": self.badges + 1, "sound": "default"], "data" : ["uid": CurrentUser[0].uid!, "email": CurrentUser[0].email!, "fullname": CurrentUser[0].fullname!, "username": CurrentUser[0].username!, "profileImageUrl": CurrentUser[0].profileImageUrl!, "pushToken": CurrentUser[0].pushToken!, "showPreview": showPreviewContent!]]
         self.setFcm(payloadDict: payload)
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        return true
-    }
     
-    @objc func presentPicker() {
+    
+    
+    
+    /*
+        Control imagePicker
+    */
+    @objc func videoPresentPicker() {
+        //        self.croppingStyle = .default
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.sourceType = .photoLibrary
+        picker.mediaTypes = [kUTTypeMovie as String]
         picker.allowsEditing = true
-        picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+        picker.videoMaximumDuration = 60
+        self.present(picker, animated: true, completion: nil)
+    }
+    
+    @objc func photoPresentPicker() {
+        self.croppingStyle = .default
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .photoLibrary
+//        picker.mediaTypes = [kUTTypeImage as String]
+        picker.allowsEditing = false
+        self.present(picker, animated: true, completion: nil)
+    }
+    
+    @objc func presentCamera() {
+        self.croppingStyle = .default
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .camera
+        picker.allowsEditing = false
         self.present(picker, animated: true, completion: nil)
     }
 
+    
+    
+    
+    
+    /*
+        Control Storage
+    */
     private func imageStorage(image: UIImage?, completion: @escaping(_ imageUrl: String) -> (), onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
-        guard let imageData = image?.jpegData(compressionQuality: 0.2) else {
+        guard let imageData = image?.jpegData(compressionQuality: 1) else {
             return
         }
 
@@ -246,7 +351,6 @@ extension ChatViewController {
             storageRef.downloadURL(completion: { (url, error) in
                 if let metaImageUrl = url?.absoluteString {
                     completion(metaImageUrl)
-//                    self.sendMessageWithImage(imageUrl: metaImageUrl, image: image!)
                     onSuccess()
                 }
             })
@@ -282,9 +386,18 @@ extension ChatViewController {
         }
     }
     
+    
+    
+    
+    
+    
+    /*
+        Control Video Thumbnail
+    */
     private func thumbnailImageForFileUrl(fileUrl: NSURL) -> UIImage? {
         let asset = AVAsset(url: fileUrl as URL)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
         
         do {
             let thumbnailCGImage = try imageGenerator.copyCGImage(at: CMTimeMakeWithSeconds(1, preferredTimescale: 60), actualTime: nil)
@@ -294,6 +407,18 @@ extension ChatViewController {
         }
         
         return nil
+    }
+    
+    
+    
+    
+    
+    /*
+        Control Send Messages
+    */
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        handleSend()
+        return true
     }
     
     @objc func handleSend() {
@@ -318,24 +443,37 @@ extension ChatViewController {
     private func sendMessageWithProperties(properties: [String:Any]) {
         let uid = Auth.auth().currentUser?.uid
         var toUid: String?
+        var token: String?
+        
         if isSearching {
+            token = allUser?.pushToken
             toUid = allUser?.uid
         } else if !isSearching {
+            token = userModel?.pushToken
             toUid = userModel?.uid
         }
-//        let toUid = userModel!.uid
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
         var values : Dictionary<String,Any> = [
             "senderUid": uid!,
             "toUid": toUid!,
             "timestamp": timestamp,
+            "read": 1
         ]
         properties.forEach({(values[$0] = $1)})
-        sendFcm()
+        if token != nil {
+            sendFcm(videoUrl: properties["videoUrl"] as? String)
+        }
         inputTextField.text = nil
         DatabaseService.updateMessagesWithValues(toUid: toUid!, uid: uid!, values: values)
     }
     
+    
+    
+    
+    
+    /*
+        Control Zoom In / Zoom Out
+    */
     func performZoomInForStartingImageView(startingImageView: UIImageView) {
         self.startingImageView = startingImageView
         startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
@@ -343,6 +481,7 @@ extension ChatViewController {
         zoomingImageView.image = startingImageView.image
         zoomingImageView.isUserInteractionEnabled = true
         zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
         if let keyWindow = UIApplication.shared.keyWindow {
             let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
             blurBackground = UIVisualEffectView(effect: blurEffect)
@@ -377,27 +516,158 @@ extension ChatViewController {
     }
 }
 
-extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ChatViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL{
-            videoStorage(videoUrl: videoUrl)
-        } else {
-            if let editedImage = info[.editedImage] as? UIImage {
-                selectedImageFromPicker = editedImage
-            } else if let originalImage = info[.originalImage] as? UIImage {
-                selectedImageFromPicker = originalImage
-            }
-            
-            if let selectedImage = selectedImageFromPicker {
-                imageStorage(image: selectedImage, completion: { (imageUrl) in
-                    self.sendMessageWithImage(imageUrl: imageUrl, image: selectedImage)
-                },onSuccess: {
-                    //update database and storage with image
-                }) {(errorMessage) in
-                    ProgressHUD.showError(errorMessage)
+        if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL {
+            let data = NSData(contentsOf: videoUrl as URL)!
+            print("File size before compression: \(Double(data.length / 1048576)) mb")
+            let compressedURL = NSURL.fileURL(withPath: NSTemporaryDirectory() + NSUUID().uuidString + ".m4v")
+            self.compressVideo(inputURL: videoUrl as URL, outputURL: compressedURL) { (exportSession) in
+                guard let session = exportSession else {
+                    return
+                }
+                switch session.status {
+                case .unknown:
+                    break
+                case .waiting:
+                    break
+                case .exporting:
+                    break
+                case .completed:
+                    guard let compressedData = NSData(contentsOf: compressedURL) else {
+                        return
+                    }
+                    print("File size after compression: \(Double(compressedData.length / 1048576)) mb")
+                case .failed:
+                    break
+                case .cancelled:
+                    break
+                @unknown default:
+                    break
                 }
             }
+        } else {
+            guard let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+            let cropController = CropViewController(croppingStyle: croppingStyle, image: image)
+            cropController.delegate = self
+            
+//            self.selectedImageFromPicker = image
+            imageView.image = image
+            
+            picker.dismiss(animated: true, completion: {
+                self.present(cropController, animated: true, completion: nil)
+                if self.inputTextField.isFirstResponder == true {
+                    self.handleKeyboardWillShow()
+                }
+                
+            })
+            
+//            if let selectedImage = selectedImageFromPicker {
+//                imageStorage(image: selectedImage, completion: { (imageUrl) in
+//                    self.sendMessageWithImage(imageUrl: imageUrl, image: selectedImage)
+//                },onSuccess: {
+//                    //update database and storage with image
+//                }) {(errorMessage) in
+//                    ProgressHUD.showError(errorMessage)
+//                }
+//            }
         }
+        transparentView.alpha = 0
+        self.tableView.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
         dismiss(animated: true, completion: nil)
+    }
+    
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        self.croppedRect = cropRect
+        self.croppedAngle = angle
+        updateImageViewWithImage(image, fromCropViewController: cropViewController)
+    }
+    
+    public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
+//        imageView.image = image
+//        layoutImageView()
+        self.selectedImageFromPicker = image
+        layoutImageView()
+        if let selectedImage = selectedImageFromPicker {
+            imageStorage(image: selectedImage, completion: { (imageUrl) in
+                self.sendMessageWithImage(imageUrl: imageUrl, image: selectedImage)
+            },onSuccess: {
+                //update database and storage with image
+            }) {(errorMessage) in
+                ProgressHUD.showError(errorMessage)
+            }
+        }
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        
+        if cropViewController.croppingStyle != .circular {
+            imageView.isHidden = true
+            
+            cropViewController.dismissAnimatedFrom(self, withCroppedImage: image,
+                                                   toView: imageView,
+                                                   toFrame: CGRect.zero,
+                                                   setup: { self.layoutImageView() },
+                                                   completion: { self.imageView.isHidden = false })
+        }
+        else {
+            self.imageView.isHidden = false
+            cropViewController.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    public func layoutImageView() {
+        guard imageView.image != nil else { return }
+        
+        let padding: CGFloat = 20.0
+        
+        var viewFrame = self.view.bounds
+        viewFrame.size.width -= (padding * 2.0)
+        viewFrame.size.height -= ((padding * 2.0))
+        
+        var imageFrame = CGRect.zero
+        imageFrame.size = imageView.image!.size;
+        
+        if imageView.image!.size.width > viewFrame.size.width || imageView.image!.size.height > viewFrame.size.height {
+            let scale = min(viewFrame.size.width / imageFrame.size.width, viewFrame.size.height / imageFrame.size.height)
+            imageFrame.size.width *= scale
+            imageFrame.size.height *= scale
+            imageFrame.origin.x = (self.view.bounds.size.width - imageFrame.size.width) * 0.5
+            imageFrame.origin.y = (self.view.bounds.size.height - imageFrame.size.height) * 0.5
+            imageView.frame = imageFrame
+        }
+        else {
+            self.imageView.frame = imageFrame;
+            self.imageView.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY)
+        }
+    }
+    
+    @objc public func sharePhoto() {
+        guard let image = imageView.image else {
+            return
+        }
+        
+        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem!
+        present(activityController, animated: true, completion: nil)
+    }
+
+}
+
+extension ChatViewController {
+    
+    func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
+        let urlAsset = AVURLAsset(url: inputURL, options: nil)
+        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetHighestQuality) else {
+            handler(nil)
+            return
+        }
+        
+        exportSession.outputURL = outputURL
+        exportSession.outputFileType = AVFileType.mov
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.exportAsynchronously { () -> Void in
+            self.videoStorage(videoUrl: exportSession.outputURL as NSURL?)
+            handler(exportSession)
+        }
     }
 }
