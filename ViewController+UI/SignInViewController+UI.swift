@@ -9,81 +9,33 @@
 import UIKit
 
 extension SignInViewController {
-    func setupTitle() {
-        let title = "CLUSTER"
-//        let subTitle = "  Talk"
-        
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.init(name: "TrebuchetMS", size: 45)!
-            ])
-        
-//        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Copperplate", size: 10)!
-//            ])
-//
-//        attributedText.append(attributedSubText)
-        titleLabel.attributedText = attributedText
+    /*
+        Control Blur Background
+    */
+    func setBlurBackground() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.alpha = 1
+        view.addSubview(blurEffectView)
+        view.addSubview(titleLabel)
+        view.addSubview(emailTextField)
+        view.addSubview(passwordTextField)
+        view.addSubview(emailBottomLineView)
+        view.addSubview(passwordBottomLineView)
+        view.addSubview(signInButton)
+        view.addSubview(signUpButton)
+        view.addSubview(passwordResetButton)
     }
     
-    func setupEmailTextField() {
-        emailContainerView.layer.borderWidth = 1
-        emailContainerView.layer.borderColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 0.5).cgColor
-        emailContainerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.03)
-        emailContainerView.layer.cornerRadius = 3
-        emailContainerView.clipsToBounds = true
-        
-        let placeholderAttr = NSAttributedString(string: "Email Address", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        emailTextField.borderStyle = .none
-        emailTextField.attributedPlaceholder = placeholderAttr
-        emailTextField.textColor = .black
-    }
     
-    func setupPasswordTextField() {
-        passwordContainerView.layer.borderWidth = 1
-        passwordContainerView.layer.borderColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 0.5).cgColor
-        passwordContainerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.03)
-        passwordContainerView.layer.cornerRadius = 3
-        passwordContainerView.clipsToBounds = true
-        
-        let placeholderAttr = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        passwordTextField.borderStyle = .none
-        passwordTextField.attributedPlaceholder = placeholderAttr
-        passwordTextField.textColor = .black
-    }
     
-    func setupSignIn() {
-        signInButton.setTitle("Sign In", for: UIControl.State.normal)
-//        signInButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
-        signInButton.backgroundColor = .lightGray
-        signInButton.layer.cornerRadius = 5
-        signInButton.setTitleColor(.white, for: UIControl.State.normal)
-        signInButton.isUserInteractionEnabled = false
-    }
     
-    func setupForgotPassword() {
-        forgotPasswordButton.setTitle("Forgot password?", for: UIControl.State.normal)
-        forgotPasswordButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        forgotPasswordButton.setTitleColor(UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8), for: UIControl.State.normal)
-    }
     
-    func setupSignUp() {
-        let title = "Don't have an account? "
-        let subtitle = "Sign Up"
-        
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-            NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        let attributedSubText = NSMutableAttributedString(string: subtitle, attributes:
-            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 13),
-            NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
-        
-        attributedText.append(attributedSubText)
-        signUpButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
-    }
-    
+    /*
+        Control Textfield
+    */
     func handleTextFields(){
         emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: UIControl.Event.editingChanged)
         passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: UIControl.Event.editingChanged)
@@ -91,15 +43,26 @@ extension SignInViewController {
     
     @objc func textFieldDidChange(){
         guard let email = emailTextField.text, !email.isEmpty, let password = passwordTextField.text, !password.isEmpty else{
-            signInButton.backgroundColor = .lightGray
+            signInButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
+            signInButton.layer.borderWidth = 2
+            signInButton.layer.borderColor = UIColor.lightGray.cgColor
+            signInButton.backgroundColor = .clear
             signInButton.isUserInteractionEnabled = false
             return
         }
         signInButton.setTitleColor(.white, for: UIControl.State.normal)
-        signInButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1)
+        signInButton.layer.borderWidth = 0
+        signInButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
         signInButton.isUserInteractionEnabled = true
     }
     
+    
+    
+    
+    
+    /*
+        Control Sign In
+    */
     func signIn(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
         Api.User.signIn(email: emailTextField.text!, password: passwordTextField.text!, onSuccess: {
             onSuccess()
@@ -107,6 +70,57 @@ extension SignInViewController {
             onError(errorMessage)
         }
     }
+    
+    
+    
+    
+    
+    /*
+     Control Contraints
+     */
+    func setupConstraints() {
+        backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
+        
+        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 160).isActive = true
+        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        
+        emailTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 45).isActive = true
+        emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
+        emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+        emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+        passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        passwordTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
+        passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+        passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        passwordBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        signInButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+        signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signInButton.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        signInButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        passwordResetButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 10).isActive = true
+        passwordResetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        passwordResetButton.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        passwordResetButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        signUpButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        signUpButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    }
 }
-
-

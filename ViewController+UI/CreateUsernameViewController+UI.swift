@@ -9,100 +9,120 @@
 import UIKit
 
 extension CreateUsernameViewController {
-    func setupTitle() {
-        let title = "Create Username"
-        let subTitle = "\n\nPick a username for your account. You can always change it later."
-        
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30),
-             NSAttributedString.Key.foregroundColor : UIColor.black])
-        
-        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-             NSAttributedString.Key.foregroundColor : UIColor.black.withAlphaComponent(0.9)])
-        
-        attributedText.append(attributedSubText)
-        titleLabel.attributedText = attributedText
-        titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 4
-    }
-    func setupUsernameTextField() {
-        usernameContainerView.layer.borderWidth = 1
-        usernameContainerView.layer.borderColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 0.5).cgColor
-        usernameContainerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.03)
-        usernameContainerView.layer.cornerRadius = 3
-        usernameContainerView.clipsToBounds = true
-        
-        let placeholderAttr = NSMutableAttributedString(string: "Enter username", attributes:
-            [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        usernameTextField.borderStyle = .none
-        usernameTextField.attributedPlaceholder = placeholderAttr
-        usernameTextField.textColor = .black
-        
+    /*
+     Control Blur Background
+     */
+    func setBlurBackground() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.alpha = 1
+        view.addSubview(blurEffectView)
+        view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
+        view.addSubview(usernameTextField)
+        view.addSubview(usernameTextCount)
+        view.addSubview(usernameBottomLineView)
+        view.addSubview(usernameExistsErrorMessage)
+        view.addSubview(restrictSpecialCharactersMessage)
+        view.addSubview(nextButton)
+        view.addSubview(signInButton)
     }
     
-    func setupNext() {
-        nextButton.setTitle("Next", for: UIControl.State.normal)
-        nextButton.backgroundColor = .lightGray
-        nextButton.layer.cornerRadius = 5
-        nextButton.clipsToBounds = true
-        nextButton.setTitleColor(.white, for: UIControl.State.normal)
-        nextButton.isUserInteractionEnabled = false
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
-    func setupSignIn() {
-        let title = "Already have an account? "
-        let subTitle = "Sign In"
+    
+    
+    
+    /*
+        Control Restrict Special Characters Error Message
+    */
+    func setupErrorLabel() {
+        let message = "Username " + usernameSelected + " is already taken."
+        let attributedText = NSMutableAttributedString(string: message, attributes:
+            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
+             NSAttributedString.Key.foregroundColor : UIColor.red])
         
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 13),
-             NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
-        
-        attributedText.append(attributedSubText)
-        signInButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
+        usernameExistsErrorMessage.attributedText = attributedText
+        usernameExistsErrorMessage.isHidden = false
+        nextButtonTopAnchorWithErrorShows?.isActive = true
+        nextButtonTopAnchor?.isActive = false
     }
     
-    func handleTextFields(){
+    func dismissError() {
+        usernameExistsErrorMessage.isHidden = true
+        restrictSpecialCharactersMessage.isHidden = true
+        nextButtonTopAnchorWithErrorShows?.isActive = false
+        nextButtonTopAnchor?.isActive = true
+    }
+    
+    
+    
+    
+    /*
+        Control Textfield
+    */
+    func handleTextFields() {
         usernameTextField.addTarget(self, action: #selector(textFieldDidChange), for: UIControl.Event.editingChanged)
     }
     
     @objc func textFieldDidChange(){
         guard let username = usernameTextField.text, !username.isEmpty else{
-//            nextButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
-            nextButton.backgroundColor = .lightGray
+            nextButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
+            nextButton.layer.borderWidth = 2
+            nextButton.layer.borderColor = UIColor.lightGray.cgColor
+            nextButton.backgroundColor = .clear
             nextButton.isUserInteractionEnabled = false
             dismissError()
             return
         }
         nextButton.setTitleColor(.white, for: UIControl.State.normal)
-        nextButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1)
+        nextButton.layer.borderWidth = 0
+        nextButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
         nextButton.isUserInteractionEnabled = true
         dismissError()
     }
     
-    func setupInitialError() {
-        usernameErrorMessageLabel.isHidden = true
-        nextButtonTopLayout.constant = 5
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = string.components(separatedBy: cs).joined(separator: "")
+        
+        let length = self.usernameTextField.text!.count + string.utf16.count - range.length
+        usernameTextCount.isHidden = false
+        
+        if string == filtered && length <= 25 {
+            restrictSpecialCharactersMessage.isHidden = true
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButtonTopAnchor?.isActive = true
+            nextButton.isUserInteractionEnabled = true
+            self.usernameTextCount.text = "\(length)/25"
+            return true
+        } else {
+            usernameExistsErrorMessage.isHidden = true
+            restrictSpecialCharactersMessage.isHidden = false
+            nextButtonTopAnchorWithErrorShows?.isActive = true
+            nextButtonTopAnchor?.isActive = false
+            if self.usernameTextField.text!.count == 20 {
+                restrictSpecialCharactersMessage.isHidden = true
+                nextButtonTopAnchorWithErrorShows?.isActive = false
+                nextButtonTopAnchor?.isActive = true
+            }
+            nextButton.isUserInteractionEnabled = false
+            return false
+        }
     }
     
-    func setupErrorLabel() {
-        let message = "Username " + usernameSelected + " is already taken."
-        
-        let attributedText = NSMutableAttributedString(string: message, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
-             NSAttributedString.Key.foregroundColor : UIColor.red])
-        
-        usernameErrorMessageLabel.translatesAutoresizingMaskIntoConstraints = false
-        usernameErrorMessageLabel.attributedText = attributedText
-        usernameErrorMessageLabel.isHidden = false
-        nextButtonTopLayout.constant = 20
-    }
     
+    
+    
+    
+    /*
+        Control Create Username
+    */
     func createUsername(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
         Api.User.createUsername(withUsername: usernameTextField.text!, onSuccess: {
             onSuccess()
@@ -111,13 +131,63 @@ extension CreateUsernameViewController {
         }
     }
     
-    func handleError() {
-        usernameContainerView.layer.borderColor = UIColor(red: 250, green: 0, blue: 0, alpha: 1).cgColor
-    }
     
-    func dismissError() {
-        usernameErrorMessageLabel.isHidden = true
-        nextButtonTopLayout.constant = 5
-        usernameContainerView.layer.borderColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 0.5).cgColor
+    
+    
+    
+    /*
+        Control Contraints
+    */
+    func setupConstraints() {
+        backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
+        
+        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+        
+        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        
+        usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
+        usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        usernameTextField.widthAnchor.constraint(equalToConstant: 240).isActive = true
+        usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+        usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: 10).isActive = true
+        usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+        usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        usernameBottomLineView.widthAnchor.constraint(equalToConstant: 250).isActive = true
+        usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+        usernameExistsErrorMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+        usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+        restrictSpecialCharactersMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+        restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+        nextButtonTopAnchor?.isActive = true
+        nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+        nextButtonTopAnchorWithErrorShows?.isActive = false
+        nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        nextButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        nextButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
 }

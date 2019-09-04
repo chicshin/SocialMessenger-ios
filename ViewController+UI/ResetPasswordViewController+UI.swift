@@ -7,71 +7,49 @@
 //
 
 import UIKit
-import Firebase
-import FirebaseAuth
-import FirebaseDatabase
-import FirebaseStorage
 import ProgressHUD
 
 extension ResetPasswordViewController {
-    func setupClose() {
-        closeButton.setImage(UIImage.init(named: "close_icon"), for: UIControl.State.normal)
-        closeButton.heightAnchor.constraint(equalToConstant: 30)
-        closeButton.widthAnchor.constraint(equalToConstant: 30)
-        closeButton.tintColor = .black
-        closeButton.clipsToBounds = true
-    }
-    func setupTitle() {
-        let title = "Reset Password"
-        let subTitle = "\n\nEnter your email address you're are using for your account below. We will send a password rest link."
-        
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30),
-             NSAttributedString.Key.foregroundColor : UIColor.black])
-        
-        let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 14)!,
-            NSAttributedString.Key.foregroundColor : UIColor.black.withAlphaComponent(0.9)])
-        
-        attributedText.append(attributedSubText)
-        titleLabel.attributedText = attributedText
-        titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 5
-    }
-    func setupEmailTextField() {
-        emailContainerView.layer.borderWidth = 1
-        emailContainerView.layer.borderColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 0.5).cgColor
-        emailContainerView.layer.cornerRadius = 3
-        emailContainerView.clipsToBounds = true
-        emailContainerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.03)
-        
-        let placeholderAttr = NSMutableAttributedString(string: "Email Address", attributes:
-            [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        
-        emailTextField.attributedPlaceholder = placeholderAttr
-        emailTextField.borderStyle = .none
-        emailTextField.textColor = .black
-    }
-    func setupReset() {
-        resetButton.setTitle("Request Reset Link", for: UIControl.State.normal)
-        resetButton.setTitleColor(.white, for: UIControl.State.normal)
-        resetButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
-        resetButton.layer.cornerRadius = 5
-        resetButton.clipsToBounds = true
-        resetButton.isUserInteractionEnabled = false
+    /*
+     Control Blur Background
+     */
+    func setBlurBackground() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.alpha = 1
+        view.addSubview(blurEffectView)
+        view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
+        view.addSubview(emailTextField)
+        view.addSubview(emailBottomLineView)
+        view.addSubview(resetButton)
+        view.addSubview(dismissButton)
     }
     
+    
+    
+    
+    /*
+        Control Textfield
+    */
     func handleTextField() {
         emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: UIControl.Event.editingChanged)
     }
     
     @objc func textFieldDidChange() {
         guard let email = emailTextField.text, !email.isEmpty else {
-            resetButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1).withAlphaComponent(0.7)
+            resetButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
+            resetButton.layer.borderWidth = 2
+            resetButton.layer.borderColor = UIColor.lightGray.cgColor
+            resetButton.backgroundColor = .clear
             resetButton.isUserInteractionEnabled = false
             return
         }
-        resetButton.backgroundColor = #colorLiteral(red: 0.6617934108, green: 0, blue: 0.05319330841, alpha: 1)
+        resetButton.setTitleColor(.white, for: UIControl.State.normal)
+        resetButton.layer.borderWidth = 0
+        resetButton.backgroundColor = UIColor(white: 1, alpha: 0.2)
         resetButton.isUserInteractionEnabled = true
     }
     
@@ -80,5 +58,40 @@ extension ResetPasswordViewController {
             ProgressHUD.showError(ERROR_EMPTY_EMAIL_RESET)
             return
         }
+    }
+    
+    func setupConstraints() {
+        backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
+        
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
+        dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        titleLabel.topAnchor.constraint(equalTo: dismissButton.bottomAnchor, constant: 30).isActive = true
+        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+        
+        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        
+        emailTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+        emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
+        emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+        emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        resetButton.topAnchor.constraint(equalTo: emailBottomLineView.bottomAnchor, constant: 30).isActive = true
+        resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        resetButton.widthAnchor.constraint(equalToConstant: 220).isActive = true
+        resetButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
 }

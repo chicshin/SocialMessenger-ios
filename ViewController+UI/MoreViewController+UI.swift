@@ -58,7 +58,11 @@ extension MoreViewController {
     }
     
     func checkTokenAndShowPreview() {
-        Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).observe(.value, with: { (snapshot) in
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Ref().databaseSpecificUser(uid: uid).observe(.value, with: { (snapshot) in
             let dictionary = snapshot.value as! [String:Any]
     
             for keys in dictionary.keys {
@@ -66,7 +70,7 @@ extension MoreViewController {
                     self.token = dictionary["pushToken"] as! String
                 }
                 if keys == "notifications" {
-                    Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).child("notifications").observeSingleEvent(of: .value, with: { (snapshot) in
+                    Ref().databaseSpecificUser(uid: uid).child("notifications").observeSingleEvent(of: .value, with: { (snapshot) in
                         let dict = snapshot.value as! [String:Any]
                         
                         if dict["showPreview"] as! String == "enabled" {
