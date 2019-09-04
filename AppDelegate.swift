@@ -48,6 +48,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
+//        let badge = (userInfo["badge"] as! Int)
+//        UIApplication.shared.applicationIconBadgeNumber = UIApplication.shared.applicationIconBadgeNumber + 1
+        
         if let messageId = userInfo[gcmMessageIDKey] {
             print("Message ID: \(messageId)")
         }
@@ -58,34 +61,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         user.setValuesForKeys(dictionary as [String : Any])
         self.User.append(user)
         
-//        let userInfos = ["uid": userInfo["uid"]!, "profileImageUrl": userInfo["profileImageUrl"]!, "username": userInfo["username"]!]
-//        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "notificationReceived"), object: nil, userInfo: userInfos))
         let storyboard: UIStoryboard = UIStoryboard(name: "Chat", bundle: nil)
         let presentVC = storyboard.instantiateViewController(withIdentifier: "NavigationChat") as! UINavigationController
         let chatVC = presentVC.topViewController as! ChatViewController
-//        let chatVC = storyboard.instantiateViewController(withIdentifier: "ChatVC") as! ChatViewController
         chatVC.allUser = self.User[0]
         chatVC.isfromNotification = true
         
         self.window?.rootViewController = presentVC
         self.window?.makeKeyAndVisible()
-//        presentVC.pushViewController(chatVC, animated: false)
-//        self.window?.rootViewController!.present(chatVC, animated: false, completion: nil)
-        
-//        presentVC.pushViewController(chatVC, animated: true)
-        
-//        let storyboard: UIStoryboard = UIStoryboard(name: "Chat", bundle: nil)
-//        let presentVC = storyboard.instantiateViewController(withIdentifier: "ChatVC") as! ChatViewController
-//        presentVC.allUser = self.User[0]
-//        let rootViewController = self.window!.rootViewController as! UINavigationController
-////        self.window?.rootViewController = presentVC
-//        rootViewController.present(presentVC, animated: true, completion: nil)
         completionHandler()
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("this one did called")
-        print(userInfo)
+//        UIApplication.shared.applicationIconBadgeNumber = UIApplication.shared.applicationIconBadgeNumber + 1
         completionHandler(.newData)
     }
     
@@ -107,6 +95,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        if let uid = Auth.auth().currentUser?.uid  {
+            var badges = 0
+            UIApplication.shared.applicationIconBadgeNumber = badges
+            Ref().databaseRoot.child("user-messages").child(uid).observe(.childAdded, with: { (snapshot) in
+                let toUid = snapshot.key
+                Ref().databaseRoot.child("user-messages").child(uid).child(toUid).observe(.childAdded, with: { (dataSanpshot) in
+                    let messageId = dataSanpshot.key
+                    Ref().databaseRoot.child("messages").child(messageId).observe(.value, with: { (messageSnapshot) in
+                        if let dict = messageSnapshot.value as? [String:Any] {
+                            let read = dict["read"] as! Int
+                            let toId = dict["toUid"] as! String
+                            if toId == uid {
+                                if read == 1 {
+                                    badges += 1
+                                    UIApplication.shared.applicationIconBadgeNumber = badges
+                                }
+                            }
+                        }
+                    })
+                })
+            })
+        }
+//        let uid = Auth.auth().currentUser?.uid
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
