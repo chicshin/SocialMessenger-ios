@@ -42,7 +42,7 @@ class UserApi {
         })
     }
     
-    func signUp(fullname: String, email: String, password: String, username: String, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
+    func signUp(fullname: String, email: String, password: String, username: String, profileImageUrl: String, onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
         
         Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             
@@ -64,10 +64,10 @@ class UserApi {
                         FULLNAME: fullname,
                         EMAIL : email,
                         USERNAME : username,
+                        PROFILE_IMAGE_URL: profileImageUrl,
                         PUSHTOKEN : ref!.token,
                         NOTIFICATIONS : [SHOWPREVIEW: ENABLED, NEWFOLLOWERS: ENABLED],
                         STATUS: ""
-//                        "showPreview": "enabled"
                     ]
                 
                     let ActiveUsernameDict : Dictionary<String,Any> = [
