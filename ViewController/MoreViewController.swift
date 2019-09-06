@@ -46,10 +46,27 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
         return array.count
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            return 40
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            return 40
+            
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            return 37
+            
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            return 33
+            
+        } else {
+            return 32
+        }
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsCell
         let list = array[indexPath.row]
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
         setupCell(cell: cell, list: list)
         cell.textLabel?.text = list
         return cell
@@ -121,12 +138,38 @@ class SettingsCell: UITableViewCell {
         
         addSubview(nextImageView)
         
-        nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        nextImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        nextImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            textLabel?.font = UIFont.systemFont(ofSize: 15)
+            nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            nextImageView.heightAnchor.constraint(equalToConstant: 27).isActive = true
+            nextImageView.widthAnchor.constraint(equalToConstant: 27).isActive = true
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            textLabel?.font = UIFont.systemFont(ofSize: 15)
+            nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            nextImageView.heightAnchor.constraint(equalToConstant: 27).isActive = true
+            nextImageView.widthAnchor.constraint(equalToConstant: 27).isActive = true
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            textLabel?.font = UIFont.systemFont(ofSize: 14)
+            nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
+            nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            textLabel?.font = UIFont.systemFont(ofSize: 14)
+            nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
+            nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+        } else {
+            textLabel?.font = UIFont.systemFont(ofSize: 12)
+            nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
+            nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

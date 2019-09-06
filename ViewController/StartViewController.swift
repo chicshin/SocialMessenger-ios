@@ -31,8 +31,8 @@ class StartViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if Auth.auth().currentUser == nil {
-//            let vc = storyboard?.instantiateViewController(withIdentifier: "SignInViewController") as! SignInViewController
-            let vc = storyboard?.instantiateViewController(withIdentifier: "SignInTwoViewController") as! SignInTwoViewController
+            let vc = storyboard?.instantiateViewController(withIdentifier: "SignInViewController") as! SignInViewController
+//            let vc = storyboard?.instantiateViewController(withIdentifier: "signInSegue") as! SignInViewController
             navigationController?.present(vc, animated: true, completion: nil)
         } else if Auth.auth().currentUser != nil {
             self.performSegue(withIdentifier: "mainTabBarSegue", sender: nil)
