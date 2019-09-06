@@ -140,7 +140,7 @@ extension ChatViewController {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd"
                     today = dateFormatter.string(from: timestampDate as Date)
-                    
+//
                     if key != today {
                         values = values?.sorted(by: { (lhs: ChatModel.dateModelStructure, rhs: ChatModel.dateModelStructure) in
                             let lhsValue = lhs.timestamp as! Int
@@ -453,6 +453,7 @@ extension ChatViewController {
             toUid = userModel?.uid
         }
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
+        
         var values : Dictionary<String,Any> = [
             "senderUid": uid!,
             "toUid": toUid!,

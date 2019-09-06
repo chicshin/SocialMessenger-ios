@@ -98,22 +98,37 @@ extension PeopleViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! MyCell
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.clipsToBounds = true
-        
-        let friendsCell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-        friendsCell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-        friendsCell.profileImage.clipsToBounds = true
+
+//        let friendsCell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
+//        friendsCell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
+//        friendsCell.profileImage.clipsToBounds = true
     }
     
     func setupFriendsCountTitle() {
         let title = "Friends "
         let subTitle = String(self.friendsCount)
         
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            styleFriends(title: title, subTitle: subTitle, fontSize: 12)
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            styleFriends(title: title, subTitle: subTitle, fontSize: 12)
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            styleFriends(title: title, subTitle: subTitle, fontSize: 12)
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            styleFriends(title: title, subTitle: subTitle, fontSize: 11)
+        } else {
+            styleFriends(title: title, subTitle: subTitle, fontSize: 11)
+        }
+    }
+    
+    func styleFriends(title: String, subTitle: String, fontSize: Int) {
         let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: 12)!,
+            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: CGFloat(fontSize))!,
              NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         
         let attributedSubText = NSMutableAttributedString(string: subTitle, attributes:
-            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: 12)!,
+            [NSAttributedString.Key.font : UIFont(name: "AppleSDGothicNeo-Medium", size: CGFloat(fontSize))!,
              NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         
         attributedText.append(attributedSubText)
@@ -122,9 +137,29 @@ extension PeopleViewController {
     }
     
     func setSearchBar() {
-        let frame = CGRect(x: 0, y: 0, width: 250, height: 44)
-        let titleView = UIView(frame: frame)
-        searchBar.frame = frame
+        var titleView = UIView()
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            let frame = CGRect(x: 0, y: 0, width: 250, height: 44)
+            titleView = UIView(frame: frame)
+            searchBar.frame = frame
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            let frame = CGRect(x: 0, y: 0, width: 250, height: 38)
+            titleView = UIView(frame: frame)
+            searchBar.frame = frame
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            let frame = CGRect(x: 0, y: 0, width: 220, height: 40)
+            titleView = UIView(frame: frame)
+            searchBar.frame = frame
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            let frame = CGRect(x: 0, y: 0, width: 200, height: 35)
+            titleView = UIView(frame: frame)
+            searchBar.frame = frame
+        } else {
+            let frame = CGRect(x: 0, y: 0, width: 180, height: 32)
+            titleView = UIView(frame: frame)
+            searchBar.frame = frame
+        }
         setupSearchBarUI()
         
         let offset = UIOffset(horizontal: (searchBar.frame.width - placeholderWidth) / 2 + 50, vertical: 0)
@@ -154,7 +189,6 @@ extension PeopleViewController {
             return lhsValue! < rhsValue!
         })
         filteredUser = sortedArr.filter({ user -> Bool in
-            print("TextDidChange")
             if searchText.isEmpty {
                 isSearching = false
                 friendsTitleLabel.isHidden = false
@@ -174,21 +208,6 @@ extension PeopleViewController {
         searchBar.setPositionAdjustment(noOffset, for: .search)
         isSearching = false
         return true
-    }
-
-    func setupFollowButton(cell: FriendsCell) {
-        cell.followButton.setTitle("", for: UIControl.State.normal)
-        cell.followButton.setImage(#imageLiteral(resourceName: "addFriend"), for: UIControl.State.normal)
-        cell.followButton.tintColor = .white
-
-        cell.followButton.backgroundColor = #colorLiteral(red: 0.6620325446, green: 0.0003923571203, blue: 0.05706844479, alpha: 1).withAlphaComponent(0.9)
-        cell.followButton.layer.cornerRadius = 13
-        cell.followButton.clipsToBounds = true
-    }
-    
-    func setupUnfollowButton(cell: FriendsCell) {
-        cell.unfollowButton.setTitle("Unfollow", for: UIControl.State.normal)
-        cell.unfollowButton.tintColor = .lightGray
     }
     
     func sendFcm(tag: Int) {

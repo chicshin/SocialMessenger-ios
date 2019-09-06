@@ -30,8 +30,6 @@ extension DestinationProfileViewController {
                     return
                 }
                 self.statusLabel.text = status
-                self.statusLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 15)
-                self.statusLabel.textAlignment = .center
             }
         })
     }
@@ -42,26 +40,15 @@ extension DestinationProfileViewController {
         } else if !isSearching! {
             nameLabel.text = self.user!.username!
         }
-        nameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 20)
     }
     
     func setupProfileImage() {
         if isSearching! {
             let url = URL(string: self.allUser!.profileImageUrl!)
             profileImage.kf.setImage(with: url)
-            profileImage.layer.cornerRadius = profileImage.frame.width/2
-            profileImage.clipsToBounds = true
-            profileImage.contentMode = .scaleAspectFill
         } else if !isSearching! {
             let url = URL(string: self.user!.profileImageUrl!)
             profileImage.kf.setImage(with: url)
-            profileImage.layer.cornerRadius = profileImage.frame.width/2
-            profileImage.clipsToBounds = true
-            profileImage.contentMode = .scaleAspectFill
         }
-    }
-    func setupCloseButton() {
-        closeButton.setImage(#imageLiteral(resourceName: "close_icon"), for: UIControl.State.normal)
-        closeButton.tintColor = .black
     }
 }

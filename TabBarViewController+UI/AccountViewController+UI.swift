@@ -9,6 +9,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseDatabase
+import CropViewController
 
 extension AccountViewController {
     /*
@@ -31,7 +32,22 @@ extension AccountViewController {
     */
     func setupTextField(cell: ProfileCell, text: String?) {
         cell.inputTextField.text = text!
-        cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
+//        cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
+            
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            cell.inputTextField.font = UIFont.systemFont(ofSize: 14)
+            
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            cell.inputTextField.font = UIFont.systemFont(ofSize: 14)
+            
+        } else {
+            cell.inputTextField.font = UIFont.systemFont(ofSize: 13)
+        }
     }
     
     @objc func handleTextField(sender: UITextField) {
@@ -166,13 +182,13 @@ extension AccountViewController {
             cell.profileImageView.kf.setImage(with: url)
         }
         cell.profileImageView.contentMode = .scaleAspectFill
-        cell.profileImageView.layer.cornerRadius = 100 / 2
         cell.profileImageView.clipsToBounds = true
     }
     
     @objc func presentPicker() {
+        self.croppingStyle = .default
         let picker = UIImagePickerController()
-        picker.allowsEditing = true
+        picker.allowsEditing = false
         picker.delegate = self
         picker.sourceType = .photoLibrary
         self.present(picker, animated: true, completion: nil)
@@ -187,21 +203,97 @@ extension AccountViewController {
     }
 }
 
-extension AccountViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension AccountViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
+//        let indexPath = IndexPath(row: 0, section: 0)
+//        let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
+        
+        guard let imageSelected = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+        let cropController = CropViewController(croppingStyle: croppingStyle, image: imageSelected)
+        cropController.delegate = self
+        
+//        image = imageSelected
+//        cell.profileImageView.image = image
+        imageView.image = imageSelected
+        
+        picker.dismiss(animated: true, completion: {
+            self.present(cropController, animated: true, completion: nil)
+        })
+        
+//        if let imageSelected = info[.originalImage] as? UIImage {
+//            image = imageSelected
+//            cell.profileImageView.image = imageSelected
+//        }
+//
+//        if let imageEdited = info[.editedImage] as? UIImage {
+//            image = imageEdited
+//            cell.profileImageView.image = imageEdited
+//        }
+//        dismiss(animated: true, completion: nil)
+    }
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        self.croppedRect = cropRect
+        self.croppedAngle = angle
+        updateImageViewWithImage(image, fromCropViewController: cropViewController)
+    }
+    
+    public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
         let indexPath = IndexPath(row: 0, section: 0)
         let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
+        cell.profileImageView.image = image
+        layoutImageView()
         
-        if let imageSelected = info[.originalImage] as? UIImage {
-            image = imageSelected
-            cell.profileImageView.image = imageSelected
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        
+        if cropViewController.croppingStyle != .circular {
+            imageView.isHidden = true
+            
+            cropViewController.dismissAnimatedFrom(self, withCroppedImage: image,
+                                                   toView: imageView,
+                                                   toFrame: CGRect.zero,
+                                                   setup: { self.layoutImageView() },
+                                                   completion: { self.imageView.isHidden = false })
+        }
+        else {
+            self.imageView.isHidden = false
+            cropViewController.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    public func layoutImageView() {
+        guard imageView.image != nil else { return }
+        
+        let padding: CGFloat = 20.0
+        
+        var viewFrame = self.view.bounds
+        viewFrame.size.width -= (padding * 2.0)
+        viewFrame.size.height -= ((padding * 2.0))
+        
+        var imageFrame = CGRect.zero
+        imageFrame.size = imageView.image!.size;
+        
+        if imageView.image!.size.width > viewFrame.size.width || imageView.image!.size.height > viewFrame.size.height {
+            let scale = min(viewFrame.size.width / imageFrame.size.width, viewFrame.size.height / imageFrame.size.height)
+            imageFrame.size.width *= scale
+            imageFrame.size.height *= scale
+            imageFrame.origin.x = (self.view.bounds.size.width - imageFrame.size.width) * 0.5
+            imageFrame.origin.y = (self.view.bounds.size.height - imageFrame.size.height) * 0.5
+            imageView.frame = imageFrame
+        }
+        else {
+            self.imageView.frame = imageFrame;
+            self.imageView.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY)
+        }
+    }
+    
+    @objc public func sharePhoto() {
+        guard let image = imageView.image else {
+            return
         }
         
-        if let imageEdited = info[.editedImage] as? UIImage {
-            image = imageEdited
-            cell.profileImageView.image = imageEdited
-        }
-        dismiss(animated: true, completion: nil)
+        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem!
+        present(activityController, animated: true, completion: nil)
     }
 }

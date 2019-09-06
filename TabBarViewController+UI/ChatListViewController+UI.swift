@@ -67,7 +67,7 @@ extension ChatListViewController {
     
     func setupTableView() {
         tableView.separatorStyle = .none
-        tableView.rowHeight = 70
+//        tableView.rowHeight = 70
         tableView.allowsMultipleSelection = true
     }
 }

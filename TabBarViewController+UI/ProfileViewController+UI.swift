@@ -31,9 +31,9 @@ extension ProfileViewController {
                 self.profileImage.kf.setImage(with: url)
             }
         })
-        profileImage.layer.cornerRadius = profileImage.frame.width/2
-        profileImage.clipsToBounds = true
-        profileImage.contentMode = .scaleAspectFill
+//        profileImage.layer.cornerRadius = profileImage.frame.width/2
+//        profileImage.clipsToBounds = true
+//        profileImage.contentMode = .scaleAspectFill
     }
     
     
@@ -44,10 +44,10 @@ extension ProfileViewController {
      Control Edit Profile Image
      */
     func didTapEditProfileImage() {
-        editProfileImage.isUserInteractionEnabled = true
+        addPhotoView.isUserInteractionEnabled = true
         profileImage.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(presentPicker))
-        editProfileImage.addGestureRecognizer(tapGesture)
+        addPhotoView.addGestureRecognizer(tapGesture)
         profileImage.addGestureRecognizer(tapGesture)
     }
     
@@ -69,13 +69,6 @@ extension ProfileViewController {
         }
     }
     
-    func setupEditProfileImage() {
-        editProfileImage.image = UIImage(imageLiteralResourceName: "add_circle")
-        editProfileImage.layer.cornerRadius = 25/2
-        editProfileImage.clipsToBounds = true
-        editProfileImage.backgroundColor = .white
-    }
-    
     
     
     
@@ -83,23 +76,17 @@ extension ProfileViewController {
     /*
         Control Start Edit Activity
     */
-    func setupEditButton() {
-        editButton.tintColor = .darkGray
-        editButton.titleLabel?.text = "Edit Profile"
-//        editButton.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        editButton.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 13)
-        editImage.image = #imageLiteral(resourceName: "edit")
-    }
+
     @objc func editDidStart() {
         
         showDoneButton()
-        editProfileImage.isHidden = false
-        //        doneButton.isHidden = false
+        addPhotoImageView.isHidden = false
+        addPhotoView.isHidden = false
         statusTextField.isHidden = false
         statusLabel.isHidden = true
         editImage.isHidden = true
         editButton.isHidden = true
-        textFieldUnderlinde.isHidden = false
+        textFieldUnderline.isHidden = false
     }
     
     
@@ -119,29 +106,18 @@ extension ProfileViewController {
                     return
                 }
                 self.statusLabel.text = status
-                self.statusLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 15)
-//                self.statusLabel.font = UIFont.systemFont(ofSize: 15)
-                self.statusLabel.textAlignment = .center
+                self.statusTextField.text = status
             }
         })
-        textFieldUnderlinde.backgroundColor = .lightGray
     }
     
-    func editStatusTextField() {
-        statusTextField.borderStyle = .none
-        let placeholderAttr = NSMutableAttributedString(string: "Please type status", attributes:
-            [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        statusTextField.attributedPlaceholder = placeholderAttr
-        statusTextField.textAlignment = .center
-        statusTextField.font = UIFont.systemFont(ofSize: 15)
-    }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         removeBlurEffect()
         return true
     }
-    
+
     func updateChangedValues() {
         self.statusText = self.statusTextField.text!
         Api.User.status(text: statusText!)
@@ -153,20 +129,18 @@ extension ProfileViewController {
         textCountLabel.isHidden = false
         if length <= 30 {
             self.textCountLabel.text = "\(length)/30"
-            self.textCountLabel.font = UIFont.systemFont(ofSize: 13)
-            self.textCountLabel.textColor = .lightGray
             return true
         } else {
             print("text count out of range")
             return false
         }
     }
-    
+
     func didTapTextField() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showBlurredBackground))
         statusTextField.addGestureRecognizer(tapGesture)
     }
-    
+
     @objc func showBlurredBackground() {
         statusTextField.becomeFirstResponder()
         setBlurBackground()
@@ -179,12 +153,6 @@ extension ProfileViewController {
     /*
         Control Done Activity
     */
-    func setupDoneButton() {
-        let title = "Done"
-        let attributedText = NSMutableAttributedString(string: title, attributes:
-            [NSAttributedString.Key.foregroundColor : UIColor.darkGray])
-        doneButton.setAttributedTitle(attributedText, for: UIControl.State.normal)
-    }
     
     @objc func showDoneButton() {
         doneButton.isHidden = false
@@ -197,13 +165,7 @@ extension ProfileViewController {
     /*
         Setup Other Fixed Fields
     */
-    func setupCloseButton() {
-        closeButton.setImage(#imageLiteral(resourceName: "close_icon"), for: UIControl.State.normal)
-        closeButton.tintColor = .black
-    }
-    func setupBackgroundImage() {
-        backgroundImage.clipsToBounds = true
-    }
+
     func setupFullname() {
         let uid = Auth.auth().currentUser?.uid
         
@@ -211,8 +173,6 @@ extension ProfileViewController {
             if let dict = dataSnapShot.value as? [String:Any] {
                 let name = dict["fullname"] as! String
                 self.nameLabel.text = name
-                self.nameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 20)
-                self.nameLabel.textAlignment = .center
             }
         })
     }
@@ -230,13 +190,13 @@ extension ProfileViewController {
         blurEffectView.frame = view.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         blurEffectView.alpha = 1
-//        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeBlurEffect)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeBlurEffect)))
         view.addSubview(blurEffectView)
         view.addSubview(statusTextField)
-        view.addSubview(textFieldUnderlinde)
+        view.addSubview(textFieldUnderline)
         view.addSubview(textCountLabel)
     }
-    
+
     @objc func removeBlurEffect() {
         let blurredEffectViews = view.subviews.filter{$0 is UIVisualEffectView}
         blurredEffectViews.forEach{ blurView in
