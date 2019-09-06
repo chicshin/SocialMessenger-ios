@@ -53,7 +53,21 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            return 45
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            return 43
+            
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            return 42
+            
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            return 38
+            
+        } else {
+            return 38
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -65,7 +79,7 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
         let content = contents[indexPath.row]
         
         cell.textLabel?.text = content
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+//        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
         
         cell.switchButton.tag = indexPath.row
         
@@ -182,9 +196,30 @@ class notificationsCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(switchButton)
         
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            textLabel?.font = UIFont.systemFont(ofSize: 15)
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
+        } else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            textLabel?.font = UIFont.systemFont(ofSize: 15)
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            textLabel?.font = UIFont.systemFont(ofSize: 15)
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.87, y: 0.87)
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            textLabel?.font = UIFont.systemFont(ofSize: 14)
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        } else {
+            textLabel?.font = UIFont.systemFont(ofSize: 13)
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        }
+        
         switchButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        switchButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        switchButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

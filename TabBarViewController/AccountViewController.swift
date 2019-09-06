@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import CropViewController
 
 class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
@@ -23,6 +24,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     var status = ""
     var fullname = ""
     var username = ""
+    
+    let imageView = UIImageView()
+    var croppingStyle = CropViewCroppingStyle.default
+    var croppedRect = CGRect.zero
+    var croppedAngle = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,9 +51,31 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         if indexPath.row == 0 {
-            return 180
+            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+                return 180
+            }
+            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+                return 180
+            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+                return 170
+            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+                return 160
+            } else {
+                return 150
+            }
         } else {
-            return 50
+            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+                return 50
+            }
+            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+                return 50
+            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+                return 50
+            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+                return 45
+            } else {
+                return 45
+            }
         }
     }
     
@@ -61,7 +89,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.inputTextField.delegate = self
         
         cell.contentTitle.text = content
-        cell.contentTitle.font = UIFont.systemFont(ofSize: 15)
+//        cell.contentTitle.font = UIFont.systemFont(ofSize: 15)
         
         cell.inputTextField.tag = indexPath.row
         
@@ -177,14 +205,14 @@ class ProfileCell: UITableViewCell {
     var contentTitle: UILabel = {
         let text = UILabel()
         text.translatesAutoresizingMaskIntoConstraints = false
-        text.font = UIFont.systemFont(ofSize: 15)
+//        text.font = UIFont.systemFont(ofSize: 15)
         return text
     }()
     
     var contentLabel: UILabel = {
         let text = UILabel()
         text.translatesAutoresizingMaskIntoConstraints = false
-        text.font = UIFont.systemFont(ofSize: 15)
+//        text.font = UIFont.systemFont(ofSize: 15)
         return text
     }()
     
@@ -222,7 +250,7 @@ class ProfileCell: UITableViewCell {
         label.isUserInteractionEnabled = true
         label.text = "Edit profile"
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
+//        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
         return label
     }()
@@ -242,7 +270,7 @@ class ProfileCell: UITableViewCell {
         label.isUserInteractionEnabled = true
         label.text = "Done edit"
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
+//        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
         return label
     }()
@@ -261,9 +289,10 @@ class ProfileCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 14)
+//        label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
+
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -281,60 +310,313 @@ class ProfileCell: UITableViewCell {
         addSubview(editTextFieldIndicator)
         addSubview(textCountLabel)
         
-        contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
-        contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        contentLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
-        bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        bottomLine.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        profileImageView.topAnchor.constraint(equalTo: topAnchor, constant: 40).isActive = true
-        profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
-        editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        editProfileImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        editProfileImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        editProfileImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
-        doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
-        seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-        seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
-        seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
-        inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
-        inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-        editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
-        textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+            contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentTitle.font = UIFont.systemFont(ofSize: 15)
+            
+            contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            contentLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentLabel.font = UIFont.systemFont(ofSize: 15)
+            
+            bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
+            bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            bottomLine.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            profileImageView.layer.cornerRadius = 100 / 2
+            
+            editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            editProfileLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editProfileImage.centerYAnchor.constraint(equalTo: doneEditLabel.centerYAnchor).isActive = true
+            editProfileImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editProfileImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            doneEditLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
+            seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+            inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
+            inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+            textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            textCountLabel.font = UIFont.systemFont(ofSize: 14)
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+            contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentTitle.font = UIFont.systemFont(ofSize: 15)
+            
+            contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            contentLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentLabel.font = UIFont.systemFont(ofSize: 15)
+            
+            bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
+            bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            bottomLine.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            profileImageView.layer.cornerRadius = 100 / 2
+            
+            editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            editProfileLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editProfileImage.centerYAnchor.constraint(equalTo: doneEditLabel.centerYAnchor).isActive = true
+            editProfileImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editProfileImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            doneEditLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
+            seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+            inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
+            inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+            textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            textCountLabel.font = UIFont.systemFont(ofSize: 14)
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+            contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentTitle.font = UIFont.systemFont(ofSize: 14)
+            
+            contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            contentLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
+            bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            bottomLine.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 95).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 95).isActive = true
+            profileImageView.layer.cornerRadius = 95 / 2
+            
+            editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            editProfileLabel.font = UIFont.systemFont(ofSize: 13)
+            
+            editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editProfileImage.centerYAnchor.constraint(equalTo: doneEditLabel.centerYAnchor).isActive = true
+            editProfileImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editProfileImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            doneEditLabel.font = UIFont.systemFont(ofSize: 13)
+            
+            seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
+            seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+            inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
+            inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+            textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            textCountLabel.font = UIFont.systemFont(ofSize: 13)
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+            contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentTitle.font = UIFont.systemFont(ofSize: 14)
+            
+            contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            contentLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
+            bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            bottomLine.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 95).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 95).isActive = true
+            profileImageView.layer.cornerRadius = 95 / 2
+            
+            editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            editProfileLabel.font = UIFont.systemFont(ofSize: 13)
+            
+            editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editProfileImage.centerYAnchor.constraint(equalTo: doneEditLabel.centerYAnchor).isActive = true
+            editProfileImage.heightAnchor.constraint(equalToConstant: 17).isActive = true
+            editProfileImage.widthAnchor.constraint(equalToConstant: 17).isActive = true
+            
+            doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            doneEditLabel.font = UIFont.systemFont(ofSize: 13)
+            
+            seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
+            seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+            inputTextField.widthAnchor.constraint(equalToConstant: 190).isActive = true
+            inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+            textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            textCountLabel.font = UIFont.systemFont(ofSize: 13)
+        } else {
+            contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
+            contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            contentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentTitle.font = UIFont.systemFont(ofSize: 13)
+            
+            contentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            contentLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            contentLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            contentLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            contentLabel.font = UIFont.systemFont(ofSize: 13)
+            
+            bottomLine.topAnchor.constraint(equalTo: contentLabel.bottomAnchor).isActive = true
+            bottomLine.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            bottomLine.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 85).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 85).isActive = true
+            profileImageView.layer.cornerRadius = 85 / 2
+            
+            editProfileLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            editProfileLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            editProfileLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            editProfileLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            editProfileLabel.font = UIFont.systemFont(ofSize: 12)
+            
+            editProfileImage.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editProfileImage.centerYAnchor.constraint(equalTo: doneEditLabel.centerYAnchor).isActive = true
+            editProfileImage.heightAnchor.constraint(equalToConstant: 17).isActive = true
+            editProfileImage.widthAnchor.constraint(equalToConstant: 17).isActive = true
+            
+            doneEditLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 7).isActive = true
+            doneEditLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            doneEditLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneEditLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            doneEditLabel.font = UIFont.systemFont(ofSize: 12)
+            
+            seperateLine.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 40).isActive = true
+            seperateLine.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            seperateLine.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            seperateLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            inputTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            inputTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -80).isActive = true
+            inputTextField.widthAnchor.constraint(equalToConstant: 140).isActive = true
+            inputTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            editTextFieldIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            editTextFieldIndicator.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+            editTextFieldIndicator.widthAnchor.constraint(equalToConstant: 17).isActive = true
+            editTextFieldIndicator.heightAnchor.constraint(equalToConstant: 17).isActive = true
+            
+            textCountLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            textCountLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -40).isActive = true
+            textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            textCountLabel.font = UIFont.systemFont(ofSize: 12)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -62,7 +62,22 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     
     var menuContents = ["menu"]
     var tableView = UITableView()
-    let menuHeight: CGFloat = 100
+    let menuHeight: CGFloat = {
+        var height = CGFloat()
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            height = 100
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            height = 100
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            height = 100
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            height = 70
+        } else {
+            height = 70
+        }
+        return height
+    }()
     var transparentView: UIView = UIView()
     
     override func viewDidLoad() {
@@ -166,8 +181,25 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     private func estimateFrameText(text: String) -> CGRect {
         let size = CGSize(width: 200, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
-        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
-            ], context: nil)
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
+                ], context: nil)
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
+                ], context: nil)
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 14)!
+                ], context: nil)
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 13)!
+                ], context: nil)
+        } else {
+            return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 13)!
+                ], context: nil)
+        }
+//        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
+//            ], context: nil)
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -175,7 +207,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         if collectionView == self.collectionView {
             count = self.groupedMessagesByDates.count
         }
-//        return self.groupedMessagesByDates.count
         return count
     }
     
@@ -479,7 +510,19 @@ class chatMessageCell: UICollectionViewCell {
     let textView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            tv.font = UIFont(name: "KBIZforSMEsgo L", size: 14)
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            tv.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
+        } else {
+            tv.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
+        }
+//        tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
         tv.backgroundColor = .clear
         tv.isEditable = false
         return tv
@@ -852,30 +895,133 @@ class menuCell: UITableViewCell {
         addSubview(photoLabel)
         addSubview(videoLabel)
         
-        photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-        photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
-        photoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        
-        videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
-        videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
-        videoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        
-        seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
-        seperatorView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
-        seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
-        
-        photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
-        photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
-        photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
-        photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
-        
-        videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
-        videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
-        videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
-        videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            photoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            videoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+            seperatorView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+            seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+            
+            photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            photoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            videoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+            seperatorView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+            seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+            
+            photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            photoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            videoLabelView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+            
+            seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+            seperatorView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+            seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+            
+            photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
+            videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            photoLabelView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+            
+            videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            videoLabelView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+            
+            seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+            seperatorView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+            seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+            
+            photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 70/2 - 6).isActive = true
+            photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 70/2 - 6).isActive = true
+            videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        } else {
+            photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            photoLabelView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+            
+            videoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            videoLabelView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            videoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
+            videoLabelView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+            
+            seperatorView.widthAnchor.constraint(equalToConstant: 0.7).isActive = true
+            seperatorView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            seperatorView.leftAnchor.constraint(equalTo: photoLabelView.rightAnchor).isActive = true
+            seperatorView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+            
+            photoLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: (((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            photoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 70/2 - 6).isActive = true
+            photoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            photoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            videoLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -(((UIScreen.main.bounds.width / 2) - 45) / 2)).isActive = true
+            videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 70/2 - 6).isActive = true
+            videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -905,7 +1051,18 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            return 100
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            return 100
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            return 100
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            return 70
+        } else {
+            return 70
+        }
     }
     
     
