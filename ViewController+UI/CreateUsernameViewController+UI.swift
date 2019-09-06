@@ -41,12 +41,12 @@ extension CreateUsernameViewController {
         Control Restrict Special Characters Error Message
     */
     func setupErrorLabel() {
-        let message = "Username " + usernameSelected + " is already taken."
-        let attributedText = NSMutableAttributedString(string: message, attributes:
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
-             NSAttributedString.Key.foregroundColor : UIColor.red])
+//        let message = "Username " + usernameSelected + " is already taken."
+//        let attributedText = NSMutableAttributedString(string: message, attributes:
+//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
+//             NSAttributedString.Key.foregroundColor : UIColor.red])
         
-        usernameExistsErrorMessage.attributedText = attributedText
+//        usernameExistsErrorMessage.attributedText = attributedText
         usernameExistsErrorMessage.isHidden = false
         nextButtonTopAnchorWithErrorShows?.isActive = true
         nextButtonTopAnchor?.isActive = false
@@ -139,55 +139,241 @@ extension CreateUsernameViewController {
         Control Contraints
     */
     func setupConstraints() {
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+            
+            usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameTextField.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+            usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: -30).isActive = true
+            usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+            usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameBottomLineView.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            usernameExistsErrorMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            restrictSpecialCharactersMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+            nextButtonTopAnchor?.isActive = true
+            nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            nextButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            nextButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+            
+            usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
+            usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+            usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: -30).isActive = true
+            usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+            usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameBottomLineView.widthAnchor.constraint(equalToConstant: 210).isActive = true
+            usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            usernameExistsErrorMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            restrictSpecialCharactersMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+            nextButtonTopAnchor?.isActive = true
+            nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            nextButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            nextButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+            
+            usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
+            usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+            usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: -30).isActive = true
+            usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+            usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameBottomLineView.widthAnchor.constraint(equalToConstant: 210).isActive = true
+            usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            usernameExistsErrorMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            restrictSpecialCharactersMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+            nextButtonTopAnchor?.isActive = true
+            nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            nextButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            nextButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+            
+            usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
+            usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+            usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: -30).isActive = true
+            usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+            usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameBottomLineView.widthAnchor.constraint(equalToConstant: 210).isActive = true
+            usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            usernameExistsErrorMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            restrictSpecialCharactersMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+            nextButtonTopAnchor?.isActive = true
+            nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            nextButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            nextButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        } else {
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+            
+            usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
+            usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+            usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: -30).isActive = true
+            usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
+            usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            usernameBottomLineView.widthAnchor.constraint(equalToConstant: 210).isActive = true
+            usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            usernameExistsErrorMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
+            restrictSpecialCharactersMessage.leftAnchor.constraint(equalTo: usernameBottomLineView.leftAnchor).isActive = true
+            restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
+            restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
+            nextButtonTopAnchor?.isActive = true
+            nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
+            nextButtonTopAnchorWithErrorShows?.isActive = false
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            nextButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            nextButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        }
         backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
         backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
-        
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
-        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
-        
-        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        subtitleLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
-        
-        usernameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 45).isActive = true
-        usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        usernameTextField.widthAnchor.constraint(equalToConstant: 240).isActive = true
-        usernameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        usernameTextCount.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
-        usernameTextCount.leftAnchor.constraint(equalTo: usernameTextField.rightAnchor, constant: 10).isActive = true
-        usernameTextCount.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        usernameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        usernameBottomLineView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
-        usernameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        usernameBottomLineView.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        usernameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        usernameExistsErrorMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
-        usernameExistsErrorMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        usernameExistsErrorMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
-        usernameExistsErrorMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        restrictSpecialCharactersMessage.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 5).isActive = true
-        restrictSpecialCharactersMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        restrictSpecialCharactersMessage.widthAnchor.constraint(equalToConstant: 240).isActive = true
-        restrictSpecialCharactersMessage.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 25)
-        nextButtonTopAnchor?.isActive = true
-        nextButtonTopAnchorWithErrorShows = nextButton.topAnchor.constraint(equalTo: usernameBottomLineView.bottomAnchor, constant: 50)
-        nextButtonTopAnchorWithErrorShows?.isActive = false
-        nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        nextButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        nextButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        signInButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-        signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        signInButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
-        signInButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
 }

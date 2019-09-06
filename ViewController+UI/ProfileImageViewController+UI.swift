@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CropViewController
+
 
 extension ProfileImageViewController {
     /*
@@ -47,8 +49,9 @@ extension ProfileImageViewController {
     }
     
     @objc func presentPicker() {
+        self.croppingStyle = .default
         let picker = UIImagePickerController()
-        picker.allowsEditing = true
+        picker.allowsEditing = false
         picker.delegate = self
         picker.sourceType = .photoLibrary
         self.present(picker, animated: true, completion: nil)
@@ -63,64 +66,283 @@ extension ProfileImageViewController {
     }
     
     func setupConstraints() {
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "Simulator iPhone XR" {
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 43).isActive = true
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
+            doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            //        welcomeUsernameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+            
+            usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
+            usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
+            doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            //        welcomeUsernameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+            
+            usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
+            usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20).isActive = true
+            doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            
+            setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
+            skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+            
+            usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
+            usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
+            doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            
+            setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+            skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+            
+            usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
+            usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+        } else {
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 25).isActive = true
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
+            doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
+            profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            profileImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
+            profileImageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+            
+            setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
+            setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+            skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+            skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            //        welcomeUsernameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+            
+            usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
+            usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
+        }
         backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
         backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
-        
-        doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 43).isActive = true
-        doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
-        doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        doneButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        profileImageView.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 70).isActive = true
-        profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profileImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        profileImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        titleLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 30).isActive = true
-        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
-        
-        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
-        
-        setImageButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30).isActive = true
-        setImageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        setImageButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        setImageButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        skipButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-        skipButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        skipButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
-        skipButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        //        welcomeUsernameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        welcomeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        welcomeLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        welcomeLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
-        
-        usernameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
-        usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
     }
 }
 
-extension ProfileImageViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ProfileImageViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let imageSelected = info[.originalImage] as? UIImage {
-            image = imageSelected
-            profileImageView.image = imageSelected
+        guard let imageSelected = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+        let cropController = CropViewController(croppingStyle: croppingStyle, image: imageSelected)
+        cropController.delegate = self
+        
+        image = imageSelected
+        self.profileImageView.image = image
+        
+        picker.dismiss(animated: true, completion: {
+            self.present(cropController, animated: true, completion: nil)
+        })
+        doneButton.isHidden = false
+    }
+    
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        self.croppedRect = cropRect
+        self.croppedAngle = angle
+        updateImageViewWithImage(image, fromCropViewController: cropViewController)
+    }
+    
+    public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
+        self.image = image
+        layoutImageView()
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        
+        if cropViewController.croppingStyle != .circular {
+            imageView.isHidden = true
+            
+            cropViewController.dismissAnimatedFrom(self, withCroppedImage: image,
+                                                   toView: imageView,
+                                                   toFrame: CGRect.zero,
+                                                   setup: { self.layoutImageView() },
+                                                   completion: { self.imageView.isHidden = false })
+        }
+        else {
+            self.imageView.isHidden = false
+            cropViewController.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    public func layoutImageView() {
+        guard imageView.image != nil else { return }
+        
+        let padding: CGFloat = 20.0
+        
+        var viewFrame = self.view.bounds
+        viewFrame.size.width -= (padding * 2.0)
+        viewFrame.size.height -= ((padding * 2.0))
+        
+        var imageFrame = CGRect.zero
+        imageFrame.size = imageView.image!.size;
+        
+        if imageView.image!.size.width > viewFrame.size.width || imageView.image!.size.height > viewFrame.size.height {
+            let scale = min(viewFrame.size.width / imageFrame.size.width, viewFrame.size.height / imageFrame.size.height)
+            imageFrame.size.width *= scale
+            imageFrame.size.height *= scale
+            imageFrame.origin.x = (self.view.bounds.size.width - imageFrame.size.width) * 0.5
+            imageFrame.origin.y = (self.view.bounds.size.height - imageFrame.size.height) * 0.5
+            imageView.frame = imageFrame
+        }
+        else {
+            self.imageView.frame = imageFrame;
+            self.imageView.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY)
+        }
+    }
+    
+    @objc public func sharePhoto() {
+        guard let image = imageView.image else {
+            return
         }
         
-        if let imageEdited = info[.editedImage] as? UIImage {
-            image = imageEdited
-            profileImageView.image = imageEdited
-        }
-        doneButton.isHidden = false
-        dismiss(animated: true, completion: nil)
+        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem!
+        present(activityController, animated: true, completion: nil)
     }
 }

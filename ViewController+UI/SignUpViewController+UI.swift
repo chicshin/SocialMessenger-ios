@@ -79,7 +79,7 @@ extension SignUpViewController {
     }
     
     func signUp(onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
-        Api.User.signUp(fullname: fullnameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, username: usernameReceived, onSuccess: {
+        Api.User.signUp(fullname: fullnameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, username: usernameReceived, profileImageUrl: "https://firebasestorage.googleapis.com/v0/b/tikitalka-a8e51.appspot.com/o/view_backgroundImage.jpeg?alt=media&token=136e8933-28a4-4de2-b1a5-0ec32fbed88f", onSuccess: {
             print("database created")
             onSuccess()
         }) { (errorMessage) in
@@ -88,67 +88,301 @@ extension SignUpViewController {
     }
     
     func setupConstraints() {
+        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 55).isActive = true
+            dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+            dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+            fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
+            fullnameTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
+            fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
+            fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
+            fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
+            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
+            emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+            emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
+            passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+            passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            createAccountButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            createAccountButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        }
+        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
+            dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+            dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+            dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+            fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
+            fullnameTextField.widthAnchor.constraint(equalToConstant: 167).isActive = true
+            fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
+            fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
+            fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
+            fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
+            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+            emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+            passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+            createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
+            dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+            dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+            fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
+            fullnameTextField.widthAnchor.constraint(equalToConstant: 167).isActive = true
+            fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
+            fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
+            fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
+            fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
+            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+            emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+            passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+            createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
+            dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+            dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+            dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+            fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
+            fullnameTextField.widthAnchor.constraint(equalToConstant: 167).isActive = true
+            fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
+            fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
+            fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
+            fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
+            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+            emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+            passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+            createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        } else {
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 25).isActive = true
+            dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+            dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+            dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+            subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
+            
+            fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
+            fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
+            fullnameTextField.widthAnchor.constraint(equalToConstant: 167).isActive = true
+            fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
+            fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
+            fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
+            fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
+            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
+            emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emailBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
+            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
+            passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+            passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            passwordBottomLineView.widthAnchor.constraint(equalToConstant: 230).isActive = true
+            passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+            createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        }
         backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
         backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
-        
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 43).isActive = true
-        dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15).isActive = true
-        dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
-        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
-        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
-        
-        subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        subtitleLabel.widthAnchor.constraint(equalToConstant: 315).isActive = true
-        
-        fullnameTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20).isActive = true
-        fullnameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -25).isActive = true
-        fullnameTextField.widthAnchor.constraint(equalToConstant: 220).isActive = true
-        fullnameTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        fullnameTextCount.centerYAnchor.constraint(equalTo: fullnameTextField.centerYAnchor).isActive = true
-        fullnameTextCount.leftAnchor.constraint(equalTo: fullnameTextField.rightAnchor, constant: 5).isActive = true
-        fullnameTextCount.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        fullnameTextCount.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        fullnameBottomLineView.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor).isActive = true
-        fullnameBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        fullnameBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
-        fullnameBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        emailTextField.topAnchor.constraint(equalTo: fullnameTextField.bottomAnchor, constant: 20).isActive = true
-        emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        emailTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
-        emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
-        emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        emailBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
-        emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
-        passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        passwordTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
-        passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
-        passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        passwordBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
-        passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        createAccountButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
-        createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        createAccountButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        createAccountButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
-        ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
 }
