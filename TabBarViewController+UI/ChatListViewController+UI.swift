@@ -26,15 +26,12 @@ extension ChatListViewController {
         }
 
         Ref().databaseRoot.child("user-messages").child(uid).observe(.childAdded, with: { (snapshot) in
-//            self.messageDictionary.removeAll()
             let toUid = snapshot.key
             Ref().databaseRoot.child("user-messages").child(uid).child(toUid).observe(.childAdded, with: { (dataSanpshot) in
                 let messageId = dataSanpshot.key
                 Ref().databaseRoot.child("messages").child(messageId).observeSingleEvent(of: .value, with: { (messageSnapshot) in
                     if let dict = messageSnapshot.value as? [String:Any] {
                         let message = ChatModel(dictionary: dict)
-//                        message.setValuesForKeys(dict)
-//                        self.Chat.append(message)
 
                         if let chatPartnerUid = message.chatPartnerUid() {
                             self.messageDictionary[chatPartnerUid] = message
@@ -67,7 +64,6 @@ extension ChatListViewController {
     
     func setupTableView() {
         tableView.separatorStyle = .none
-//        tableView.rowHeight = 70
         tableView.allowsMultipleSelection = true
     }
 }

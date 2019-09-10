@@ -31,9 +31,6 @@ extension ProfileViewController {
                 self.profileImage.kf.setImage(with: url)
             }
         })
-//        profileImage.layer.cornerRadius = profileImage.frame.width/2
-//        profileImage.clipsToBounds = true
-//        profileImage.contentMode = .scaleAspectFill
     }
     
     
@@ -219,7 +216,6 @@ extension ProfileViewController: CropViewControllerDelegate, UIImagePickerContro
             self.present(cropController, animated: true, completion: nil)
         })
         
-//        dismiss(animated: true, completion: nil)
         showDoneButton()
     }
     

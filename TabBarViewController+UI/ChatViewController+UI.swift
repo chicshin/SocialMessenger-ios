@@ -34,7 +34,6 @@ extension ChatViewController {
         Control Badge Count
     */
     func badgeCount() {
-//        let uid = Auth.auth().currentUser?.uid
         var chatPartnerUid: String?
         if isSearching {
             chatPartnerUid = allUser!.uid!
@@ -202,7 +201,7 @@ extension ChatViewController {
     
     @objc func handleKeyboardWillHide() {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone X" {
             inputContainerVeiw.translatesAutoresizingMaskIntoConstraints = false
             inputContainerHeightX?.isActive = true
             inputContainerHeight?.isActive = false
@@ -297,7 +296,6 @@ extension ChatViewController {
         Control imagePicker
     */
     @objc func videoPresentPicker() {
-        //        self.croppingStyle = .default
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.sourceType = .photoLibrary
@@ -312,7 +310,6 @@ extension ChatViewController {
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.sourceType = .photoLibrary
-//        picker.mediaTypes = [kUTTypeImage as String]
         picker.allowsEditing = false
         self.present(picker, animated: true, completion: nil)
     }
@@ -384,6 +381,20 @@ extension ChatViewController {
                 }
             })
         }
+//        uploadTask.observe(.progress, handler: { (snapshot) in
+//            if let completedUnitCount = snapshot.progress?.completedUnitCount {
+//                let data = NSData(contentsOf: videoUrl! as URL)
+//                let progressPercentage = Double(completedUnitCount)/Double(data!.length) * 100
+//                self.navigationItem.title = String(format: "%.0f", progressPercentage) + "%"
+//            }
+//        })
+//        uploadTask.observe(.success, handler: { (snapshot) in
+//            if self.isSearching {
+//                self.navigationItem.title = self.allUser!.username!
+//            } else if !self.isSearching {
+//                self.navigationItem.title = self.userModel!.username!
+//            }
+//        })
     }
     
     
@@ -518,6 +529,10 @@ extension ChatViewController {
 }
 
 extension ChatViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    internal func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL {
             let data = NSData(contentsOf: videoUrl as URL)!
@@ -548,11 +563,10 @@ extension ChatViewController: CropViewControllerDelegate, UIImagePickerControlle
                 }
             }
         } else {
-            guard let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
-            let cropController = CropViewController(croppingStyle: croppingStyle, image: image)
+//            guard let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+            let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage)
+            let cropController = CropViewController(croppingStyle: croppingStyle, image: image!)
             cropController.delegate = self
-            
-//            self.selectedImageFromPicker = image
             imageView.image = image
             
             picker.dismiss(animated: true, completion: {
@@ -562,20 +576,14 @@ extension ChatViewController: CropViewControllerDelegate, UIImagePickerControlle
                 }
                 
             })
-            
-//            if let selectedImage = selectedImageFromPicker {
-//                imageStorage(image: selectedImage, completion: { (imageUrl) in
-//                    self.sendMessageWithImage(imageUrl: imageUrl, image: selectedImage)
-//                },onSuccess: {
-//                    //update database and storage with image
-//                }) {(errorMessage) in
-//                    ProgressHUD.showError(errorMessage)
-//                }
-//            }
         }
         transparentView.alpha = 0
         self.tableView.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: {
+            if self.inputTextField.isFirstResponder == true {
+                self.handleKeyboardWillShow()
+            }
+        })
     }
     
     public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
@@ -585,8 +593,6 @@ extension ChatViewController: CropViewControllerDelegate, UIImagePickerControlle
     }
     
     public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
-//        imageView.image = image
-//        layoutImageView()
         self.selectedImageFromPicker = image
         layoutImageView()
         if let selectedImage = selectedImageFromPicker {

@@ -53,14 +53,11 @@ extension PeopleViewController {
         let uid = Auth.auth().currentUser?.uid
         if !isSearching {
             Ref().databaseSpecificUser(uid: uid!).child("following").observe(.childAdded, with: { (snapshot) in
-//                self.Users.removeAll()
                 let followingUid = snapshot.value
                 let user = UserModel()
                 Ref().databaseUsers.child(followingUid as! String).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dictionary = snapshot.value as? [String:Any] {
-//                        let user = UserModel()
                         user.setValuesForKeys(dictionary)
-//                        self.Users.append(user)
                         self.userDictionary[followingUid as! String] = user
                         self.friendsCount = self.userDictionary.count
                         self.attemptReloadTable()
@@ -98,24 +95,20 @@ extension PeopleViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! MyCell
         cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.clipsToBounds = true
-
-//        let friendsCell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell") as! FriendsCell
-//        friendsCell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
-//        friendsCell.profileImage.clipsToBounds = true
     }
     
     func setupFriendsCountTitle() {
         let title = "Friends "
         let subTitle = String(self.friendsCount)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             styleFriends(title: title, subTitle: subTitle, fontSize: 12)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             styleFriends(title: title, subTitle: subTitle, fontSize: 12)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             styleFriends(title: title, subTitle: subTitle, fontSize: 12)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             styleFriends(title: title, subTitle: subTitle, fontSize: 11)
         } else {
             styleFriends(title: title, subTitle: subTitle, fontSize: 11)
@@ -138,20 +131,20 @@ extension PeopleViewController {
     
     func setSearchBar() {
         var titleView = UIView()
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             let frame = CGRect(x: 0, y: 0, width: 250, height: 44)
             titleView = UIView(frame: frame)
             searchBar.frame = frame
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             let frame = CGRect(x: 0, y: 0, width: 250, height: 38)
             titleView = UIView(frame: frame)
             searchBar.frame = frame
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             let frame = CGRect(x: 0, y: 0, width: 220, height: 40)
             titleView = UIView(frame: frame)
             searchBar.frame = frame
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             let frame = CGRect(x: 0, y: 0, width: 200, height: 35)
             titleView = UIView(frame: frame)
             searchBar.frame = frame
@@ -224,9 +217,7 @@ extension PeopleViewController {
         if isSearching {
             notificationModel.to = filteredUser[tag].pushToken
         }
-        //        notificationModel.notification.title = name
         notificationModel.notification.text = "\(String(describing: name!)) started following you"
-        //        notificationModel.data.title = name
         notificationModel.data.text = "\(String(describing: name!)) started following you"
         
         let params = notificationModel.toJSON()

@@ -33,16 +33,16 @@ extension AccountViewController {
     func setupTextField(cell: ProfileCell, text: String?) {
         cell.inputTextField.text = text!
 //        cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             cell.inputTextField.font = UIFont.systemFont(ofSize: 14)
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             cell.inputTextField.font = UIFont.systemFont(ofSize: 14)
             
         } else {
@@ -206,31 +206,15 @@ extension AccountViewController {
 extension AccountViewController: CropViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-//        let indexPath = IndexPath(row: 0, section: 0)
-//        let cell = tableView.cellForRow(at: indexPath) as! ProfileCell
-        
         guard let imageSelected = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
         let cropController = CropViewController(croppingStyle: croppingStyle, image: imageSelected)
         cropController.delegate = self
-        
-//        image = imageSelected
-//        cell.profileImageView.image = image
+
         imageView.image = imageSelected
         
         picker.dismiss(animated: true, completion: {
             self.present(cropController, animated: true, completion: nil)
         })
-        
-//        if let imageSelected = info[.originalImage] as? UIImage {
-//            image = imageSelected
-//            cell.profileImageView.image = imageSelected
-//        }
-//
-//        if let imageEdited = info[.editedImage] as? UIImage {
-//            image = imageEdited
-//            cell.profileImageView.image = imageEdited
-//        }
-//        dismiss(animated: true, completion: nil)
     }
     public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
         self.croppedRect = cropRect
