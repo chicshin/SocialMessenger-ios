@@ -24,9 +24,6 @@ extension MoreViewController {
     }
     
     func handleSignOut() {
-//        ubmitButton.isUserInteractionEnabled = true
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSignOut))
-//        submitButton.addGestureRecognizer(tapGesture)
         removePushToken()
         do {
             try Auth.auth().signOut()

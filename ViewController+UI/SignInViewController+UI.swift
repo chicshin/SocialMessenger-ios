@@ -79,7 +79,7 @@ extension SignInViewController {
      Control Contraints
      */
     func setupConstraints() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 160).isActive = true
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
@@ -119,7 +119,7 @@ extension SignInViewController {
             signUpButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
             signUpButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) + -40).isActive = true
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
@@ -158,7 +158,7 @@ extension SignInViewController {
             signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             signUpButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
             signUpButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) + -40).isActive = true
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
@@ -197,7 +197,7 @@ extension SignInViewController {
             signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             signUpButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
             signUpButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) + -40).isActive = true
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
@@ -280,44 +280,5 @@ extension SignInViewController {
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
         backgroundImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
-        
-//        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 160).isActive = true
-//        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        titleLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
-//
-//        emailTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 45).isActive = true
-//        emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        emailTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
-//        emailTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-//
-//        emailBottomLineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor).isActive = true
-//        emailBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        emailBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
-//        emailBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-//
-//        passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 20).isActive = true
-//        passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        passwordTextField.widthAnchor.constraint(equalToConstant: 270).isActive = true
-//        passwordTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-//
-//        passwordBottomLineView.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
-//        passwordBottomLineView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        passwordBottomLineView.widthAnchor.constraint(equalToConstant: 280).isActive = true
-//        passwordBottomLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-//
-//        signInButton.topAnchor.constraint(equalTo: passwordBottomLineView.bottomAnchor, constant: 30).isActive = true
-//        signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        signInButton.widthAnchor.constraint(equalToConstant: 140).isActive = true
-//        signInButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-//
-//        passwordResetButton.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 10).isActive = true
-//        passwordResetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        passwordResetButton.widthAnchor.constraint(equalToConstant: 150).isActive = true
-//        passwordResetButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-//
-//        signUpButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-//        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        signUpButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
-//        signUpButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
 }

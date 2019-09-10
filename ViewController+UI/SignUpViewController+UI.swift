@@ -31,6 +31,8 @@ extension SignUpViewController {
         view.addSubview(passwordBottomLineView)
         view.addSubview(createAccountButton)
         view.addSubview(ageCheckBox)
+        view.addSubview(termsButton)
+        view.addSubview(privacyPolicyButton)
     }
     
     
@@ -88,7 +90,7 @@ extension SignUpViewController {
     }
     
     func setupConstraints() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 55).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
@@ -146,8 +148,18 @@ extension SignUpViewController {
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            termsButton.widthAnchor.constraint(equalToConstant: 115).isActive = true
+            termsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            privacyPolicyButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            privacyPolicyButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+            privacyPolicyButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            privacyPolicyButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
@@ -205,7 +217,17 @@ extension SignUpViewController {
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            
+            termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            termsButton.widthAnchor.constraint(equalToConstant: 115).isActive = true
+            termsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            privacyPolicyButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            privacyPolicyButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+            privacyPolicyButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            privacyPolicyButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
@@ -263,12 +285,22 @@ extension SignUpViewController {
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            
+            termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            termsButton.widthAnchor.constraint(equalToConstant: 115).isActive = true
+            termsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            privacyPolicyButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+            privacyPolicyButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+            privacyPolicyButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            privacyPolicyButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
             dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-            
+
             titleLabel.topAnchor.constraint(equalTo: dismissButton.topAnchor, constant: 80).isActive = true
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             titleLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
@@ -321,6 +353,16 @@ extension SignUpViewController {
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            termsButton.widthAnchor.constraint(equalToConstant: 115).isActive = true
+            termsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            privacyPolicyButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            privacyPolicyButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+            privacyPolicyButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            privacyPolicyButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         } else {
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 25).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
@@ -379,6 +421,16 @@ extension SignUpViewController {
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+            termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+            termsButton.widthAnchor.constraint(equalToConstant: 115).isActive = true
+            termsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            privacyPolicyButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
+            privacyPolicyButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+            privacyPolicyButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            privacyPolicyButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         }
         backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true

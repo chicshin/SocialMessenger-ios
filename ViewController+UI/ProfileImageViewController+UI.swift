@@ -66,7 +66,7 @@ extension ProfileImageViewController {
     }
     
     func setupConstraints() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "Simulator iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 43).isActive = true
             doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
             doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -106,7 +106,7 @@ extension ProfileImageViewController {
             usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
             usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
             doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
             doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -145,7 +145,7 @@ extension ProfileImageViewController {
             usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
             usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
             doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20).isActive = true
             doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -183,7 +183,7 @@ extension ProfileImageViewController {
             usernameLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
             usernameLabel.heightAnchor.constraint(equalToConstant: 39).isActive = true
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
             doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
             doneButton.widthAnchor.constraint(equalToConstant: 100).isActive = true

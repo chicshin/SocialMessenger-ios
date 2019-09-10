@@ -61,7 +61,7 @@ extension ResetPasswordViewController {
     }
     
     func setupConstraints() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 55).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
@@ -90,7 +90,7 @@ extension ResetPasswordViewController {
             resetButton.widthAnchor.constraint(equalToConstant: 220).isActive = true
             resetButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
@@ -118,7 +118,7 @@ extension ResetPasswordViewController {
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             resetButton.widthAnchor.constraint(equalToConstant: 220).isActive = true
             resetButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
@@ -146,7 +146,7 @@ extension ResetPasswordViewController {
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             resetButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
             resetButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
             dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
             dismissButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
