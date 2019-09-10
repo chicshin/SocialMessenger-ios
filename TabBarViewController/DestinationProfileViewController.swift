@@ -41,7 +41,7 @@ class DestinationProfileViewController: UIViewController {
     var chatButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Send message", for: UIControl.State.normal)
+        button.setTitle("Send messages", for: UIControl.State.normal)
         button.titleLabel?.textAlignment = .center
         return button
     }()
@@ -68,8 +68,16 @@ class DestinationProfileViewController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
     func setupUI() {
-//        setupChatButton()
         setupStatus()
         setupDestinationName()
         setupProfileImage()
@@ -113,7 +121,7 @@ class DestinationProfileViewController: UIViewController {
     }
     
     func setUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -143,7 +151,7 @@ class DestinationProfileViewController: UIViewController {
             closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
             
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -172,7 +180,7 @@ class DestinationProfileViewController: UIViewController {
             closeButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
             closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 90).isActive = true
@@ -201,7 +209,7 @@ class DestinationProfileViewController: UIViewController {
             closeButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
             closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 90).isActive = true

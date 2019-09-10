@@ -36,6 +36,16 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
         setupUI()
     }
     
+    override func shouldAutomaticallyForwardRotationMethods() -> Bool {
+        return false
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask{
+        get {
+            return .portrait
+        }
+    }
+    
     func setupUI() {
         setupNavigationBar()
         setupTableView()
@@ -43,20 +53,25 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
         tableView.reloadData()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             return 67
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             return 65
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             return 66
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             return 59
             
         } else {
@@ -229,7 +244,7 @@ class listCell: UITableViewCell {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         timestampLabel.text = "HH:MM:SS"
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage!.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
             profileImage!.widthAnchor.constraint(equalToConstant: 50).isActive = true
@@ -239,7 +254,7 @@ class listCell: UITableViewCell {
             lastMessageLabel.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: -5).isActive = true
             lastMessageLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 15).isActive = true
             lastMessageLabel.widthAnchor.constraint(equalToConstant: 240).isActive = true
-            lastMessageLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
+            lastMessageLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
             lastMessageLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 14)
             
             nameLabel.topAnchor.constraint(equalTo: profileImage.topAnchor, constant: 5).isActive = true
@@ -260,7 +275,7 @@ class listCell: UITableViewCell {
             messagesCountLabel.font = UIFont.systemFont(ofSize: 10)
             
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage!.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
             profileImage!.widthAnchor.constraint(equalToConstant: 49).isActive = true
@@ -270,7 +285,7 @@ class listCell: UITableViewCell {
             lastMessageLabel.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: -5).isActive = true
             lastMessageLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 15).isActive = true
             lastMessageLabel.widthAnchor.constraint(equalToConstant: 235).isActive = true
-            lastMessageLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
+            lastMessageLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
             lastMessageLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 14)
             
             nameLabel.topAnchor.constraint(equalTo: profileImage.topAnchor, constant: 5).isActive = true
@@ -290,7 +305,7 @@ class listCell: UITableViewCell {
             messagesCountLabel.layer.cornerRadius = 20/2
             messagesCountLabel.font = UIFont.systemFont(ofSize: 10)
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage!.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
             profileImage!.widthAnchor.constraint(equalToConstant: 47).isActive = true
@@ -300,7 +315,7 @@ class listCell: UITableViewCell {
             lastMessageLabel.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: -5).isActive = true
             lastMessageLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 15).isActive = true
             lastMessageLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
-            lastMessageLabel.heightAnchor.constraint(equalToConstant: 13).isActive = true
+            lastMessageLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
             lastMessageLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
             
             nameLabel.topAnchor.constraint(equalTo: profileImage.topAnchor, constant: 5).isActive = true
@@ -320,7 +335,7 @@ class listCell: UITableViewCell {
             messagesCountLabel.layer.cornerRadius = 18/2
             messagesCountLabel.font = UIFont.systemFont(ofSize: 9)
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage!.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
             profileImage!.widthAnchor.constraint(equalToConstant: 46).isActive = true
@@ -330,7 +345,7 @@ class listCell: UITableViewCell {
             lastMessageLabel.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: -5).isActive = true
             lastMessageLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 15).isActive = true
             lastMessageLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
-            lastMessageLabel.heightAnchor.constraint(equalToConstant: 13).isActive = true
+            lastMessageLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
             lastMessageLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
             
             nameLabel.topAnchor.constraint(equalTo: profileImage.topAnchor, constant: 5).isActive = true
@@ -380,32 +395,6 @@ class listCell: UITableViewCell {
             messagesCountLabel.layer.cornerRadius = 8
             messagesCountLabel.font = UIFont.systemFont(ofSize: 8)
         }
-        
-//        let constraints = [
-//            lastMessageLabel.heightAnchor.constraint(equalToConstant: 16),
-//            lastMessageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
-//            lastMessageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 83),
-//            lastMessageLabel.widthAnchor.constraint(equalToConstant: 250),
-            
-//            profileImage!.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
-//            profileImage!.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-//            profileImage!.widthAnchor.constraint(equalToConstant: 55),
-//            profileImage!.heightAnchor.constraint(equalToConstant: 55),
-            
-//            nameLabel.topAnchor.constraint(equalTo: topAnchor, constant:15),
-//            nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -35),
-//            nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 83),
-//            nameLabel.widthAnchor.constraint(equalToConstant: 250),
-            
-//            timestampLabel.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0),
-//            timestampLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            
-//            messagesCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-//            messagesCountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-//            messagesCountLabel.widthAnchor.constraint(equalToConstant: 20),
-//            messagesCountLabel.heightAnchor.constraint(equalToConstant: 20)
-//        ]
-//        NSLayoutConstraint.activate(constraints)
     }
     
     required init?(coder aDecoder: NSCoder) {

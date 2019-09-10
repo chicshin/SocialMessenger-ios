@@ -58,20 +58,20 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let tabHeight = tabBarController?.tabBar.frame.size.height
         let width = UIScreen.main.bounds.width
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             tableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 10, width: width, height: 80)
             friendsTableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 100, width: width, height: UIScreen.main.bounds.height - tabHeight! - (statusBarHeight + navHeight! + 90))
             friendsTitleLabel.frame = CGRect(x: 20, y: statusBarHeight + navHeight! + 78, width: 80, height: 20)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             tableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 10, width: width, height: 75)
             friendsTableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 95, width: width, height: UIScreen.main.bounds.height - tabHeight! - (statusBarHeight + navHeight! + 85))
             friendsTitleLabel.frame = CGRect(x: 20, y: statusBarHeight + navHeight! + 79, width: 80, height: 20)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             tableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 10, width: width, height: 75)
             friendsTableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 95, width: width, height: UIScreen.main.bounds.height - tabHeight! - (statusBarHeight + navHeight! + 85))
             friendsTitleLabel.frame = CGRect(x: 15, y: statusBarHeight + navHeight! + 79, width: 80, height: 20)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             tableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 10, width: width, height: 70)
             friendsTableView.frame = CGRect(x: 0, y: statusBarHeight + navHeight! + 90, width: width, height: UIScreen.main.bounds.height - tabHeight! - (statusBarHeight + navHeight! + 80))
             friendsTitleLabel.frame = CGRect(x: 20, y: statusBarHeight + navHeight! + 73, width: 80, height: 20)
@@ -103,22 +103,32 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
         setSearchBar()
 //        setupImage()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
+    }
+    
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == self.tableView {
-            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
                 return 80
             }
-            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
                 return 75
                 
-            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
                 return 75
                 
-            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
                 return 70
                 
             } else {
@@ -126,16 +136,16 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             }
         } else if tableView == self.friendsTableView {
             
-            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
                 return 62
             }
-            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
                 return 57
                 
-            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
                 return 57
                 
-            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
                 return 52
                 
             } else {
@@ -175,8 +185,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             cell.profileImage.kf.setImage(with: url)
             cell.profileImage.contentMode = .scaleAspectFill
             cell.usernameLabel.text = user.username!
-//            cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
-//            KBIZforSMEsgo L
             
             cellToReturn = cell
             
@@ -230,18 +238,13 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let url = URL(string: user.profileImageUrl!)
         cell.profileImage.kf.setImage(with: url)
         cell.usernameLabel.text = user.username!
-//        cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
-//        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.contentMode = .scaleAspectFill
-//        cell.profileImage.clipsToBounds = true
     }
 
     func setupCellForSearch(cell: FriendsCell, user: AllUserModel) {
         let url = URL(string: user.profileImageUrl!)
         cell.profileImage.kf.setImage(with: url)
         cell.usernameLabel.text = user.username!
-//        cell.usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
-//        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width/2
         cell.profileImage.contentMode = .scaleAspectFill
         cell.profileImage.clipsToBounds = true
     }
@@ -351,7 +354,7 @@ class MyCell: UITableViewCell {
         addSubview(profileImage)
         addSubview(usernameLabel)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
             profileImage.topAnchor.constraint(equalTo: topAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 60).isActive = true
@@ -363,7 +366,7 @@ class MyCell: UITableViewCell {
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 55).isActive = true
@@ -375,7 +378,7 @@ class MyCell: UITableViewCell {
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
 
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 55).isActive = true
@@ -387,7 +390,7 @@ class MyCell: UITableViewCell {
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 16)
 
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -470,7 +473,7 @@ class FriendsCell: UITableViewCell {
         addSubview(followButton)
         addSubview(unfollowButton)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             profileImage.topAnchor.constraint(equalTo: topAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -479,23 +482,24 @@ class FriendsCell: UITableViewCell {
             
             usernameLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 25).isActive = true
             usernameLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
-            //            usernameLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             
             followButton.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
             followButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-            followButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-            followButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            followButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+            followButton.widthAnchor.constraint(equalToConstant: 45).isActive = true
+            followButton.layer.cornerRadius = 13
+            followButton.clipsToBounds = true
             
             followImageView.centerYAnchor.constraint(equalTo: followButton.centerYAnchor).isActive = true
             followImageView.centerXAnchor.constraint(equalTo: followButton.centerXAnchor).isActive = true
-            followImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-            followImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            followImageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            followImageView.widthAnchor.constraint(equalToConstant: 20).isActive = true
             
             unfollowButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 45).isActive = true
@@ -504,7 +508,6 @@ class FriendsCell: UITableViewCell {
             
             usernameLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 25).isActive = true
             usernameLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
-            //            usernameLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             
             followButton.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
@@ -522,7 +525,7 @@ class FriendsCell: UITableViewCell {
             unfollowButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 17)
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 45).isActive = true
@@ -531,7 +534,6 @@ class FriendsCell: UITableViewCell {
             
             usernameLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 25).isActive = true
             usernameLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
-            //            usernameLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             
             followButton.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
@@ -549,7 +551,7 @@ class FriendsCell: UITableViewCell {
             unfollowButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             usernameLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 16)
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -558,7 +560,6 @@ class FriendsCell: UITableViewCell {
             
             usernameLabel.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 25).isActive = true
             usernameLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true
-            //            usernameLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
             usernameLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
             
             followButton.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor).isActive = true

@@ -64,14 +64,14 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     var tableView = UITableView()
     let menuHeight: CGFloat = {
         var height = CGFloat()
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             height = 100
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             height = 100
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             height = 100
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             height = 70
         } else {
             height = 70
@@ -105,7 +105,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         inputContainerHeightX = inputContainerVeiw.heightAnchor.constraint(equalToConstant: 70)
         inputContainerHeightX?.isActive = false
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone X" {
             inputContainerHeightX?.isActive = true
             inputContainerHeight?.isActive = false
         }
@@ -117,12 +117,6 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         setupUI()
         
     }
-
-    
-//    @objc func showChat(notification: Notification) {
-//        guard let text = notification.userInfo?["uid"] as? String else { return }
-//        print ("uid: \(text)")
-//    }
     
     func setupUI() {
         setCurrentUserInfo()
@@ -181,17 +175,17 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     private func estimateFrameText(text: String) -> CGRect {
         let size = CGSize(width: 200, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
                 ], context: nil)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 15)!
                 ], context: nil)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 14)!
                 ], context: nil)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font : UIFont.init(name: "KBIZforSMEsgo L", size: 13)!
                 ], context: nil)
         } else {
@@ -339,7 +333,7 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
         sendButton.translatesAutoresizingMaskIntoConstraints = false
 
 //            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 40)
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone X" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone X" {
             containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 70)
         }
         else {
@@ -510,14 +504,14 @@ class chatMessageCell: UICollectionViewCell {
     let textView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             tv.font = UIFont(name: "KBIZforSMEsgo L", size: 15)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             tv.font = UIFont(name: "KBIZforSMEsgo L", size: 14)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             tv.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
         } else {
             tv.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
@@ -788,20 +782,9 @@ class chatMessageCell: UICollectionViewCell {
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor!.isActive = true
         bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
-//        bubbleDateBottomAnchor = bubbleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 30)
-//        bubbleDateBottomAnchor?.isActive = true
-//        bubbleTopAnchor = bubbleView.topAnchor.constraint(equalTo: self.topAnchor)
-//        bubbleTopAnchor?.isActive = false
-//        bubbleLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
-//        bubbleLeftAnchor?.isActive = false
-//        bubbleRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
-//        bubbleRightAnchor?.isActive = true
-//        bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
-//        bubbleWidthAnchor!.isActive = true
-//        bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+
 
         textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 7).isActive = true
-//        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         textView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
@@ -895,7 +878,7 @@ class menuCell: UITableViewCell {
         addSubview(photoLabel)
         addSubview(videoLabel)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
             photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
             photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
@@ -921,7 +904,7 @@ class menuCell: UITableViewCell {
             videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
             videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
             photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
             photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
@@ -946,7 +929,7 @@ class menuCell: UITableViewCell {
             videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
             videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
             videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
             photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
             photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
@@ -971,7 +954,7 @@ class menuCell: UITableViewCell {
             videoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 88/2).isActive = true
             videoLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
             videoLabel.heightAnchor.constraint(equalToConstant: 12).isActive = true
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             photoLabelView.topAnchor.constraint(equalTo: topAnchor).isActive = true
             photoLabelView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
             photoLabelView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2).isActive = true
@@ -1051,14 +1034,14 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             return 100
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             return 100
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             return 100
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             return 70
         } else {
             return 70

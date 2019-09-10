@@ -19,7 +19,6 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     var editInAction = false
     var doneEditTriggered = false
     
-//    var textField = ""
     var image : UIImage? = nil
     var status = ""
     var fullname = ""
@@ -42,6 +41,14 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         keyboardTapGestureRecognizer()
         setupUI()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
     
     func setupUI() {
         setupTableView()
@@ -51,27 +58,27 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         if indexPath.row == 0 {
-            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
                 return 180
             }
-            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
                 return 180
-            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
                 return 170
-            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
                 return 160
             } else {
                 return 150
             }
         } else {
-            if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+            if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
                 return 50
             }
-            else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+            else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
                 return 50
-            } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+            } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
                 return 50
-            } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+            } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
                 return 45
             } else {
                 return 45
@@ -89,7 +96,6 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.inputTextField.delegate = self
         
         cell.contentTitle.text = content
-//        cell.contentTitle.font = UIFont.systemFont(ofSize: 15)
         
         cell.inputTextField.tag = indexPath.row
         
@@ -205,14 +211,12 @@ class ProfileCell: UITableViewCell {
     var contentTitle: UILabel = {
         let text = UILabel()
         text.translatesAutoresizingMaskIntoConstraints = false
-//        text.font = UIFont.systemFont(ofSize: 15)
         return text
     }()
     
     var contentLabel: UILabel = {
         let text = UILabel()
         text.translatesAutoresizingMaskIntoConstraints = false
-//        text.font = UIFont.systemFont(ofSize: 15)
         return text
     }()
     
@@ -250,7 +254,6 @@ class ProfileCell: UITableViewCell {
         label.isUserInteractionEnabled = true
         label.text = "Edit profile"
         label.textAlignment = .center
-//        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
         return label
     }()
@@ -270,7 +273,6 @@ class ProfileCell: UITableViewCell {
         label.isUserInteractionEnabled = true
         label.text = "Done edit"
         label.textAlignment = .center
-//        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
         return label
     }()
@@ -289,7 +291,6 @@ class ProfileCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
-//        label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
 
@@ -310,7 +311,7 @@ class ProfileCell: UITableViewCell {
         addSubview(editTextFieldIndicator)
         addSubview(textCountLabel)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -372,7 +373,7 @@ class ProfileCell: UITableViewCell {
             textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
             textCountLabel.font = UIFont.systemFont(ofSize: 14)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -433,7 +434,7 @@ class ProfileCell: UITableViewCell {
             textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
             textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
             textCountLabel.font = UIFont.systemFont(ofSize: 14)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -494,7 +495,7 @@ class ProfileCell: UITableViewCell {
             textCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
             textCountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
             textCountLabel.font = UIFont.systemFont(ofSize: 13)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             contentTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             contentTitle.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
             contentTitle.widthAnchor.constraint(equalToConstant: 100).isActive = true

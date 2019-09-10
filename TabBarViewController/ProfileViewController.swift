@@ -154,6 +154,15 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
         textFieldUnderline.isHidden = true
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
     func setupUI() {
         setupProfileImage()
         setupFullname()
@@ -221,7 +230,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     }
     
     func setUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -286,7 +295,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             textCountLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
             textCountLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -350,7 +359,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             textCountLabel.leftAnchor.constraint(equalTo: textFieldUnderline.rightAnchor, constant: 25).isActive = true
             textCountLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
             textCountLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 13)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 90).isActive = true
@@ -414,7 +423,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             textCountLabel.leftAnchor.constraint(equalTo: textFieldUnderline.rightAnchor, constant: 20).isActive = true
             textCountLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
             textCountLabel.font = UIFont(name: "KBIZforSMEsgo L", size: 12)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             profileImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             profileImage.topAnchor.constraint(equalTo: view.topAnchor, constant: (UIScreen.main.bounds.height/3) * 2 - 50).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 90).isActive = true

@@ -31,17 +31,24 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
     func setupUI() {
         setupTableView()
         setupNavigationBar()
-//        checkPushToken()
     }
     
     func checkNotifications() {
         let current = UNUserNotificationCenter.current()
         current.getNotificationSettings(completionHandler: { (settings) in
             if settings.authorizationStatus == .authorized {
-//                self.AllowNotificationIsOn = true
                 print("authroized----")
             } else if settings.authorizationStatus == .denied {
                 self.allowNotificationIsOn = false
@@ -53,16 +60,16 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             return 45
         }
-        else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             return 43
             
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             return 42
             
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             return 38
             
         } else {
@@ -79,7 +86,6 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
         let content = contents[indexPath.row]
         
         cell.textLabel?.text = content
-//        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
         
         cell.switchButton.tag = indexPath.row
         
@@ -99,8 +105,6 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
     func handleAllowNotification(cell: notificationsCell) {
         cell.switchButton.isOn = allowNotificationIsOn
         if allowNotificationIsOn {
-//            showPreviewIsOn = true
-//            newFollwersIsOn = true
         } else {
             showPreviewIsOn = false
             newFollwersIsOn = false
@@ -127,12 +131,7 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
         }
         cell.switchButton.addTarget(self, action: #selector(switchValueDidChange(_:)), for: UIControl.Event.valueChanged)
     }
-    
-//    func handleSwitch(cell: notificationsCell) {
-////        cell.switchButton.isOn = true
-////        cell.switchButton.setOn(true, animated: false)
-//        cell.switchButton.addTarget(self, action: #selector(switchValueDidChange(_:)), for: UIControl.Event.valueChanged)
-//    }
+
 
     @objc func switchValueDidChange(_ sender: UISwitch) {
         let tag = sender.tag
@@ -149,8 +148,6 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowers)
             } else {
                 createPushToken()
-//                showPreviewIsOn = true
-//                newFollwersIsOn = true
                 allowNotificationIsOn = true
             }
             tableView.reloadData()
@@ -158,24 +155,20 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
             if showPreviewIsOn {
                 let showPreview = ["notifications/showPreview": DISABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(showPreview)
-//                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "disabled"])
                 showPreviewIsOn = false
             } else {
                 let showPreview = ["notifications/showPreview": ENABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(showPreview)
-//                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "enabled"])
                 showPreviewIsOn = true
             }
         case 2:
             if newFollwersIsOn {
                 let newFollowerNotification = ["notifications/newFollowers": DISABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowerNotification)
-                //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "disabled"])
                 newFollwersIsOn = false
             } else {
                 let newFollowerNotification = ["notifications/newFollowers": ENABLED]
                 Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(newFollowerNotification)
-                //                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["showPreview": "enabled"])
                 newFollwersIsOn = true
             }
         default:
@@ -196,19 +189,19 @@ class notificationsCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(switchButton)
         
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             textLabel?.font = UIFont.systemFont(ofSize: 15)
             switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             switchButton.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
-        } else if UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus"{
+        } else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             textLabel?.font = UIFont.systemFont(ofSize: 15)
             switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             switchButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             textLabel?.font = UIFont.systemFont(ofSize: 15)
             switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             switchButton.transform = CGAffineTransform(scaleX: 0.87, y: 0.87)
-        } else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8"{
+        } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             textLabel?.font = UIFont.systemFont(ofSize: 14)
             switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             switchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
@@ -219,7 +212,6 @@ class notificationsCell: UITableViewCell {
         }
         
         switchButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-//        switchButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
