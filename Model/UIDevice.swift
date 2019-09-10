@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class UIDevice {
+public class UIDevices {
     
     static let modelName: String = {
         var systemInfo = utsname()
