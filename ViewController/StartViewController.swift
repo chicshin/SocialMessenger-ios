@@ -25,7 +25,16 @@ class StartViewController: UIViewController {
         box.widthAnchor.constraint(equalToConstant: 80).isActive = true
         box.layer.cornerRadius = 15
         box.clipsToBounds = true
-        box.image = #imageLiteral(resourceName: "Icon-App-40x40")
+        box.image = #imageLiteral(resourceName: "ItunesArtwork")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
     }
     
     override func viewDidAppear(_ animated: Bool) {

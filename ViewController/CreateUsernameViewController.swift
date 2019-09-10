@@ -20,14 +20,8 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         
-//        let title = "Create Username"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30)])
-//        label.attributedText = attributedText
-        
         label.textAlignment = .center
         label.textColor = .lightGray
-        //        label.textColor = UIColor(white: 1, alpha: 0.8)
         return label
     }()
     
@@ -36,14 +30,8 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         
-//        let title = "Pick a username for your account. You can always change it later."
-//        let attributedSubText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 15)!])
-//        label.attributedText = attributedSubText
-        
         label.textAlignment = .center
         label.textColor = .lightGray
-        //        label.textColor = UIColor(white: 1, alpha: 0.8)
         label.numberOfLines = 3
         return label
     }()
@@ -59,16 +47,10 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
-        
-//        let placeholderAttr = NSAttributedString(string: "Enter username", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
+
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-        
         textField.textAlignment = .center
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
         
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
@@ -85,14 +67,6 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
     var restrictSpecialCharactersMessage: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        
-//        let message = "Only numbers, letters and underscore(_) are allowed in the username."
-//        let attributedText = NSMutableAttributedString(string: message, attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
-//             NSAttributedString.Key.foregroundColor : UIColor.red])
-//
-//        label.attributedText = attributedText
-        //        restrictSpecialCharactersMessageLabel.isHidden = false
         label.numberOfLines = 2
         return label
     }()
@@ -104,8 +78,6 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         button.isUserInteractionEnabled = false
         
         button.setTitle("Next", for: UIControl.State.normal)
-//        button.layer.cornerRadius = 19
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
         
@@ -116,21 +88,11 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
     
     var signInButton: UIButton = {
         let button = UIButton(type: .system)
-//        let title = "Already have an account? "
-//        let subtitle = "Sign In"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-//        let attributedSubText = NSMutableAttributedString(string: subtitle, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
         
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
         button.isUserInteractionEnabled = true
         
-//        attributedText.append(attributedSubText)
-//        button.setAttributedTitle(attributedText, for: UIControl.State.normal)
         
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
@@ -141,7 +103,6 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
-//        label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
         return label
     }()
@@ -168,6 +129,15 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
         setDeviceUI()
         setupUI()
         handleFunctions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
     }
     
     func setupUI() {
@@ -215,7 +185,7 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
     }
     
     func setDeviceUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus" {
             let title = "Create Username"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30)])
@@ -260,7 +230,7 @@ class CreateUsernameViewController: UIViewController, UITextFieldDelegate {
                 [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12),
                  NSAttributedString.Key.foregroundColor : UIColor.red])
             usernameExistsErrorMessage.attributedText = existErrorAttributedText
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8" {
             let title = "Create Username"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 26)])

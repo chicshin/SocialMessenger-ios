@@ -44,11 +44,6 @@ class ProfileImageViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         
-//        let title = "Add Profile Picture"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 29)])
-//        label.attributedText = attributedText
-        
         label.textAlignment = .center
         label.textColor = .lightGray
         return label
@@ -58,11 +53,6 @@ class ProfileImageViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
-        
-//        let title = "Add a profile photo so your friends know it's you. You can always change it later."
-//        let attributedSubText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 14)!])
-//        label.attributedText = attributedSubText
         
         label.textAlignment = .center
         label.textColor = .lightGray
@@ -80,8 +70,6 @@ class ProfileImageViewController: UIViewController {
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.white, for: UIControl.State.normal)
         
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-//        button.layer.cornerRadius = 19
         button.backgroundColor = UIColor(white: 1, alpha: 0.2)
         button.isUserInteractionEnabled = true
         return button
@@ -103,7 +91,6 @@ class ProfileImageViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         label.textColor = UIColor(white: 1, alpha: 0.7)
-//        label.font = UIFont(name: "Arial-BoldMT", size: 26)
         label.text = "Welcome"
         label.textAlignment = .left
         label.isHidden = true
@@ -115,7 +102,6 @@ class ProfileImageViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         label.textColor = UIColor(white: 1, alpha: 0.7)
-//        label.font = UIFont(name: "Arial-BoldMT", size: 26)
         label.textAlignment = .left
         label.isHidden = true
         return label
@@ -145,6 +131,15 @@ class ProfileImageViewController: UIViewController {
         setDeviceUI()
         setupUI()
         handleFunctions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
     }
     
     func setupUI() {
@@ -197,7 +192,7 @@ class ProfileImageViewController: UIViewController {
     }
     
     func setDeviceUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus" {
             let title = "Add Profile Picture"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 29)])
@@ -216,7 +211,7 @@ class ProfileImageViewController: UIViewController {
             
             doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
             profileImageView.layer.cornerRadius = 80/2
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8" {
             let title = "Add Profile Picture"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 25)])

@@ -23,7 +23,6 @@ class ResetPasswordViewController: UIViewController {
         
         button.setImage(UIImage.init(named: "close_icon"), for: UIControl.State.normal)
         button.tintColor = UIColor.black.withAlphaComponent(0.7)
-        //        button.clipsToBounds = true
         return button
     }()
     
@@ -32,14 +31,8 @@ class ResetPasswordViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         
-//        let title = "Reset Password"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30)])
-//        label.attributedText = attributedText
-        
         label.textAlignment = .center
         label.textColor = .lightGray
-        //        label.textColor = UIColor(white: 1, alpha: 0.8)
         return label
     }()
     
@@ -47,11 +40,6 @@ class ResetPasswordViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
-        
-//        let title = "Enter your email address you're are using for your account. We will send a password reset link."
-//        let attributedSubText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 15)!])
-//        label.attributedText = attributedSubText
         
         label.textAlignment = .center
         label.textColor = .lightGray
@@ -70,15 +58,9 @@ class ResetPasswordViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
-        
-//        let placeholderAttr = NSAttributedString(string: "Email Address", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
+
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-        
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
         
         textField.keyboardType = UIKeyboardType.emailAddress
         textField.autocapitalizationType = .none
@@ -94,11 +76,9 @@ class ResetPasswordViewController: UIViewController {
         button.isUserInteractionEnabled = false
         
         button.setTitle("Request Reset Link", for: UIControl.State.normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
         
-//        button.layer.cornerRadius = 19
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.lightGray.cgColor
         return button
@@ -117,6 +97,15 @@ class ResetPasswordViewController: UIViewController {
         setDeviceUI()
         setupUI()
         handleFunctions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
     }
     
     func setupUI() {
@@ -163,7 +152,7 @@ class ResetPasswordViewController: UIViewController {
     }
     
     func setDeviceUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus" {
             let title = "Reset Password"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 30)])
@@ -182,7 +171,7 @@ class ResetPasswordViewController: UIViewController {
             
             resetButton.titleLabel?.font = UIFont.systemFont(ofSize: 15)
             resetButton.layer.cornerRadius = 19
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8" {
             let title = "Reset Password"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 26)])

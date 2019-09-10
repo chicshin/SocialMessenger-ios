@@ -34,11 +34,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         
-//        let title = "Email and Password"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 29)])
-//        label.attributedText = attributedText
-        
         label.textAlignment = .center
         label.textColor = .lightGray
         return label
@@ -48,11 +43,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
-        
-//        let title = "Enter your name so friends may know it's you."
-//        let attributedSubText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Arial", size: 14)!])
-//        label.attributedText = attributedSubText
         
         label.textAlignment = .center
         label.textColor = .lightGray
@@ -85,17 +75,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
-        
-//        let placeholderAttr = NSAttributedString(string: "Fullname", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
+
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-//
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
-        
-        //        textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         return textField
@@ -106,14 +88,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
         
-//        let placeholderAttr = NSAttributedString(string: "Email Address", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-        
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 15)
         
         textField.keyboardType = UIKeyboardType.emailAddress
         textField.autocapitalizationType = .none
@@ -127,14 +103,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
         
-//        let placeholderAttr = NSAttributedString(string: "Password", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-//
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
         
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
@@ -150,11 +120,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         button.isUserInteractionEnabled = false
         
         button.setTitle("Create an account", for: UIControl.State.normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
-//
-//        button.layer.cornerRadius = 19
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.lightGray.cgColor
         return button
@@ -164,20 +131,40 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
-//        label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .right
         return label
     }()
     
     var ageCheckBox: UIButton = {
         let button = UIButton(type: .system)
-//        let checkedImage = UIImage(imageLiteralResourceName: "isChecked")
-//        let uncheckedImage = UIImage(imageLiteralResourceName: "check")
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(#imageLiteral(resourceName: "check"), for: UIControl.State.normal)
-        button.setTitle("  I am +13 years old", for: UIControl.State.normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.setTitle("  I am 12+ years old", for: UIControl.State.normal)
         button.tintColor = .lightGray
+        return button
+    }()
+    
+    var termsButton: UIButton = {
+        let button = UIButton(type: .system)
+
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        button.isUserInteractionEnabled = true
+
+        button.titleLabel?.textAlignment = .center
+        button.setTitleColor(.lightGray, for: UIControl.State.normal)
+        return button
+    }()
+    
+    var privacyPolicyButton: UIButton = {
+        let button = UIButton(type: .system)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        button.isUserInteractionEnabled = true
+        
+        button.titleLabel?.textAlignment = .center
+        button.setTitleColor(.lightGray, for: UIControl.State.normal)
         return button
     }()
     
@@ -200,12 +187,23 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(passwordBottomLineView)
         view.addSubview(createAccountButton)
         view.addSubview(ageCheckBox)
+        view.addSubview(termsButton)
+        view.addSubview(privacyPolicyButton)
         
         fullnameTextField.delegate = self
         
         setDeviceUI()
         setupUI()
         handleFunctions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
     }
     
     func setupUI() {
@@ -218,6 +216,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         handleTextFields()
         didTapCreateAccount()
         didTapAgeCheck()
+        didTapTermsOfService()
+        didTapPrivacyPolicy()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -281,6 +281,24 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
 
     }
     
+    func didTapTermsOfService() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTermsOfService))
+        termsButton.addGestureRecognizer(tapGesture)
+    }
+    
+    func didTapPrivacyPolicy() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handlePrivacyPolicy))
+        privacyPolicyButton.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleTermsOfService() {
+        self.performSegue(withIdentifier: "TermsSegue", sender: nil)
+    }
+    
+    @objc func handlePrivacyPolicy() {
+        self.performSegue(withIdentifier: "PrivacyPolicySegue", sender: nil)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ProfileImageSegue" {
             let vc = segue.destination as! ProfileImageViewController
@@ -289,7 +307,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     }
     
     func setDeviceUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus" {
             let title = "Email and Password"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 29)])
@@ -325,7 +343,18 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             ageCheckBox.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             
             dismissButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8" {
+            
+            let termsOfService = "Terms of Service "
+            let privacyPolicy = "Privacy Policy"
+            let termsOfServiceAttributedText = NSMutableAttributedString(string: termsOfService, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            let privacyPolicyAttributedText = NSMutableAttributedString(string: privacyPolicy, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            termsButton.setAttributedTitle(termsOfServiceAttributedText, for: UIControl.State.normal)
+            privacyPolicyButton.setAttributedTitle(privacyPolicyAttributedText, for: UIControl.State.normal)
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8" {
             let title = "Email and Password"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 26)])
@@ -361,6 +390,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             ageCheckBox.titleLabel?.font = UIFont.systemFont(ofSize: 13)
             
             dismissButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+            
+            let termsOfService = "Terms of Service "
+            let privacyPolicy = "Privacy Policy"
+            let termsOfServiceAttributedText = NSMutableAttributedString(string: termsOfService, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 12),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            let privacyPolicyAttributedText = NSMutableAttributedString(string: privacyPolicy, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 12),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            termsButton.setAttributedTitle(termsOfServiceAttributedText, for: UIControl.State.normal)
+            privacyPolicyButton.setAttributedTitle(privacyPolicyAttributedText, for: UIControl.State.normal)
         } else {
             let title = "Email and Password"
             let attributedText = NSMutableAttributedString(string: title, attributes:
@@ -397,6 +437,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             ageCheckBox.titleLabel?.font = UIFont.systemFont(ofSize: 12)
             
             dismissButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+            
+            let termsOfService = "Terms of Service "
+            let privacyPolicy = "Privacy Policy"
+            let termsOfServiceAttributedText = NSMutableAttributedString(string: termsOfService, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 11),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            let privacyPolicyAttributedText = NSMutableAttributedString(string: privacyPolicy, attributes:
+                [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 11),
+                 NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
+            termsButton.setAttributedTitle(termsOfServiceAttributedText, for: UIControl.State.normal)
+            privacyPolicyButton.setAttributedTitle(privacyPolicyAttributedText, for: UIControl.State.normal)
         }
     }
 }

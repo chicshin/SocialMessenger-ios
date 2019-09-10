@@ -22,11 +22,6 @@ class SignInViewController: UIViewController {
     var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-//        let title = "TIKI TALKA"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.init(name: "Arial-BoldItalicMT", size: 32)!
-//            ])
-//        label.attributedText = attributedText
         label.textColor = UIColor(white: 1, alpha: 0.8)
         label.textAlignment = .center
         return label
@@ -50,15 +45,8 @@ class SignInViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
-        
-//        let placeholderAttr = NSAttributedString(string: "Email Address", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-//
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
         
         textField.keyboardType = UIKeyboardType.emailAddress
         textField.autocapitalizationType = .none
@@ -71,15 +59,8 @@ class SignInViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.backgroundColor = .clear
-        
-//        let placeholderAttr = NSAttributedString(string: "Password", attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         textField.borderStyle = .none
-//        textField.attributedPlaceholder = placeholderAttr
-        
         textField.textColor = .white
-//        textField.font = UIFont.systemFont(ofSize: 16)
         
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
@@ -95,11 +76,9 @@ class SignInViewController: UIViewController {
         button.isUserInteractionEnabled = false
         
         button.setTitle("Sign In", for: UIControl.State.normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
         
-//        button.layer.cornerRadius = 19
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.lightGray.cgColor
         return button
@@ -107,21 +86,10 @@ class SignInViewController: UIViewController {
     
     var signUpButton: UIButton = {
         let button = UIButton(type: .system)
-//        let title = "Don't have an account? "
-//        let subtitle = "Sign Up"
-//        let attributedText = NSMutableAttributedString(string: title, attributes:
-//            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-//        let attributedSubText = NSMutableAttributedString(string: subtitle, attributes:
-//            [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
-//             NSAttributedString.Key.foregroundColor : UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8)])
         
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
         button.isUserInteractionEnabled = true
-        
-//        attributedText.append(attributedSubText)
-//        button.setAttributedTitle(attributedText, for: UIControl.State.normal)
         
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(.lightGray, for: UIControl.State.normal)
@@ -134,7 +102,6 @@ class SignInViewController: UIViewController {
         button.backgroundColor = .clear
         
         button.setTitle("Forgot password?", for: UIControl.State.normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         button.setTitleColor(UIColor(red: 0, green: 122/255, blue: 1, alpha: 0.8), for: UIControl.State.normal)
         return button
     }()
@@ -156,6 +123,15 @@ class SignInViewController: UIViewController {
         handleFunctions()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        AppDelegate.AppUtility.lockOrientation(UIInterfaceOrientationMask.all)
+    }
+    
     func setupUI() {
         setBlurBackground()
         setupConstraints()
@@ -169,7 +145,7 @@ class SignInViewController: UIViewController {
     }
     
     func setDeviceUI() {
-        if UIDevice.modelName == "iPhone XS Max" || UIDevice.modelName == "iPhone XR" || UIDevice.modelName == "iPhone 6 Plus" || UIDevice.modelName == "iPhone 6s Plus" || UIDevice.modelName == "Simulator iPhone 7 Plus" || UIDevice.modelName == "iPhone 8 Plus" {
+        if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" || UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus" {
             let title = "TIKI TALKA"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.init(name: "Arial-BoldItalicMT", size: 32)!
@@ -203,7 +179,7 @@ class SignInViewController: UIViewController {
             
             signInButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             signInButton.layer.cornerRadius = 19
-        } else if UIDevice.modelName == "Simulator iPhone X" || UIDevice.modelName == "iPhone XS" || UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "Simulator iPhone 7" || UIDevice.modelName == "iPhone 8" {
+        } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" || UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8" {
             let title = "TIKI TALKA"
             let attributedText = NSMutableAttributedString(string: title, attributes:
                 [NSAttributedString.Key.font : UIFont.init(name: "Arial-BoldItalicMT", size: 28)!
