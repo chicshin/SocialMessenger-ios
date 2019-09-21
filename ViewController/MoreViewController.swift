@@ -14,10 +14,12 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     var tableView: UITableView! = UITableView()
     
-    let array = ["Account", "Notifications", "Sign Out"]
+    let array = ["Account", "Notifications", "Full HD", "Blocking", "Sign Out"]
     var token = ""
     var showPreview = ""
     var newFollowers = ""
+    var fullHDIsOn = true
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,6 +75,8 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsCell
         let list = array[indexPath.row]
         setupCell(cell: cell, list: list)
+        cell.switchButton.tag = indexPath.row
+        handleFullHD(cell: cell)
         cell.textLabel?.text = list
         return cell
     }
@@ -81,15 +85,45 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
         if list == "Sign Out" {
             cell.nextImageView.isHidden = true
             cell.textLabel?.textColor = #colorLiteral(red: 0, green: 0.4799541235, blue: 0.9984330535, alpha: 1)
+            cell.switchButton.isHidden = true
         } else {
             if list == "Account" {
                 cell.nextImageView.isHidden = false
+                cell.switchButton.isHidden = true
                 cell.imageView?.image = #imageLiteral(resourceName: "person")
             }
             if list == "Notifications" {
                 cell.nextImageView.isHidden = false
+                cell.switchButton.isHidden = true
                 cell.imageView?.image = #imageLiteral(resourceName: "notification")
             }
+            if list ==  "Full HD" {
+                cell.nextImageView.isHidden = true
+                cell.switchButton.isHidden = false
+                cell.imageView?.image = #imageLiteral(resourceName: "hd")
+            }
+            if list == "Blocking" {
+                cell.nextImageView.isHidden = false
+                cell.switchButton.isHidden = true
+                cell.imageView?.image = #imageLiteral(resourceName: "block")
+            }
+        }
+    }
+    
+    func handleFullHD(cell: SettingsCell) {
+        cell.switchButton.isOn = fullHDIsOn
+        cell.switchButton.addTarget(self, action: #selector(switchValueDidChange(_:)), for: UIControl.Event.valueChanged)
+    }
+    
+    @objc func switchValueDidChange(_ sender: UISwitch) {
+        if fullHDIsOn {
+        fullHDIsOn = false
+        let fullHDStatus = ["fullHD": DISABLED]
+        Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(fullHDStatus)
+        } else {
+        fullHDIsOn = true
+        let fullHDStatus = ["fullHD": ENABLED]
+        Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(fullHDStatus)
         }
     }
     
@@ -99,7 +133,9 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.performSegue(withIdentifier: "showProfileAccountSegue", sender: self)
         case 1:
             self.performSegue(withIdentifier: "notificationSettingSegue", sender: self)
-        case 2:
+        case 3:
+            self.performSegue(withIdentifier: "showBlockingSegue", sender: self)
+        case 4:
             showSignOutAlert()
         default:
             break
@@ -125,6 +161,33 @@ class MoreViewController: UIViewController, UITableViewDelegate, UITableViewData
                 vc.newFollwersIsOn = false
             }
         }
+        
+//        if segue.identifier == "ResolutionSegue" {
+//            let vc = segue.destination as! ResolutionViewController
+//            if dataImageIsOn == "true" {
+//                vc.dataImageIsOn = true
+//            } else if dataImageIsOn == "false" {
+//                vc.dataImageIsOn = false
+//            }
+//            
+//            if dataVideoIsOn == "true" {
+//                vc.dataVideoIsOn = true
+//            } else if dataVideoIsOn == "false" {
+//                vc.dataVideoIsOn = false
+//            }
+//            
+//            if wifiImageIsOn == "true" {
+//                vc.wifiImageIsOn = true
+//            } else if wifiImageIsOn == "false" {
+//                vc.wifiImageIsOn = false
+//            }
+//            
+//            if wifiVideoIsOn == "true" {
+//                vc.wifiVideoIsOn = true
+//            } else if wifiVideoIsOn == "false" {
+//                vc.wifiVideoIsOn = false
+//            }
+//        }
     }
 }
 
@@ -138,10 +201,17 @@ class SettingsCell: UITableViewCell {
         return next
     }()
     
+    var switchButton: UISwitch = {
+        let button = UISwitch()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         addSubview(nextImageView)
+        addSubview(switchButton)
         
         if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             textLabel?.font = UIFont.systemFont(ofSize: 15)
@@ -149,6 +219,9 @@ class SettingsCell: UITableViewCell {
             nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             nextImageView.heightAnchor.constraint(equalToConstant: 27).isActive = true
             nextImageView.widthAnchor.constraint(equalToConstant: 27).isActive = true
+            
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
         }
         else if UIDevices.modelName == "iPhone 6 Plus" || UIDevices.modelName == "iPhone 6s Plus" || UIDevices.modelName == "iPhone 7 Plus" || UIDevices.modelName == "iPhone 8 Plus"{
             textLabel?.font = UIFont.systemFont(ofSize: 15)
@@ -156,25 +229,38 @@ class SettingsCell: UITableViewCell {
             nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             nextImageView.heightAnchor.constraint(equalToConstant: 27).isActive = true
             nextImageView.widthAnchor.constraint(equalToConstant: 27).isActive = true
+            
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
         } else if UIDevices.modelName == "iPhone X" || UIDevices.modelName == "iPhone XS" {
             textLabel?.font = UIFont.systemFont(ofSize: 14)
             nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
             nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+            
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.87, y: 0.87)
         } else if UIDevices.modelName == "iPhone 6" || UIDevices.modelName == "iPhone 6s" || UIDevices.modelName == "iPhone 7" || UIDevices.modelName == "iPhone 8"{
             textLabel?.font = UIFont.systemFont(ofSize: 14)
             nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
             nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+            
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         } else {
             textLabel?.font = UIFont.systemFont(ofSize: 12)
             nextImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             nextImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
             nextImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
             nextImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+            
+            switchButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+            switchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         }
+        switchButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

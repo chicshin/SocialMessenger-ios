@@ -139,7 +139,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(#imageLiteral(resourceName: "check"), for: UIControl.State.normal)
-        button.setTitle("  I am 12+ years old", for: UIControl.State.normal)
+        button.setTitle("I am 17+. I have read and agreed to our Terms of Service/Privacy Policy.", for: UIControl.State.normal)
+        button.titleLabel?.numberOfLines = 0
         button.tintColor = .lightGray
         return button
     }()
