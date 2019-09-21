@@ -67,7 +67,9 @@ class UserApi {
                         PROFILE_IMAGE_URL: profileImageUrl,
                         PUSHTOKEN : ref!.token,
                         NOTIFICATIONS : [SHOWPREVIEW: ENABLED, NEWFOLLOWERS: ENABLED],
-                        STATUS: ""
+                        STATUS: "",
+                        FULLHD : ENABLED,
+                        FLAGS : [SPAM: 0, FRAUD: 0, INAPPROPRIATE: 0, OTHER: 0]
                     ]
                 
                     let ActiveUsernameDict : Dictionary<String,Any> = [
@@ -82,6 +84,7 @@ class UserApi {
                         }
                     })
                     Ref().databaseUsers.child(ACTIVEUSERNAMES).updateChildValues(ActiveUsernameDict)
+//                    Ref().databaseRoot.child(ACTIVEUSERNAMES).updateChildValues(ActiveUsernameDict)
                 }
             }
         

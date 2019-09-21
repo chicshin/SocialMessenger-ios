@@ -72,6 +72,7 @@ class ChatModel: NSObject{
         today = dateFormatter.string(from: timestampDate as Date)
         return today
     }
+    
     init(dictionary: [String: Any]) {
         super.init()
         senderUid = dictionary["senderUid"] as? String
