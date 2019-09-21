@@ -144,9 +144,9 @@ extension SignUpViewController {
             createAccountButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
             createAccountButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
-            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20).isActive = true
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 300).isActive = true
             ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
             
             termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
@@ -213,10 +213,10 @@ extension SignUpViewController {
             createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
             createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
             
-            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20).isActive = true
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
-            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 50).isActive = true
             
             termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
             termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -281,10 +281,10 @@ extension SignUpViewController {
             createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
             createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
             
-            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20).isActive = true
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
-            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 50).isActive = true
             
             termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
             termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -349,10 +349,10 @@ extension SignUpViewController {
             createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
             createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
             
-            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20).isActive = true
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
-            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 50).isActive = true
             
             termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
             termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -417,10 +417,10 @@ extension SignUpViewController {
             createAccountButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
             createAccountButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
             
-            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 10).isActive = true
+            ageCheckBox.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20).isActive = true
             ageCheckBox.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            ageCheckBox.widthAnchor.constraint(equalToConstant: 150).isActive = true
-            ageCheckBox.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            ageCheckBox.widthAnchor.constraint(equalToConstant: 280).isActive = true
+            ageCheckBox.heightAnchor.constraint(equalToConstant: 50).isActive = true
             
             termsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15).isActive = true
             termsButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true

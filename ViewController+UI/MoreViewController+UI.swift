@@ -12,16 +12,20 @@ import FirebaseDatabase
 
 extension MoreViewController {
     func removePushToken() {
-        let uid = Auth.auth().currentUser?.uid
-        Ref().databaseSpecificUser(uid: uid!).observeSingleEvent(of: .value, with: { (snapshot) in
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        Ref().databaseSpecificUser(uid: uid).observeSingleEvent(of: .value, with: { (snapshot) in
             let dictionary = snapshot.value as! [String:Any]
             for keys in dictionary.keys {
                 if keys == "pushToken" {
-                    Ref().databaseSpecificUser(uid: uid!).child(keys).removeValue()
+                    Ref().databaseSpecificUser(uid: uid).child(keys).removeValue()
                 }
             }
         })
     }
+    
+    
     
     func handleSignOut() {
         removePushToken()
@@ -83,6 +87,23 @@ extension MoreViewController {
                         }
                     })
                 }
+                if keys == FULLHD {
+                    Ref().databaseSpecificUser(uid: uid).child(FULLHD).observeSingleEvent(of: .value, with: { (snapshot) in
+                        guard let dict = snapshot.value as? String else {
+                            return
+                        }
+                        if dict == ENABLED {
+                            self.fullHDIsOn = true
+                        } else {
+                            self.fullHDIsOn = false
+                        }
+                        let indexPath = IndexPath(row: 2, section: 0)
+                        let cell = self.tableView.cellForRow(at: indexPath) as! SettingsCell
+                        cell.switchButton.isOn = self.fullHDIsOn
+                        
+                    })
+                }
+                
             }
         })
     }

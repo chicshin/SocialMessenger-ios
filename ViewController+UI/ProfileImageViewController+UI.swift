@@ -275,7 +275,7 @@ extension ProfileImageViewController: CropViewControllerDelegate, UIImagePickerC
         cropController.delegate = self
         
         image = imageSelected
-        self.profileImageView.image = image
+//        self.profileImageView.image = image
         
         picker.dismiss(animated: true, completion: {
             self.present(cropController, animated: true, completion: nil)
@@ -291,6 +291,7 @@ extension ProfileImageViewController: CropViewControllerDelegate, UIImagePickerC
     
     public func updateImageViewWithImage(_ image: UIImage, fromCropViewController cropViewController: CropViewController) {
         self.image = image
+        self.profileImageView.image = image
         layoutImageView()
         
         self.navigationItem.rightBarButtonItem?.isEnabled = true
