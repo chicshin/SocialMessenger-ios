@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   RemoteConfigDefaults.plist
-   Tikitalka
-
-   Created by Jane Shin on 9/20/19.
-   Copyright (c) 2019 Jane Shin. All rights reserved.
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-    
-    </dict>
+<dict>
+	<key>remote_message</key>
+	<false/>
+	<key>remote_caps</key>
+	<string>Server Maintenance</string>
+</dict>
 </plist>
