@@ -13,6 +13,27 @@ import FirebaseStorage
 import Alamofire
 
 extension PeopleViewController {
+    func signOutFlaggedUserAlert() {
+        let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            self.handleSignOut()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        let moreVC = MoreViewController()
+        moreVC.removePushToken()
+        do {
+            try Auth.auth().signOut()
+        } catch let logutError {
+            print(logutError)
+        }
+        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+        self.present(signInVC, animated: true, completion: nil)
+    }
+    
     
     func loadMyProfile() {
         let uid = Auth.auth().currentUser?.uid
@@ -33,26 +54,66 @@ extension PeopleViewController {
     
     func loadSearch() {
         let myUid = Auth.auth().currentUser?.uid
+        var blockedUsers = [String]()
         Ref().databaseUsers.queryOrderedByKey().observeSingleEvent(of: .value, with: { (snapshot) in
             self.AllUsers.removeAll()
+            self.allUserDictionary.removeAll()
             let users = snapshot.value as! [String:AnyObject]
             for (key, value) in users {
                 let uid = value.value(forKey: "uid") as? String
                 if key != "activeUsernames" && uid != myUid {
-                    let dictionary = value as? [String:Any]
                     let user = AllUserModel()
+                    let dictionary = value as? [String:Any]
                     user.setValuesForKeys(dictionary!)
-                    self.AllUsers.append(user)
+                    self.allUserDictionary[uid!] = user
+//                    let dictionary = value as? [String:Any]
+//                    let user = AllUserModel()
+//                    user.setValuesForKeys(dictionary!)
+//                    self.AllUsers.append(user)
                 }
-                
+            }
+            for item in blockedUsers {
+                self.allUserDictionary.removeValue(forKey: item)
+            }
+            self.AllUsers = Array(self.allUserDictionary.values)
+//            DispatchQueue.main.async {
+//                self.friendsTableView.reloadData();
+//            }
+        })
+        
+        Ref().databaseRoot.child(BLOCK).child(myUid!).child(BLOCKING).observe(.value, with: { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
+                return
+            }
+            for key in dict.keys {
+                blockedUsers.append(key)
             }
         })
+        
+        Ref().databaseRoot.child(BLOCK).child(myUid!).child(BLOCKEDBY).observe(.value, with: { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
+                return
+            }
+            for key in dict.keys {
+                blockedUsers.append(key)
+            }
+        })
+        
+        Ref().databaseRoot.child(FLAGGEDUSERS).observe(.value, with: { (snapshot) in
+            guard let dict = snapshot.value as? [String:String] else {
+                return
+            }
+            for key in dict.keys {
+                blockedUsers.append(key)
+            }
+        })
+
     }
     
     func loadFriends() {
         let uid = Auth.auth().currentUser?.uid
         if !isSearching {
-            Ref().databaseSpecificUser(uid: uid!).child("following").observe(.childAdded, with: { (snapshot) in
+            Ref().databaseSpecificUser(uid: uid!).child(FOLLOWING).observe(.childAdded, with: { (snapshot) in
                 let followingUid = snapshot.value
                 let user = UserModel()
                 Ref().databaseUsers.child(followingUid as! String).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -64,13 +125,12 @@ extension PeopleViewController {
                     }
                 })
             })
-            Ref().databaseSpecificUser(uid: uid!).child("following").observeSingleEvent(of: .childRemoved, with: { (snapshot) in
+            Ref().databaseSpecificUser(uid: uid!).child(FOLLOWING).observe(.childRemoved, with: { (snapshot) in
                 self.Users.removeAll()
                 self.userDictionary.removeValue(forKey: snapshot.value as! String)
                 self.attemptReloadTable()
             })
         }
-        
     }
     
     func attemptReloadTable() {
@@ -192,8 +252,11 @@ extension PeopleViewController {
             }
             return false
         })
+        AllUsers.removeAll()
         loadSearch()
         friendsTableView.reloadData()
+//        AllUsers.removeAll()
+//        loadSearch()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {

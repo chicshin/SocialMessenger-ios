@@ -16,6 +16,30 @@ import CropViewController
 import ProgressHUD
 
 extension ProfileViewController {
+    /* Control Flagged Users */
+    func signOutFlaggedUserAlert() {
+        let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            self.handleSignOut()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        let moreVC = MoreViewController()
+        moreVC.removePushToken()
+        do {
+            try Auth.auth().signOut()
+        } catch let logutError {
+            print(logutError)
+        }
+        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+        self.present(signInVC, animated: true, completion: nil)
+    }
+    
+    
+    
     /*
         Control Profile Image
     */

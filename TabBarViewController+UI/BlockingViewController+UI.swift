@@ -1,17 +1,16 @@
 //
-//  NotificationsSettingViewController+UI.swift
+//  BlockingViewController+UI.swift
 //  Tikitalka
 //
-//  Created by Jane Shin on 8/24/19.
+//  Created by Jane Shin on 9/16/19.
 //  Copyright © 2019 Jane Shin. All rights reserved.
 //
 
 import UIKit
-import FirebaseAuth
 import Firebase
-import FirebaseDatabase
+import FirebaseAuth
 
-extension NotificationsSettingViewController {
+extension BlockingViewController {
     /* Control Flagged Users */
     func signOutFlaggedUserAlert() {
         let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
@@ -35,33 +34,30 @@ extension NotificationsSettingViewController {
     }
     
     
-    func setupTableView() {
-        tableView.separatorStyle = .none
-    }
-    
-    func setupNavigationBar() {
-        navigationItem.title = "Notifications"
-    }
-    
-    func removePushToken() {
+    func observeBlockedUsers() {
         let uid = Auth.auth().currentUser?.uid
-        Ref().databaseSpecificUser(uid: uid!).observeSingleEvent(of: .value, with: { (snapshot) in
-            let dictionary = snapshot.value as! [String:Any]
-            for keys in dictionary.keys {
-                if keys == "pushToken" {
-                    Ref().databaseSpecificUser(uid: uid!).child(keys).removeValue()
-                }
+        Ref().databaseRoot.child(BLOCK).child(uid!).child(BLOCKING).observe(.childAdded, with: { (snapshot) in
+            guard let _ = snapshot.value else {
+                return
             }
+            let blockedUid = snapshot.key
+            let user = AllUserModel()
+            Ref().databaseUsers.child(blockedUid).observe(.value, with: { (snapshot) in
+                if let dictionary = snapshot.value as? [String:Any] {
+                    user.setValuesForKeys(dictionary)
+                    self.userDictionary[blockedUid] = user
+                    self.attemptReloadTable()
+                }
+            })
+            
         })
     }
     
-    func createPushToken() {
-        InstanceID.instanceID().instanceID { (result, error) in
-            if let error = error {
-                print("Error fetching remote instance ID: \(error)")
-            }else if let result = result{
-                Ref().databaseSpecificUser(uid: Auth.auth().currentUser!.uid).updateChildValues(["pushToken": result.token])
-            }
+    func attemptReloadTable() {
+        self.AllUsers = Array(self.userDictionary.values)
+        DispatchQueue.main.async {
+            self.tableView.reloadData();
         }
     }
 }
+

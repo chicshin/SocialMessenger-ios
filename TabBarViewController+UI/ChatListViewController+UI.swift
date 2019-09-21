@@ -15,6 +15,30 @@ import Alamofire
 import AlamofireImage
 
 extension ChatListViewController {
+    /* Control Flagged Users */
+    func signOutFlaggedUserAlert() {
+        let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            self.handleSignOut()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        let moreVC = MoreViewController()
+        moreVC.removePushToken()
+        do {
+            try Auth.auth().signOut()
+        } catch let logutError {
+            print(logutError)
+        }
+        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+        self.present(signInVC, animated: true, completion: nil)
+    }
+    
+    
+    
     
     func setupNavigationBar() {
         navigationItem.title = Auth.auth().currentUser?.displayName
@@ -24,7 +48,7 @@ extension ChatListViewController {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
-
+        var blockedUsers = [String]()
         Ref().databaseRoot.child("user-messages").child(uid).observe(.childAdded, with: { (snapshot) in
             let toUid = snapshot.key
             Ref().databaseRoot.child("user-messages").child(uid).child(toUid).observe(.childAdded, with: { (dataSanpshot) in
@@ -35,12 +59,50 @@ extension ChatListViewController {
 
                         if let chatPartnerUid = message.chatPartnerUid() {
                             self.messageDictionary[chatPartnerUid] = message
+                            Ref().databaseRoot.child(FLAGGEDUSERS).observe(.value, with: { (snapshot) in
+                                guard let dict = snapshot.value as? [String:Any] else {
+                                    return
+                                }
+                                for key in dict.keys {
+                                    if chatPartnerUid == key {
+                                        self.messageDictionary.removeValue(forKey: chatPartnerUid)
+                                        return
+                                    } else {
+                                        self.messageDictionary[chatPartnerUid] = message
+                                    }
+                                }
+                                for item in blockedUsers {
+                                    self.messageDictionary.removeValue(forKey: item)
+                                    self.attemptReloadTable()
+                                }
+
+                            })
                         }
+                        
                         self.attemptReloadTable()
                     }
                 })
             })
         })
+        
+        Ref().databaseRoot.child(BLOCK).child(uid).child(BLOCKING).observe(.value, with: { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
+                return
+            }
+            for key in dict.keys {
+                blockedUsers.append(key)
+            }
+        })
+        
+        Ref().databaseRoot.child(BLOCK).child(uid).child(BLOCKEDBY).observe(.value, with: { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
+                return
+            }
+            for key in dict.keys {
+                blockedUsers.append(key)
+            }
+        })
+        
         Ref().databaseRoot.child("user-messages").child(uid).observe(.childRemoved, with: { (snapshot) in
             self.messageDictionary.removeValue(forKey: snapshot.key)
             self.attemptReloadTable()

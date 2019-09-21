@@ -12,6 +12,29 @@ import FirebaseDatabase
 import CropViewController
 
 extension AccountViewController {
+    /* Control Flagged Users */
+    func signOutFlaggedUserAlert() {
+        let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            self.handleSignOut()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        let moreVC = MoreViewController()
+        moreVC.removePushToken()
+        do {
+            try Auth.auth().signOut()
+        } catch let logutError {
+            print(logutError)
+        }
+        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+        self.present(signInVC, animated: true, completion: nil)
+    }
+    
+    
     /*
      Controll TableView and NavigationBar
     */
@@ -32,7 +55,6 @@ extension AccountViewController {
     */
     func setupTextField(cell: ProfileCell, text: String?) {
         cell.inputTextField.text = text!
-//        cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
         if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             cell.inputTextField.font = UIFont.systemFont(ofSize: 15)
         }

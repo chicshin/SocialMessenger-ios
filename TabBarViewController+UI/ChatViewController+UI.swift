@@ -17,6 +17,30 @@ import AVFoundation
 import CropViewController
 
 extension ChatViewController {
+    /* Control Flagged Users */
+    func signOutFlaggedUserAlert() {
+        let alert = UIAlertController(title: "Error", message: "Your account has been disabled for violating our terms.", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            self.handleSignOut()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleSignOut() {
+        let moreVC = MoreViewController()
+        moreVC.removePushToken()
+        do {
+            try Auth.auth().signOut()
+        } catch let logutError {
+            print(logutError)
+        }
+        let storyboard = UIStoryboard(name: "Start", bundle: nil)
+        let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+        self.present(signInVC, animated: true, completion: nil)
+    }
+    
+    
+    
     func setupNavigationBar() {
         if isSearching {
             navigationItem.title = self.allUser!.username!
@@ -58,6 +82,31 @@ extension ChatViewController {
             })
         })
 
+    }
+    
+    
+    
+    
+    
+    /*
+        Control Full HD
+    */
+    func checkFullHD() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Ref().databaseSpecificUser(uid: uid).child(FULLHD).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dict = snapshot.value as? String else {
+                return
+            }
+            
+            if dict == ENABLED {
+                self.fullHDIsOn = true
+            } else {
+                self.fullHDIsOn = false
+            }
+        })
     }
     
     
@@ -331,27 +380,46 @@ extension ChatViewController {
         Control Storage
     */
     private func imageStorage(image: UIImage?, completion: @escaping(_ imageUrl: String) -> (), onSuccess: @escaping() -> Void, onError: @escaping(_ errorMessage: String) -> Void) {
-        guard let imageData = image?.jpegData(compressionQuality: 1) else {
-            return
-        }
-
         let imageName = NSUUID().uuidString
         let storageRef = Ref().storageRef.child("message_images").child(imageName)
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
-    
-        storageRef.putData(imageData, metadata: metadata, completion: { (metadata, error) in
-            if error != nil {
-                onError(error!.localizedDescription)
+        print("fullHD", fullHDIsOn)
+        
+        if fullHDIsOn {
+            guard let imageData = image?.jpegData(compressionQuality: 1) else {
                 return
             }
-            storageRef.downloadURL(completion: { (url, error) in
-                if let metaImageUrl = url?.absoluteString {
-                    completion(metaImageUrl)
-                    onSuccess()
+            storageRef.putData(imageData, metadata: metadata, completion: { (metadata, error) in
+                if error != nil {
+                    onError(error!.localizedDescription)
+                    return
                 }
+                storageRef.downloadURL(completion: { (url, error) in
+                    if let metaImageUrl = url?.absoluteString {
+                        completion(metaImageUrl)
+                        onSuccess()
+                    }
+                })
             })
-        })
+
+        } else if !fullHDIsOn {
+            guard let imageData = image?.jpegData(compressionQuality: 0.7) else {
+                return
+            }
+            storageRef.putData(imageData, metadata: metadata, completion: { (metadata, error) in
+                if error != nil {
+                    onError(error!.localizedDescription)
+                    return
+                }
+                storageRef.downloadURL(completion: { (url, error) in
+                    if let metaImageUrl = url?.absoluteString {
+                        completion(metaImageUrl)
+                        onSuccess()
+                    }
+                })
+            })
+        }
     }
     
     private func videoStorage(videoUrl: NSURL?) {
@@ -664,17 +732,42 @@ extension ChatViewController {
     
     func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
         let urlAsset = AVURLAsset(url: inputURL, options: nil)
-        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetHighestQuality) else {
-            handler(nil)
-            return
+        if fullHDIsOn {
+            guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetHighestQuality) else {
+                handler(nil)
+                return
+            }
+            exportSession.outputURL = outputURL
+            exportSession.outputFileType = AVFileType.mov
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.exportAsynchronously { () -> Void in
+                self.videoStorage(videoUrl: exportSession.outputURL as NSURL?)
+                handler(exportSession)
+            }
+        } else if !fullHDIsOn {
+            guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetMediumQuality) else {
+                handler(nil)
+                return
+            }
+            exportSession.outputURL = outputURL
+            exportSession.outputFileType = AVFileType.mov
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.exportAsynchronously { () -> Void in
+                self.videoStorage(videoUrl: exportSession.outputURL as NSURL?)
+                handler(exportSession)
+            }
         }
-        
-        exportSession.outputURL = outputURL
-        exportSession.outputFileType = AVFileType.mov
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.exportAsynchronously { () -> Void in
-            self.videoStorage(videoUrl: exportSession.outputURL as NSURL?)
-            handler(exportSession)
-        }
+//        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetHighestQuality) else {
+//            handler(nil)
+//            return
+//        }
+//
+//        exportSession.outputURL = outputURL
+//        exportSession.outputFileType = AVFileType.mov
+//        exportSession.shouldOptimizeForNetworkUse = true
+//        exportSession.exportAsynchronously { () -> Void in
+//            self.videoStorage(videoUrl: exportSession.outputURL as NSURL?)
+//            handler(exportSession)
+//        }
     }
 }
