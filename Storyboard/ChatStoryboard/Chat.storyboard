@@ -20,7 +20,7 @@
         <!--Chat View Controller-->
         <scene sceneID="GQx-81-RWm">
             <objects>
-                <collectionViewController storyboardIdentifier="ChatVC" id="Huy-l8-vev" customClass="ChatViewController" customModule="Cluster" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="ChatVC" id="Huy-l8-vev" customClass="ChatViewController" customModule="TikiTalka" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="aAV-JV-a1b">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
