@@ -26,6 +26,11 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
         tableView = UITableView(frame: UIScreen.main.bounds, style: UITableView.Style.plain)
         tableView.delegate = self
         tableView.dataSource = self
@@ -54,7 +59,8 @@ class ChatListViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         AppDelegate.AppUtility.lockOrientation(.portrait)
-        tableView.reloadData()
+        observeUserMessages()
+//        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

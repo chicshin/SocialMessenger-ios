@@ -28,10 +28,13 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     var CurrentUser = [CurrentUserModel]()
     var filteredUser = [AllUserModel]()
     var userDictionary = [String: UserModel]()
+    var allUserDictionary = [String:AllUserModel]()
     var currentIndexPathRow: Int?
     
     var friendsCount = 0
     var addUid: String?
+    
+    var timer: Timer?
     
     var friendsTitleLabel: UILabel = {
         let label = UILabel()
@@ -45,6 +48,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 //        } catch let logutError {
 //            print(logutError)
 //        }
+        
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
         
         tableView.dataSource = self
         friendsTableView.dataSource = self
@@ -105,7 +114,31 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         super.viewWillAppear(animated)
         AppDelegate.AppUtility.lockOrientation(.portrait)
         setSearchBar()
-//        setupImage()
+        loadSearch()
+//        friendsTableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        filteredUser.removeAll()
+        let searchText = searchBar.text
+        let sortedArr = allUserDictionary.values.sorted(by: {(lhs: AllUserModel, rhs: AllUserModel) in
+            let lhsValue = lhs.username
+            let rhsValue = rhs.username
+            return lhsValue! < rhsValue!
+        })
+        filteredUser = sortedArr.filter({ user -> Bool in
+            if searchText!.isEmpty {
+                isSearching = false
+                friendsTitleLabel.isHidden = false
+                return true
+            } else if !searchText!.isEmpty {
+                isSearching = true
+                return (user.username?.lowercased().contains(searchText!.lowercased()))!
+            }
+            return false
+        })
+        friendsTableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -115,7 +148,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchBar.resignFirstResponder()
     }
-    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == self.tableView {
@@ -135,7 +167,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 return 70
             }
         } else if tableView == self.friendsTableView {
-            
             if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
                 return 62
             }
@@ -191,6 +222,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
         if tableView == self.friendsTableView {
             let cell = friendsTableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
+            
             if !isSearching {
                 let user = Users[indexPath.row]
                 setupCell(cell: cell, user: user)
@@ -198,19 +230,19 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 cell.followButton.isHidden = true
                 friendsTitleLabel.isHidden = false
                 cell.unfollowButton.isHidden = true
+                
                 setupFriendsCountTitle()
 //
                 cellToReturn = cell
             } else if isSearching {
                 let user = filteredUser[indexPath.row]
-
                 friendsTitleLabel.isHidden = true
                 setupCellForSearch(cell: cell, user: user)
                 cell.followImageView.isHidden = false
                 cell.followButton.isHidden = false
                 cell.unfollowButton.isHidden = true
 
-                Ref().databaseSpecificUser(uid: user.uid!).child("followers").observe(.childAdded, with: { (snapshot) in
+                Ref().databaseSpecificUser(uid: user.uid!).child(FOLLOWERS).observe(.childAdded, with: { (snapshot) in
                     guard let followers = snapshot.value as? String else {
 
                         return
@@ -313,6 +345,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 //            let view = storyboard?.instantiateViewController(withIdentifier: "DestinationProfileVC") as! DestinationProfileViewController
 //            navigationController?.present(view, animated: true, completion: nil)
             currentIndexPathRow = indexPath.row
+//            performSegue(withIdentifier: "sendUserDataSegue", sender: self)
             performSegue(withIdentifier: "sendUserDataSegue", sender: self)
             friendsTableView.deselectRow(at: indexPath, animated: true)
         }
@@ -475,7 +508,7 @@ class FriendsCell: UITableViewCell {
         
         if UIDevices.modelName == "iPhone XS Max" || UIDevices.modelName == "iPhone XR" {
             profileImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
-            profileImage.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            profileImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
             profileImage.heightAnchor.constraint(equalToConstant: 50).isActive = true
             profileImage.widthAnchor.constraint(equalToConstant: 50).isActive = true
             profileImage.layer.cornerRadius = 50/2

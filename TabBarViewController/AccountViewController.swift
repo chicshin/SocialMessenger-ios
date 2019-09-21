@@ -31,6 +31,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
         tableView = UITableView(frame: UIScreen.main.bounds, style: UITableView.Style.plain)
         tableView.delegate = self
         tableView.dataSource = self
@@ -98,6 +103,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.contentTitle.text = content
         
         cell.inputTextField.tag = indexPath.row
+        
         
         didTapEditProfile(cell: cell)
         didTapDoneEdit(cell: cell)
@@ -182,6 +188,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.editProfileLabel.isHidden = false
             cell.doneEditLabel.isHidden = true
             cell.editProfileImage.isHidden = true
+            cell.textCountLabel.isHidden = true
         }
     }
     

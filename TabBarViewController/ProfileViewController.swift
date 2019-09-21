@@ -127,6 +127,12 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
+        
         statusTextField.delegate = self
         
         view.addSubview(closeButton)
@@ -212,7 +218,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
         self.imageStorage(onSuccess: {
         //changed image saved on database and storage
         }) { (errorMessage) in
-        print("Something wrong1")
         ProgressHUD.showError(errorMessage)
         }
     

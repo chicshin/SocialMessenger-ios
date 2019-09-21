@@ -20,6 +20,11 @@ class NotificationsSettingViewController: UIViewController, UITableViewDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
         tableView = UITableView(frame: UIScreen.main.bounds, style: UITableView.Style.plain)
         tableView.delegate = self
         tableView.dataSource = self

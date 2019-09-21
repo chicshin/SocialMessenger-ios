@@ -18,6 +18,8 @@ import CropViewController
 import MobileCoreServices
 import AVFoundation
 import CropViewController
+import SystemConfiguration.CaptiveNetwork
+
 class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
 
     let inputTextField: UITextField! = {
@@ -60,6 +62,8 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     
     var badges = 0
     
+    var fullHDIsOn = false
+    
     var menuContents = ["menu"]
     var tableView = UITableView()
     let menuHeight: CGFloat = {
@@ -82,6 +86,11 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Block().observeFlaggedUser(completion: { (snapshot) in
+            if snapshot {
+                self.signOutFlaggedUserAlert()
+            }
+        })
         
         collectionView.register(chatMessageCell.self, forCellWithReuseIdentifier: "chatMessageCell")
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
@@ -114,16 +123,20 @@ class ChatViewController: UICollectionViewController, UITextFieldDelegate, UICol
             inputContainerHeightX?.isActive = false
         }
         
+        observeData()
         setupUI()
         
     }
     
     func setupUI() {
         setCurrentUserInfo()
-        observeMessageLog()
         setupNavigationBar()
+    }
+    
+    func observeData() {
+        observeMessageLog()
         badgeCount()
-
+        checkFullHD()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -530,12 +543,14 @@ class chatMessageCell: UICollectionViewCell {
         return view
     }()
     
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
         profileImage.translatesAutoresizingMaskIntoConstraints = false
         profileImage.layer.cornerRadius = 15
         profileImage.clipsToBounds = true
         profileImage.contentMode = .scaleAspectFill
+//        profileImage.isUserInteractionEnabled = true
+//        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserProfile)))
         return profileImage
     }()
     
@@ -662,22 +677,6 @@ class chatMessageCell: UICollectionViewCell {
                     }
                 }
             })
-//            let urlData = NSData(contentsOf: url!)
-//            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0];
-//            let filePath="\(documentsPath)/tempFile.mp4"
-//            urlData!.write(toFile: filePath, atomically: false)
-//            DispatchQueue.main.async {
-//                PHPhotoLibrary.shared().performChanges({
-//                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
-//                }) { completed, error in
-//                    if completed {
-//                        let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
-//                        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-//                        alertController.addAction(defaultAction)
-//                        self.chatViewController!.present(alertController, animated: true, completion: nil)
-//                    }
-//                }
-//            }
 
         } else {
             let url = URL(string: chat!.imageUrl!)
